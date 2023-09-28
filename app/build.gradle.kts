@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -69,36 +71,39 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     //kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-    // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01")
+/*    // ViewModel
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-alpha02")
+
     // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0-alpha01")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0-alpha02")*/
 
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
     //moshi
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     //dagger hilt
     implementation("com.google.dagger:hilt-android:2.45")
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     kapt("com.google.dagger:hilt-compiler:2.45")
 
     //hilt viewmodel
     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.1.0-alpha01")
 
     //navigation
     implementation("androidx.navigation:navigation-compose:2.5.1")
 
     //ViewModels
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 
     implementation("io.coil-kt:coil-compose:2.1.0")
-
 }
