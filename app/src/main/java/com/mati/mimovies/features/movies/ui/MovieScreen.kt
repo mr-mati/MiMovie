@@ -174,7 +174,6 @@ fun MovieScreenPreview(
                         EachRow(res = res)
                     }
                 }
-
             }
         }
     }
