@@ -4,6 +4,7 @@ package com.mati.mimovies.features.movies.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -20,8 +21,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -54,12 +58,14 @@ import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.ui.theme.BackgroundMain
 import com.mati.mimovies.ui.theme.Blue
+import com.mati.mimovies.ui.theme.BlueLight
 
 @Composable
 fun MovieScreen(
     viewModel: MovieViewModel = hiltViewModel(),
 ) {
 
+    val scrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
     systemUiController.setNavigationBarColor(BackgroundMain)
@@ -81,10 +87,11 @@ fun MovieScreen(
     if (response.data.isNotEmpty()) {
         Column(
             modifier = Modifier
+                .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
         ) {
             TopToolbar()
-            TitleList("Trending")
+            TitleList("Trending", true)
             LazyRow {
                 items(
                     response.data,
@@ -95,8 +102,9 @@ fun MovieScreen(
                     TrendList(res = response)
                 }
             }
+            TitleList("Categories", false)
             Categories()
-            TitleList("For You")
+            TitleList("For You", true)
             LazyRow {
                 items(
                     response.data,
@@ -105,6 +113,30 @@ fun MovieScreen(
                     }
                 ) { response ->
                     ListMoviesItem(res = response)
+                }
+            }
+            TitleList("Most Visited", true)
+            LazyRow {
+                items(
+                    response.data,
+                    key = {
+                        it.id!!
+                    }
+                ) { response ->
+                    ListMoviesItem(res = response)
+                }
+            }
+            TitleList("New Showing", true)
+            val categories = listOf(
+                "Cinematic",
+                "Historical"
+            )
+            Column(
+                modifier = Modifier
+                    .padding(bottom = 4.dp, top = 8.dp)
+            ) {
+                repeat(response.data.size) { index ->
+                    NewShowing(categories, res = response.data[index])
                 }
             }
         }
@@ -126,6 +158,9 @@ fun TopToolbar() {
         },
         actions = {
             IconButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Search, null)
+            }
+            IconButton(onClick = { /*TODO*/ }) {
                 Icon(Icons.Default.Person, null)
             }
         },
@@ -134,25 +169,25 @@ fun TopToolbar() {
 }
 
 @Composable
-fun TitleList(text: String) {
+fun TitleList(text: String, action: Boolean) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 18.dp)
     )
     {
         Text(
-            modifier = Modifier
-                .padding(start = 8.dp),
             text = text, fontWeight = FontWeight.Bold, style = TextStyle(
                 fontSize = 24.sp,
                 color = Color.White,
             )
         )
-        TextButton(onClick = { /*TODO*/ }) {
-            Text(text = "See All")
+        if (action) {
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(text = "See All")
+            }
         }
     }
 }
@@ -163,8 +198,8 @@ fun TrendList(res: Movies.Results) {
     Card(
         modifier = Modifier
             .width(390.dp)
-            .height(250.dp)
-            .padding(16.dp),
+            .height(200.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
         ),
@@ -191,27 +226,39 @@ fun TrendList(res: Movies.Results) {
 @Composable
 fun Categories() {
     val categories = listOf(
-        "Cinama",
+        "Cinematic",
         "Serials",
         "Actions",
+        "Romantic",
         "Comedy",
-        "History"
+        "Animation",
+        "Social",
+        "Historical"
     )
     val scrollState = rememberScrollState()
     Row(
-        modifier = Modifier.horizontalScroll(scrollState)
+        modifier = Modifier
+            .horizontalScroll(scrollState)
+            .padding(bottom = 4.dp, top = 8.dp)
     ) {
         repeat(categories.size) { index ->
             Surface(
                 modifier = Modifier
-                    .padding(start = if (index == 0) 24.dp else 0.dp, end = 12.dp)
+                    .background(BackgroundMain)
+                    .padding(
+                        start = if (index == 0) 24.dp else 0.dp,
+                        end = 12.dp
+                    )
                     .border(width = 1.dp, color = Blue, shape = RoundedCornerShape(16.dp))
                     .clip(RoundedCornerShape(16.dp))
                     .padding(12.dp)
                     .clickable { }
             ) {
                 Text(
-                    text = categories[index], style = TextStyle(
+                    text = categories[index],
+                    modifier = Modifier.background(BackgroundMain),
+                    style = TextStyle(
+                        background = BackgroundMain,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
                         letterSpacing = 0.4.sp
@@ -255,15 +302,121 @@ fun ListMoviesItem(
     }
 }
 
+@Composable
+fun NewShowing(
+    categories: List<String>,
+    res: Movies.Results,
+) {
+    Row(
+        modifier = Modifier
+            .background(BackgroundMain)
+            .fillMaxWidth()
+    ) {
+        Card(
+            modifier = Modifier
+                .width(150.dp)
+                .height(180.dp)
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White,
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Image(
+                rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .build()
+                ),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+        Column(
+            modifier = Modifier
+                .padding(top = 16.dp),
+        ) {
+            Text(
+                text = "Movie ${res.orginal_title}",
+                modifier = Modifier
+                    .padding(8.dp),
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 16.sp
+                ),
+            )
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star,
+                    tint = Color.Yellow, contentDescription = null
+                )
+                Text(
+                    text = "${res.vote_average}/10 IMDb",
+                    style = TextStyle(
+                        color = Color.LightGray
+                    ),
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 4.dp, top = 8.dp)
+            ) {
+                repeat(categories.size) { index ->
+                    GenreShowing(categories[index])
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
+fun GenreShowing(genre: String) {
+    Card(
+        modifier = Modifier
+            .padding(start = 4.dp, end = 4.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = BlueLight,
+        ),
+        shape = RoundedCornerShape(22.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp),
+            text = genre,
+            fontWeight = FontWeight.Bold,
+            style = TextStyle(
+                color = Blue,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.sp,
+                letterSpacing = 0.4.sp
+            )
+        )
+    }
+}
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun MovieScreenPreview() {
     Column(
         modifier = Modifier
+            .background(BackgroundMain)
             .padding(bottom = 16.dp)
     ) {
         TopToolbar()
-        TitleList("category")
     }
 
 }
