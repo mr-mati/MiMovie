@@ -104,6 +104,9 @@ dependencies {
     //navigation
     implementation("androidx.navigation:navigation-compose:2.5.1")
 
+    //view pager
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+
     //ViewModels
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2")
