@@ -6,6 +6,6 @@ val Color1 = Color(21, 19, 24)
 val Color2 = Color(65, 79, 202)
 val Color3 = Color(21, 19, 24)
 
-val BackgroundMain = Color(21, 19, 24)
+val BackgroundMain = Color(39,44,64)
 val Blue = Color(65, 79, 202)
 val BlueLight = Color(130, 177, 255, 255)
