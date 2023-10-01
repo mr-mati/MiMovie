@@ -22,6 +22,13 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
     private val _res: MutableState<MovieState> = mutableStateOf(MovieState())
     val res: State<MovieState> = _res
 
+    private val _movieDetails:MutableState<Movies.Results> = mutableStateOf(Movies.Results())
+    val movieDetails:MutableState<Movies.Results> = _movieDetails
+
+    fun setMovie(data:Movies.Results){
+        _movieDetails.value = data
+    }
+
     init {
         viewModelScope.launch {
             useCase.getMovies()
