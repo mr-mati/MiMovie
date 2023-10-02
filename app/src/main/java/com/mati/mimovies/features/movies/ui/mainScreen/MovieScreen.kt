@@ -1,8 +1,9 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
-package com.mati.mimovies.features.movies.ui
+package com.mati.mimovies.features.movies.ui.mainScreen
 
-import android.annotation.SuppressLint
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,9 +17,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -38,31 +42,43 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
+import com.mati.mimovies.features.movies.ui.MovieViewModel
 import com.mati.mimovies.ui.theme.BackgroundMain
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
+import com.programming_simplified.movieapp.utils.MovieNavigationItems
+import kotlinx.coroutines.delay
 
 @Composable
 fun MovieScreen(
     viewModel: MovieViewModel = hiltViewModel(),
+    navHostController: NavHostController,
 ) {
 
     val scrollState = rememberScrollState()
@@ -74,7 +90,14 @@ fun MovieScreen(
     val response = viewModel.res.value
 
     if (response.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                painterResource(id = R.drawable.gradients),
+                contentScale = ContentScale.FillBounds
+            )
+            , contentAlignment = Alignment.Center,
+            ) {
             CircularProgressIndicator()
         }
     }
@@ -92,16 +115,7 @@ fun MovieScreen(
         ) {
             TopToolbar()
             TitleList("Trending", true)
-            LazyRow {
-                items(
-                    response.data,
-                    key = {
-                        it.id!!
-                    }
-                ) { response ->
-                    TrendList(res = response)
-                }
-            }
+            TrendList()
             TitleList("Categories", false)
             Categories()
             TitleList("For You", true)
@@ -112,7 +126,10 @@ fun MovieScreen(
                         it.id!!
                     }
                 ) { response ->
-                    ListMoviesItem(res = response)
+                    ListMoviesItem(results = response) {
+                        viewModel.setMovie(response)
+                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                    }
                 }
             }
             TitleList("Most Visited", true)
@@ -123,7 +140,10 @@ fun MovieScreen(
                         it.id!!
                     }
                 ) { response ->
-                    ListMoviesItem(res = response)
+                    ListMoviesItem(results = response) {
+                        viewModel.setMovie(response)
+                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                    }
                 }
             }
             TitleList("New Showing", true)
@@ -141,7 +161,6 @@ fun MovieScreen(
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -192,34 +211,93 @@ fun TitleList(text: String, action: Boolean) {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TrendList(res: Movies.Results) {
-    Card(
+fun TrendList() {
+    val banners = listOf(
+        R.drawable.banner_oppenheimer,
+        R.drawable.banner_barbie,
+        R.drawable.banner_sex_education,
+        R.drawable.banner_spider_man
+    )
+
+    val pagerState = rememberPagerState()
+    val bannerIndex = remember { mutableStateOf(0) }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            bannerIndex.value = page
+        }
+    }
+
+    /// auto scroll
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(10000)
+            tween<Float>(1500)
+            pagerState.animateScrollToPage(
+                page = (pagerState.currentPage + 1) % banners.size
+            )
+        }
+    }
+
+    Box(
         modifier = Modifier
-            .width(390.dp)
-            .height(200.dp)
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White,
-        ),
-        shape = RoundedCornerShape(8.dp)
+            .fillMaxWidth()
+            .height(190.dp)
+            .padding(horizontal = 8.dp)
     ) {
-        Image(
-            rememberAsyncImagePainter(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
-                    .placeholder(R.drawable.ic_launcher_foreground)
-                    .build()
-            ),
-            contentDescription = "",
-            contentScale = ContentScale.FillBounds,
+        HorizontalPager(
+            state = pagerState,
+            pageCount = banners.size,
             modifier = Modifier
-                .fillMaxSize()
-        )
+                .fillMaxWidth()
+                .height(190.dp)
+        ) { index ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(4.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = banners[index]),
+                    contentDescription = "Banners",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .paint(
+                            painterResource(id = R.drawable.bg),
+                            contentScale = ContentScale.FillBounds
+                        )
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+        ) {
+            repeat(banners.size) { index ->
+                val height = 12.dp
+                val width = if (index == bannerIndex.value) 28.dp else 12.dp
+                val color = if (index == bannerIndex.value) Blue else Gray
+
+                Surface(
+                    modifier = Modifier
+                        .padding(end = 6.dp)
+                        .size(width, height)
+                        .clip(RoundedCornerShape(20.dp)),
+                    color = color,
+                ) {
+                }
+            }
+        }
     }
 }
 
@@ -271,7 +349,7 @@ fun Categories() {
 
 @Composable
 fun ListMoviesItem(
-    res: Movies.Results,
+    results: Movies.Results, onGettingClick: () -> Unit,
 ) {
 
     Card(
@@ -285,19 +363,23 @@ fun ListMoviesItem(
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        onClick = { onGettingClick() }
     ) {
         Image(
             rememberAsyncImagePainter(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
-                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .data("${ApiService.BASE_POSTER_URL}${results.poster_path}")
                     .build()
             ),
             contentDescription = "",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
+                .paint(
+                    painterResource(id = R.drawable.bg),
+                    contentScale = ContentScale.FillBounds
+                )
         )
     }
 }
@@ -329,13 +411,16 @@ fun NewShowing(
                 rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
-                        .placeholder(R.drawable.ic_launcher_foreground)
                         .build()
                 ),
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.bg),
+                        contentScale = ContentScale.FillBounds
+                    )
             )
         }
         Column(
@@ -418,5 +503,4 @@ fun MovieScreenPreview() {
     ) {
         TopToolbar()
     }
-
 }
