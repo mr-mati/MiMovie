@@ -2,7 +2,7 @@ package com.mati.mimovies.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val White = Color(21, 19, 24)
+val White = Color(255, 255, 255)
 val Black = Color(21, 19, 24)
 
 val BackgroundMain_Light = Color(39, 44, 64)
