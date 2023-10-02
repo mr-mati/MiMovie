@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,6 @@ import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.ui.theme.BackgroundMain
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 
@@ -50,14 +50,14 @@ fun MovieDetailScreen(
 
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
-    systemUiController.setNavigationBarColor(BackgroundMain)
-    systemUiController.setStatusBarColor(BackgroundMain)
+    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.background)
+    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.background)
 
     val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
-            .background(BackgroundMain)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(bottom = 16.dp)
             .fillMaxSize(),
@@ -129,7 +129,7 @@ fun Header(response: Movies.Results) {
             style = TextStyle(
                 textAlign = TextAlign.Left,
                 fontWeight = FontWeight.Normal,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.tertiary,
                 fontSize = 26.sp,
                 lineHeight = 24.sp,
                 letterSpacing = 0.5.sp
@@ -189,7 +189,7 @@ fun TopCastList(
                     defaultElevation = 3.dp
                 ),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.tertiary,
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
@@ -218,7 +218,7 @@ fun Trailer(
             defaultElevation = 3.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.tertiary,
         ),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -250,7 +250,7 @@ fun TitleList(text: String) {
         Text(
             text = text, fontWeight = FontWeight.Bold, style = TextStyle(
                 fontSize = 24.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.tertiary,
             )
         )
     }

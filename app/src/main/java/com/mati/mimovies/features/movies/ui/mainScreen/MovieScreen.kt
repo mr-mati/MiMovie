@@ -36,6 +36,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -69,8 +70,6 @@ import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.ui.theme.BackgroundMain
-import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 import com.programming_simplified.movieapp.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
@@ -84,20 +83,21 @@ fun MovieScreen(
     val scrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
-    systemUiController.setNavigationBarColor(BackgroundMain)
-    systemUiController.setStatusBarColor(BackgroundMain)
+    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
+    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val response = viewModel.res.value
 
     if (response.isLoading) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .paint(
-                painterResource(id = R.drawable.gradients),
-                contentScale = ContentScale.FillBounds
-            )
-            , contentAlignment = Alignment.Center,
-            ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .paint(
+                    painterResource(id = R.drawable.gradients),
+                    contentScale = ContentScale.FillBounds
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
             CircularProgressIndicator()
         }
     }
@@ -170,7 +170,7 @@ fun TopToolbar() {
         title = {
             Text(
                 text = "Mi Movies", style = TextStyle(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 18.sp
                 )
             )
@@ -183,7 +183,7 @@ fun TopToolbar() {
                 Icon(Icons.Default.Person, null)
             }
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(BackgroundMain)
+        colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary)
     )
 }
 
@@ -200,12 +200,16 @@ fun TitleList(text: String, action: Boolean) {
         Text(
             text = text, fontWeight = FontWeight.Bold, style = TextStyle(
                 fontSize = 24.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.tertiary,
             )
         )
         if (action) {
             TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "See All")
+                Text(
+                    text = "See All", style = TextStyle(
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                )
             }
         }
     }
@@ -262,7 +266,7 @@ fun TrendList() {
                     defaultElevation = 3.dp
                 ),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.tertiary,
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
@@ -286,7 +290,8 @@ fun TrendList() {
             repeat(banners.size) { index ->
                 val height = 12.dp
                 val width = if (index == bannerIndex.value) 28.dp else 12.dp
-                val color = if (index == bannerIndex.value) Blue else Gray
+                val color =
+                    if (index == bannerIndex.value) MaterialTheme.colorScheme.secondary else Gray
 
                 Surface(
                     modifier = Modifier
@@ -322,21 +327,25 @@ fun Categories() {
         repeat(categories.size) { index ->
             Surface(
                 modifier = Modifier
-                    .background(BackgroundMain)
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(
                         start = if (index == 0) 24.dp else 0.dp,
                         end = 12.dp
                     )
-                    .border(width = 1.dp, color = Blue, shape = RoundedCornerShape(16.dp))
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = RoundedCornerShape(16.dp)
+                    )
                     .clip(RoundedCornerShape(16.dp))
                     .padding(12.dp)
                     .clickable { }
             ) {
                 Text(
                     text = categories[index],
-                    modifier = Modifier.background(BackgroundMain),
+                    modifier = Modifier.background(MaterialTheme.colorScheme.primary),
                     style = TextStyle(
-                        background = BackgroundMain,
+                        background = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
                         letterSpacing = 0.4.sp
@@ -361,7 +370,7 @@ fun ListMoviesItem(
             defaultElevation = 3.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.tertiary,
         ),
         shape = RoundedCornerShape(8.dp),
         onClick = { onGettingClick() }
@@ -391,7 +400,7 @@ fun NewShowing(
 ) {
     Row(
         modifier = Modifier
-            .background(BackgroundMain)
+            .background(MaterialTheme.colorScheme.primary)
             .fillMaxWidth()
     ) {
         Card(
@@ -403,7 +412,7 @@ fun NewShowing(
                 defaultElevation = 3.dp
             ),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.tertiary,
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
@@ -433,7 +442,7 @@ fun NewShowing(
                     .padding(8.dp),
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 16.sp
                 ),
             )
@@ -484,7 +493,7 @@ fun GenreShowing(genre: String) {
             text = genre,
             fontWeight = FontWeight.Bold,
             style = TextStyle(
-                color = Blue,
+                color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 letterSpacing = 0.4.sp
@@ -498,7 +507,7 @@ fun GenreShowing(genre: String) {
 fun MovieScreenPreview() {
     Column(
         modifier = Modifier
-            .background(BackgroundMain)
+            .background(MaterialTheme.colorScheme.primary)
             .padding(bottom = 16.dp)
     ) {
         TopToolbar()
