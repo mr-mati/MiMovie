@@ -110,7 +110,7 @@ fun Header(response: Movies.Results) {
                 data = "${ApiService.BASE_POSTER_URL}${response.poster_path ?: ""}",
                 builder = {
                     crossfade(true)
-                    placeholder(R.drawable.banner_oppenheimer)
+                    placeholder(R.drawable.ic_intro)
                 })
         )
         Image(
@@ -171,7 +171,7 @@ fun TopCastList(
         R.drawable.banner_oppenheimer,
         R.drawable.banner_barbie,
         R.drawable.banner_sex_education,
-        R.drawable.banner_spider_man,
+        R.drawable.banner_spider_man
     )
     val scrollState = rememberScrollState()
     Row(
@@ -232,7 +232,7 @@ fun Trailer(
                 data = "${ApiService.BASE_POSTER_URL}${response.poster_path ?: ""}",
                 builder = {
                     crossfade(true)
-                    placeholder(R.drawable.banner_oppenheimer)
+                    placeholder(R.drawable.bg)
                 })
         )
     }
