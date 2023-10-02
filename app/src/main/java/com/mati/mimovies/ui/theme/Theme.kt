@@ -15,18 +15,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Color1,
-    secondary = Color2,
-    tertiary = Color3,
-    background = BackgroundMain
+val DarkColorScheme = darkColorScheme(
+    primary = BackgroundMain_Dark,
+    secondary = Blue,
+    tertiary = White,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Color1,
-    secondary = Color2,
-    tertiary = Color3,
-    background = BackgroundMain
+val LightColorScheme = lightColorScheme(
+    primary = BackgroundMain_Light,
+    secondary = Blue,
+    tertiary = Black,
 
 
     /* Other default colors to override
@@ -50,7 +48,7 @@ fun MiMoviesTheme(
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme) DarkColorScheme else LightColorScheme
         }
 
         darkTheme -> DarkColorScheme
