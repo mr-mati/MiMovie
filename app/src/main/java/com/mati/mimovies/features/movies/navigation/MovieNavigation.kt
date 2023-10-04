@@ -18,13 +18,13 @@ fun MovieNavigation(
 
     NavHost(
         navController = navHostController,
-        startDestination = MovieNavigationItems.MovieList.route
+        startDestination = MovieNavigationItems.MovieScreen.route
     ) {
-        composable(MovieNavigationItems.MovieList.route) {
+        composable(MovieNavigationItems.MovieScreen.route) {
             MovieScreen(viewModel = viewModel, navHostController = navHostController)
         }
         composable(MovieNavigationItems.MovieDetails.route) {
-            MovieDetailScreen(viewModel)
+            MovieDetailScreen(viewModel, navHostController = navHostController)
         }
     }
 
