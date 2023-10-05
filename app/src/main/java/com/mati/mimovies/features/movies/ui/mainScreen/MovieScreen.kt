@@ -58,7 +58,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -87,6 +86,7 @@ fun MovieScreen(
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val response = viewModel.res.value
+    val res = viewModel.movieDetails.value
 
     if (response.isLoading) {
         Box(
@@ -147,16 +147,39 @@ fun MovieScreen(
                 }
             }
             TitleList("New Showing", true)
-            val categories = listOf(
-                "Cinematic",
-                "Historical"
-            )
+            val genre = res.genre_ids
+            val categories = arrayListOf<String>("TV Movie")
+            repeat(genre!!.size) { i ->
+                when (genre[i]) {
+                    28 -> categories.add("Action")
+                    12 -> categories.add("Adventure")
+                    16 -> categories.add("Animation")
+                    35 -> categories.add("Comedy")
+                    80 -> categories.add("Crime")
+                    99 -> categories.add("Documentary")
+                    18 -> categories.add("Drama")
+                    10751 -> categories.add("Family")
+                    36 -> categories.add("History")
+                    27 -> categories.add("Horror")
+                    10402 -> categories.add("Music")
+                    9648 -> categories.add("Mystery")
+                    878 -> categories.add("Science Fiction")
+                    10770 -> categories.add("TV Movie")
+                    53 -> categories.add("Thriller")
+                    10752 -> categories.add("War")
+                    37 -> categories.add("Westernv")
+                    else -> "Null"
+                }
+            }
             Column(
                 modifier = Modifier
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
                 repeat(response.data.size) { index ->
-                    NewShowing(categories, res = response.data[index])
+                    NewShowing(categories, res = response.data[index]){
+                        viewModel.setMovie(response.data[index])
+                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                    }
                 }
             }
         }
@@ -194,7 +217,7 @@ fun TitleList(text: String, action: Boolean) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 18.dp)
+            .padding(end = 18.dp, start = 8.dp)
     )
     {
         Text(
@@ -207,7 +230,8 @@ fun TitleList(text: String, action: Boolean) {
             TextButton(onClick = { /*TODO*/ }) {
                 Text(
                     text = "See All", style = TextStyle(
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontSize = 12.sp
                     )
                 )
             }
@@ -288,8 +312,8 @@ fun TrendList() {
                 .padding(16.dp)
         ) {
             repeat(banners.size) { index ->
-                val height = 12.dp
-                val width = if (index == bannerIndex.value) 28.dp else 12.dp
+                val height = 8.dp
+                val width = if (index == bannerIndex.value) 16.dp else 8.dp
                 val color =
                     if (index == bannerIndex.value) MaterialTheme.colorScheme.secondary else Gray
 
@@ -322,14 +346,14 @@ fun Categories() {
     Row(
         modifier = Modifier
             .horizontalScroll(scrollState)
-            .padding(bottom = 4.dp, top = 8.dp)
+            .padding(bottom = 4.dp, top = 16.dp)
     ) {
         repeat(categories.size) { index ->
             Surface(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.primary)
                     .padding(
-                        start = if (index == 0) 24.dp else 0.dp,
+                        start = if (index == 0) 8.dp else 0.dp,
                         end = 12.dp
                     )
                     .border(
@@ -365,6 +389,7 @@ fun ListMoviesItem(
         modifier = Modifier
             .width(150.dp)
             .height(180.dp)
+            .padding(end = 4.dp)
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
@@ -395,83 +420,87 @@ fun ListMoviesItem(
 
 @Composable
 fun NewShowing(
-    categories: List<String>,
+    categories: ArrayList<String>,
     res: Movies.Results,
+    onGettingClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
-            .fillMaxWidth()
+    Card(
+        onClick = { onGettingClick() }
     ) {
-        Card(
+        Row(
             modifier = Modifier
-                .width(150.dp)
-                .height(180.dp)
-                .padding(8.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
-            ),
-            shape = RoundedCornerShape(8.dp)
+                .background(MaterialTheme.colorScheme.primary)
+                .fillMaxWidth(),
         ) {
-            Image(
-                rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
-                        .build()
-                ),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .paint(
-                        painterResource(id = R.drawable.bg),
-                        contentScale = ContentScale.FillBounds
-                    )
-            )
-        }
-        Column(
-            modifier = Modifier
-                .padding(top = 16.dp),
-        ) {
-            Text(
-                text = "Movie ${res.orginal_title}",
-                modifier = Modifier
+                    .width(150.dp)
+                    .height(180.dp)
                     .padding(8.dp),
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 16.sp
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
                 ),
-            )
-            Row(
-                modifier = Modifier
-                    .padding(8.dp)
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                ),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Icon(
-                    Icons.Default.Star,
-                    tint = Color.Yellow, contentDescription = null
-                )
-                Text(
-                    text = "${res.vote_average}/10 IMDb",
-                    style = TextStyle(
-                        color = Color.LightGray
+                Image(
+                    rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
+                            .build()
                     ),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .paint(
+                            painterResource(id = R.drawable.bg),
+                            contentScale = ContentScale.FillBounds
+                        )
                 )
             }
-            Row(
+            Column(
                 modifier = Modifier
-                    .padding(bottom = 4.dp, top = 8.dp)
+                    .padding(top = 16.dp),
             ) {
-                repeat(categories.size) { index ->
-                    GenreShowing(categories[index])
+                Text(
+                    text = "${res.title}",
+                    modifier = Modifier
+                        .padding(8.dp),
+                    fontWeight = FontWeight.Bold,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 16.sp
+                    ),
+                )
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Star,
+                        tint = Color.Yellow, contentDescription = null
+                    )
+                    Text(
+                        text = "${res.vote_average}/10 IMDb",
+                        style = TextStyle(
+                            color = Color.LightGray
+                        ),
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .padding(bottom = 4.dp, top = 8.dp)
+                ) {
+                    categories.forEach {
+                        GenreShowing(it)
+                    }
                 }
             }
         }
     }
-
 }
 
 @Composable
@@ -499,17 +528,5 @@ fun GenreShowing(genre: String) {
                 letterSpacing = 0.4.sp
             )
         )
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun MovieScreenPreview() {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(bottom = 16.dp)
-    ) {
-        TopToolbar()
     }
 }
