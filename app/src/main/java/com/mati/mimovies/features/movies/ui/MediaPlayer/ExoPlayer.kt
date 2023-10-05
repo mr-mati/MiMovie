@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.ui.VideoPlayer
+package com.mati.mimovies.features.movies.ui.MediaPlayer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,11 +12,9 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
 
 @Composable
-fun VideoPlayer(
+fun ExPlayer(
     videoUrl: String,
 ) {
-
-    val videoUrl = videoUrl
     val context = LocalContext.current
     val player = SimpleExoPlayer.Builder(context).build()
     val playerView = PlayerView(context)
