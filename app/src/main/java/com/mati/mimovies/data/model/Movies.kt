@@ -8,14 +8,14 @@ data class Movies(
 
     data class Results(
 
-        val id: Long?=0,
-        val orginal_title: String?="",
-        val overview: String?="",
-        val poster_path: String?="",
-        val vote_average: String?="",
-
-
-        )
+        val id: Long? = 0,
+        val orginal_title: String? = "",
+        val title: String? = "Null Name",
+        val genre_ids: List<Int>? = listOf(0, 0),
+        val overview: String? = "",
+        val poster_path: String? = "",
+        val vote_average: String? = "",
+    )
 
 
 }
