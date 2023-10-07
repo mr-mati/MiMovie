@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class
+)
 
 package com.mati.mimovies.features.movies.ui.mainScreen
 
@@ -32,7 +34,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +45,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
@@ -64,13 +66,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.features.movies.ui.MovieViewModel
 import com.mati.mimovies.ui.theme.BlueLight
-import com.programming_simplified.movieapp.utils.MovieNavigationItems
+import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
 
 @Composable
@@ -86,20 +92,9 @@ fun MovieScreen(
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val response = viewModel.res.value
-    val res = viewModel.movieDetails.value
 
     if (response.isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.gradients),
-                    contentScale = ContentScale.FillBounds
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator()
-        }
+        ShimmerMain()
     }
 
     if (response.error.isNotEmpty()) {
@@ -114,10 +109,9 @@ fun MovieScreen(
                 .padding(bottom = 16.dp)
         ) {
             TopToolbar()
+            Categories()
             TitleList("Trending", true)
             TrendList()
-            TitleList("Categories", false)
-            Categories()
             TitleList("For You", true)
             LazyRow {
                 items(
@@ -147,36 +141,12 @@ fun MovieScreen(
                 }
             }
             TitleList("New Showing", true)
-            val genre = res.genre_ids
-            val categories = arrayListOf<String>("TV Movie")
-            repeat(genre!!.size) { i ->
-                when (genre[i]) {
-                    28 -> categories.add("Action")
-                    12 -> categories.add("Adventure")
-                    16 -> categories.add("Animation")
-                    35 -> categories.add("Comedy")
-                    80 -> categories.add("Crime")
-                    99 -> categories.add("Documentary")
-                    18 -> categories.add("Drama")
-                    10751 -> categories.add("Family")
-                    36 -> categories.add("History")
-                    27 -> categories.add("Horror")
-                    10402 -> categories.add("Music")
-                    9648 -> categories.add("Mystery")
-                    878 -> categories.add("Science Fiction")
-                    10770 -> categories.add("TV Movie")
-                    53 -> categories.add("Thriller")
-                    10752 -> categories.add("War")
-                    37 -> categories.add("Westernv")
-                    else -> "Null"
-                }
-            }
             Column(
                 modifier = Modifier
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
                 repeat(response.data.size) { index ->
-                    NewShowing(categories, res = response.data[index]){
+                    NewShowing(res = response.data[index]) {
                         viewModel.setMovie(response.data[index])
                         navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                     }
@@ -395,7 +365,7 @@ fun ListMoviesItem(
             defaultElevation = 3.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
+            containerColor = Color.Gray,
         ),
         shape = RoundedCornerShape(8.dp),
         onClick = { onGettingClick() }
@@ -410,20 +380,16 @@ fun ListMoviesItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.bg),
-                    contentScale = ContentScale.FillBounds
-                )
         )
     }
 }
 
 @Composable
 fun NewShowing(
-    categories: ArrayList<String>,
     res: Movies.Results,
     onGettingClick: () -> Unit,
 ) {
+    val scrollState = rememberScrollState()
     Card(
         onClick = { onGettingClick() }
     ) {
@@ -490,9 +456,33 @@ fun NewShowing(
                         ),
                     )
                 }
+                val genre = res.genre_ids
+                val categories = arrayListOf<String>()
+                repeat(genre!!.size) { i ->
+                    when (genre[i]) {
+                        28 -> categories.add("Action")
+                        12 -> categories.add("Adventure")
+                        16 -> categories.add("Animation")
+                        35 -> categories.add("Comedy")
+                        80 -> categories.add("Crime")
+                        99 -> categories.add("Documentary")
+                        18 -> categories.add("Drama")
+                        10751 -> categories.add("Family")
+                        36 -> categories.add("History")
+                        27 -> categories.add("Horror")
+                        10402 -> categories.add("Music")
+                        9648 -> categories.add("Mystery")
+                        878 -> categories.add("Science Fiction")
+                        10770 -> categories.add("TV Movie")
+                        53 -> categories.add("Thriller")
+                        10752 -> categories.add("War")
+                        37 -> categories.add("Westernv")
+                    }
+                }
                 Row(
                     modifier = Modifier
-                        .padding(bottom = 4.dp, top = 8.dp)
+                        .horizontalScroll(scrollState)
+                        .padding(bottom = 4.dp, top = 8.dp, end = 8.dp)
                 ) {
                     categories.forEach {
                         GenreShowing(it)
@@ -527,6 +517,118 @@ fun GenreShowing(genre: String) {
                 fontSize = 12.sp,
                 letterSpacing = 0.4.sp
             )
+        )
+    }
+}
+
+@Composable
+fun ShimmerMain() {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(bottom = 16.dp)
+            .fillMaxSize(),
+    ) {
+        TopToolbar()
+        Categories()
+        TitleListShimmer(true)
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(4.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Gray,
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {}
+        TitleListShimmer(true)
+        LazyRow {
+            items(
+                count = 5
+            ) {
+                ListMovieShimmer()
+            }
+        }
+        TitleListShimmer(true)
+        LazyRow {
+            items(
+                count = 5
+            ) {
+                ListMovieShimmer()
+            }
+        }
+        TitleListShimmer(true)
+    }
+}
+
+@Composable
+fun TitleListShimmer(action: Boolean) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = 18.dp, start = 8.dp, top = 8.dp, bottom = 8.dp)
+    )
+    {
+        Card(
+            modifier = Modifier
+                .width(100.dp)
+                .height(30.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Gray,
+            ),
+            shape = RoundedCornerShape(24.dp)
+        ) {}
+        if (action) {
+            Card(
+                modifier = Modifier
+                    .width(50.dp)
+                    .height(30.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Gray,
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ) {}
+        }
+    }
+}
+
+@Composable
+fun ListMovieShimmer() {
+    Card(
+        modifier = Modifier
+            .width(150.dp)
+            .height(180.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Gray,
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
+        LottieAnimation(
+            modifier = Modifier
+                .width(100.dp)
+                .height(100.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp),
+            composition = composition,
+            alignment = Alignment.Center,
+            iterations = LottieConstants.IterateForever,
         )
     }
 }
