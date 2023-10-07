@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.mati.mimovies.features.movies.ui.detailScreen
 
 import android.util.Log
@@ -20,8 +22,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +33,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,7 +57,7 @@ import com.mati.mimovies.features.movies.ui.MediaPlayer.VideoPlayerMati
 import com.mati.mimovies.features.movies.ui.MovieViewModel
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
-import com.programming_simplified.movieapp.utils.MovieNavigationItems
+import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
 fun MovieDetailScreen(
@@ -81,6 +89,7 @@ fun MovieDetailScreen(
                 }
             }
         }
+        ToolBox()
         Row(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -107,17 +116,11 @@ fun MovieDetailScreen(
                     53 -> categories.add("Thriller")
                     10752 -> categories.add("War")
                     37 -> categories.add("Westernv")
-                    else -> "Null"
                 }
             }
             categories.forEach {
                 GenreShowing(it)
             }
-            /*repeat(categories.size) { i ->
-                val context = LocalContext.current
-                Toast.makeText(context, "${categories[i]}", Toast.LENGTH_SHORT).show()
-                GenreShowing(categories[i])
-            }*/
         }
         Text(
             text = "${response.overview}",
@@ -149,18 +152,85 @@ fun Header(
     ) {
         Image(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .blur(
+                    radiusX = 20.dp,
+                    radiusY = 20.dp,
+                    edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(16.dp))
+                ),
+            contentScale = ContentScale.Crop,
             contentDescription = null,
             painter = rememberAsyncImagePainter(
                 ImageRequest.Builder(LocalContext.current)
-                    .data(data = "${ApiService.BASE_POSTER_URL}${response.poster_path ?: ""}")
+                    .data("${ApiService.BASE_POSTER_URL}${response.poster_path}")
                     .apply(block = fun ImageRequest.Builder.() {
-                        crossfade(true)
-                        placeholder(R.drawable.ic_intro)
                     }).build()
-            ),
-            contentScale = ContentScale.FillBounds,
+            )
         )
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(230.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Image(
+                    rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("${ApiService.BASE_POSTER_URL}${response.poster_path}")
+                            .build()
+                    ),
+                    alignment = Alignment.CenterStart,
+                    contentDescription = "",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .paint(
+                            painterResource(id = R.drawable.bg),
+                            contentScale = ContentScale.FillBounds
+                        )
+                )
+            }
+            Text(
+                text = "${response.title}",
+                modifier = Modifier.padding(top = 12.dp),
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    textAlign = TextAlign.Left,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 26.sp,
+                    lineHeight = 24.sp,
+                    letterSpacing = 0.5.sp
+                )
+            )
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star,
+                    tint = Color.Yellow, contentDescription = null
+                )
+                Text(
+                    text = "${response.vote_average}/10 IMDb",
+                    style = TextStyle(
+                        color = Color.DarkGray
+                    ),
+                )
+            }
+        }
         Image(
             modifier = Modifier
                 .fillMaxWidth()
@@ -171,22 +241,6 @@ fun Header(
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
         )
-        IconButton(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .background(Color.Transparent),
-            onClick = {
-                onGettingClick()
-            },
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.play),
-                contentDescription = "Play",
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(Color.Transparent)
-            )
-        }
         IconButton(
             modifier = Modifier
                 .padding(16.dp)
@@ -209,19 +263,184 @@ fun Header(
 
             )
         }
-        Text(
-            text = "${response.title}",
-            modifier = Modifier.padding(start = 16.dp, top = 320.dp),
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                textAlign = TextAlign.Left,
-                fontWeight = FontWeight.Normal,
-                color = MaterialTheme.colorScheme.tertiary,
-                fontSize = 26.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp
-            )
-        )
+    }
+}
+
+@Composable
+fun ToolBox() {
+    Column {
+        Card(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            ),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            IconButton(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.secondary),
+                onClick = {
+                },
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.play),
+                        contentDescription = "Play",
+                        colorFilter = ColorFilter.tint(Color.White),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(24.dp)
+                            .background(Color.Transparent)
+                    )
+                    Text(
+                        text = "Play",
+                        style = TextStyle(
+                            textAlign = TextAlign.Left,
+                            fontWeight = FontWeight.Normal,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontSize = 18.sp,
+                            lineHeight = 24.sp,
+                            letterSpacing = 0.5.sp
+                        )
+                    )
+                }
+            }
+        }
+        Card(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            ),
+            shape = RoundedCornerShape(45.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .padding(start = 16.dp, end = 16.dp)
+                .background(color = Color.Gray)
+        ) {}
+        Row(
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            IconButton(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .width(60.dp)
+                    .height(60.dp),
+                onClick = { /*TODO*/ })
+            {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = "Add To List"
+                    )
+                    Text(
+                        text = "Add to list",
+                        style = TextStyle(
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+                        )
+                    )
+                }
+            }
+            IconButton(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .width(60.dp)
+                    .height(60.dp),
+                onClick = { /*TODO*/ })
+            {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_favorite),
+                        contentDescription = "Rate"
+                    )
+                    Text(
+                        text = "Rate",
+                        style = TextStyle(
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+                        )
+                    )
+                }
+            }
+            IconButton(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .width(60.dp)
+                    .height(60.dp),
+                onClick = { /*TODO*/ })
+            {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_download),
+                        contentDescription = "download"
+                    )
+                    Text(
+                        text = "Download",
+                        style = TextStyle(
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+                        )
+                    )
+                }
+            }
+            IconButton(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .width(60.dp)
+                    .height(60.dp),
+                onClick = { /*TODO*/ })
+            {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_share),
+                        contentDescription = "Share"
+                    )
+                    Text(
+                        text = "Share",
+                        style = TextStyle(
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
+                            fontSize = 12.sp,
+                        )
+                    )
+                }
+            }
+        }
+        Card(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            ),
+            shape = RoundedCornerShape(45.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .padding(start = 16.dp, end = 16.dp)
+                .background(color = Color.Gray)
+        ) {}
     }
 }
 
@@ -255,10 +474,12 @@ fun GenreShowing(genre: String) {
 fun TopCastList(
 ) {
     val banners = listOf(
-        R.drawable.banner_oppenheimer,
-        R.drawable.banner_barbie,
-        R.drawable.banner_sex_education,
-        R.drawable.banner_spider_man
+        R.drawable.cast1,
+        R.drawable.cast2,
+        R.drawable.cast3,
+        R.drawable.cast4,
+        R.drawable.cast5,
+        R.drawable.cast6
     )
     val scrollState = rememberScrollState()
     Row(
@@ -273,10 +494,10 @@ fun TopCastList(
                     .height(150.dp)
                     .padding(8.dp),
                 elevation = CardDefaults.cardElevation(
-                    defaultElevation = 3.dp
+                    defaultElevation = 0.dp
                 ),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    containerColor = Color.Transparent,
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
