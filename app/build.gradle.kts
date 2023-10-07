@@ -115,6 +115,9 @@ dependencies {
     //exo player
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
 
+    //Animations Lottie
+    implementation("com.airbnb.android:lottie-compose:6.0.1")
+
     //video player
     implementation("io.sanghun:compose-video:1.2.0")
     implementation("androidx.media3:media3-exoplayer:1.1.0") // [Required] androidx.media3 ExoPlayer dependency
