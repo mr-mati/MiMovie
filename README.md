@@ -8,12 +8,12 @@
 
 <h3 align="center">MiMovie</h3>
 <p align="center">
-  <img src="https://www.freepnglogos.com/uploads/xiaomi-png/xiaomi-logo-logos-marcas-8.png" alt="android" width="86" height="64"/>
+  <img src="https://www.uplooder.net/img/image/94/e6ee8878f4f4c8b69a1a26b273e2266e/icon.png" alt="android" width="86" height="64"/>
 </p>
 
 <p align="center">
-  <img src="https://s8.uupload.ir/files/20230815_110054_zg9.png" alt="android" width="360" height="620"/>
-  <img src="https://s8.uupload.ir/files/20230815_110041_4tri.png" alt="android" width="360" height="620"/>
+  <img src="https://www.uplooder.net/img/image/99/441cd8bb11ec1d3b1fc8b384c725913f/20231009-172746-0000.png" alt="android" width="360" height="620"/>
+  <img src="https://www.uplooder.net/img/image/55/4110ac9336bf3b4110b96e4e4319211f/20231009-172721-0000.png" alt="android" width="360" height="620"/>
 </p>
 
 <p align="left">
