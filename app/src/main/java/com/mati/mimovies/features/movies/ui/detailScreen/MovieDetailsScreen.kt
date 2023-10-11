@@ -83,11 +83,7 @@ fun MovieDetailScreen(
             .fillMaxSize(),
     ) {
         Header(response) {
-            navHostController.navigate(MovieNavigationItems.MovieScreen.route) {
-                popUpTo(MovieNavigationItems.MovieDetails.route) {
-                    inclusive = true
-                }
-            }
+            navHostController.popBackStack()
         }
         ToolBox()
         Row(
