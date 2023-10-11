@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
 package com.mati.mimovies.features.movies.ui.mainScreen
@@ -84,7 +84,6 @@ fun MovieScreen(
     viewModel: MovieViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
-
     val scrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
@@ -92,6 +91,8 @@ fun MovieScreen(
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val response = viewModel.res.value
+    val responseYou = viewModel.you.value
+    val responseTop = viewModel.top.value
 
     if (response.isLoading) {
         ShimmerMain()
@@ -115,7 +116,7 @@ fun MovieScreen(
             TitleList("For You", true)
             LazyRow {
                 items(
-                    response.data,
+                    responseYou.data,
                     key = {
                         it.id!!
                     }
@@ -126,10 +127,10 @@ fun MovieScreen(
                     }
                 }
             }
-            TitleList("Most Visited", true)
+            TitleList("Top Rated", true)
             LazyRow {
                 items(
-                    response.data,
+                    responseTop.data,
                     key = {
                         it.id!!
                     }
@@ -142,6 +143,7 @@ fun MovieScreen(
             }
             TitleList("New Showing", true)
             Column(
+                
                 modifier = Modifier
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
