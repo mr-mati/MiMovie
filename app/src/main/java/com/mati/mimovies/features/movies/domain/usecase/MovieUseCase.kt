@@ -21,4 +21,21 @@ class MovieUseCase @Inject constructor(
             }
         }
     }
+
+    suspend fun getMovieYou(): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMovieYou().map { results ->
+            results.map {
+                mapper.fromMap(it)
+            }
+        }
+    }
+
+    suspend fun getTopMovies(): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMoviesTop().map { results ->
+            results.map {
+                mapper.fromMap(it)
+            }
+        }
+    }
+
 }
