@@ -75,13 +75,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-/*    // ViewModel
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-alpha02")
-
-    // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0-alpha02")*/
-
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
@@ -94,15 +87,12 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     kapt("com.google.dagger:hilt-compiler:2.45")
 
-    /*//hilt viewmodel
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    kapt("androidx.hilt:hilt-compiler:1.1.0-alpha01")*/
-
     // System Ui Controller
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.17.0")
 
     //navigation
     implementation("androidx.navigation:navigation-compose:2.5.1")
+    implementation("com.google.accompanist:accompanist-navigation-animation:0.16.1")
 
     //view pager
     implementation("com.google.accompanist:accompanist-pager:0.28.0")
@@ -120,12 +110,12 @@ dependencies {
 
     //video player
     implementation("io.sanghun:compose-video:1.2.0")
-    implementation("androidx.media3:media3-exoplayer:1.1.0") // [Required] androidx.media3 ExoPlayer dependency
-    implementation("androidx.media3:media3-session:1.1.0") // [Required] MediaSession Extension dependency
-    implementation("androidx.media3:media3-ui:1.1.0") // [Required] Base Player UI
+    implementation("androidx.media3:media3-exoplayer:1.1.1") // [Required] androidx.media3 ExoPlayer dependency
+    implementation("androidx.media3:media3-session:1.1.1") // [Required] MediaSession Extension dependency
+    implementation("androidx.media3:media3-ui:1.1.1") // [Required] Base Player UI
 
-    implementation("androidx.media3:media3-exoplayer-dash:1.1.0") // [Optional] If your media item is DASH
-    implementation("androidx.media3:media3-exoplayer-hls:1.1.0") // [Optional] If your media item is HLS (m3u8..)
+    implementation("androidx.media3:media3-exoplayer-dash:1.1.1") // [Optional] If your media item is DASH
+    implementation("androidx.media3:media3-exoplayer-hls:1.1.1") // [Optional] If your media item is HLS (m3u8..)
 
     implementation("io.coil-kt:coil-compose:2.1.0")
 }
