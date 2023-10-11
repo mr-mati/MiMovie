@@ -11,7 +11,12 @@ interface ApiService {
         const val BASE_POSTER_URL = "https://image.tmdb.org/t/p/w500/"
     }
 
-    @GET("4/discover/movie?api_key=c9856d0cb57c3f14bf75bdc6c063b8f3")
+    @GET("3/discover/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun getMoviesList(): Response<Movies>
 
+    @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e&page=2")
+    suspend fun getMovieYou(): Response<Movies>
+
+    @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMoviesTop(): Response<Movies>
 }
