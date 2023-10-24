@@ -109,13 +109,10 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.0.1")
 
     //video player
-    implementation("io.sanghun:compose-video:1.2.0")
-    implementation("androidx.media3:media3-exoplayer:1.1.1") // [Required] androidx.media3 ExoPlayer dependency
-    implementation("androidx.media3:media3-session:1.1.1") // [Required] MediaSession Extension dependency
-    implementation("androidx.media3:media3-ui:1.1.1") // [Required] Base Player UI
-
-    implementation("androidx.media3:media3-exoplayer-dash:1.1.1") // [Optional] If your media item is DASH
-    implementation("androidx.media3:media3-exoplayer-hls:1.1.1") // [Optional] If your media item is HLS (m3u8..)
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-dash:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
 
     implementation("io.coil-kt:coil-compose:2.1.0")
 }

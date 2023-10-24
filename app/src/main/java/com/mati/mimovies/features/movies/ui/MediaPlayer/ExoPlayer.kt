@@ -1,37 +1,44 @@
 package com.mati.mimovies.features.movies.ui.MediaPlayer
 
+import android.net.Uri
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 
 @Composable
-fun ExPlayer(
-    videoUrl: String,
-) {
+fun VideoPlayer(videoUri: Uri) {
     val context = LocalContext.current
-    val player = SimpleExoPlayer.Builder(context).build()
-    val playerView = PlayerView(context)
-    val mediaItem = MediaItem.fromUri(videoUrl)
-    val playWhenReady by rememberSaveable {
-        mutableStateOf(true)
-    }
-    player.setMediaItem(mediaItem)
+    val player = remember { SimpleExoPlayer.Builder(context).build() }
+
+    val playerView = remember { PlayerView(context) }
     playerView.player = player
-
-
-    LaunchedEffect(player) {
-        player.prepare()
-        player.playWhenReady = playWhenReady
+    player.setMediaItem(MediaItem.fromUri(videoUri))
+    val videoSource = remember {
+        ProgressiveMediaSource.Factory(DefaultDataSourceFactory(context))
+            .createMediaSource(MediaItem.fromUri(videoUri))
     }
-    AndroidView(factory = {
-        playerView
-    })
+    player.setMediaSource(videoSource)
+    player.prepare()
+
+
+    AndroidView(
+        factory = { playerView },
+        modifier = Modifier.fillMaxSize()
+    )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            player.release()
+        }
+    }
 
 }

@@ -2,6 +2,7 @@
 
 package com.mati.mimovies.features.movies.ui.detailScreen
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,11 +54,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
-import com.mati.mimovies.features.movies.ui.MediaPlayer.VideoPlayerMati
+import com.mati.mimovies.features.movies.ui.MediaPlayer.VideoPlayer
 import com.mati.mimovies.features.movies.ui.MovieViewModel
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
-import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
 fun MovieDetailScreen(
@@ -220,9 +220,11 @@ fun Header(
                     tint = Color.Yellow, contentDescription = null
                 )
                 Text(
+                    modifier = Modifier
+                        .padding(top = 4.dp),
                     text = "${response.vote_average}/10 IMDb",
                     style = TextStyle(
-                        color = Color.DarkGray
+                        color = BlueLight
                     ),
                 )
             }
@@ -525,9 +527,10 @@ fun Trailer(
         ),
         shape = RoundedCornerShape(8.dp)
     ) {
-        val video =
+        val video = Uri.parse(
             "https://s921.ifilo.net/filo/video/TVRRd01TOHdNeTh5Tmc9PQ==/YjNGRWJXRnFWUT09/qt2G-hl4-240.mp4"
-        VideoPlayerMati(video)
+        )
+        VideoPlayer(video)
     }
 }
 
