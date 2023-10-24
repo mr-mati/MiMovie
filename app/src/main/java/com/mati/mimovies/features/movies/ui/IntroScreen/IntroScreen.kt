@@ -1,13 +1,14 @@
+@file:OptIn(DelicateCoroutinesApi::class)
+
 package com.mati.mimovies.features.movies.ui.IntroScreen
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -26,17 +27,21 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.withContext
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun IntroScreen(
     navHostController: NavHostController,
 ) {
+
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
     systemUiController.setNavigationBarColor(BlueLight)
     systemUiController.setStatusBarColor(BlueLight)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,13 +69,18 @@ fun IntroScreen(
         LaunchedEffect(Unit) {
             withContext(Main) {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    navHostController.navigate(MovieNavigationItems.MovieScreen.route) {
-                        popUpTo(MovieNavigationItems.IntroScreen.route) {
-                            inclusive = true
-                        }
-                    }
+                    getMainScreen(navHostController)
                 }, 2000)
             }
+        }
+    }
+}
+
+
+fun getMainScreen(navHostController: NavHostController) {
+    navHostController.navigate(MovieNavigationItems.MovieScreen.route) {
+        popUpTo(MovieNavigationItems.IntroScreen.route) {
+            inclusive = true
         }
     }
 }

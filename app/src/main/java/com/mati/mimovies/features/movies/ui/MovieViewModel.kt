@@ -18,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel() {
 
-
     private val _res: MutableState<MovieState> = mutableStateOf(MovieState())
     val res: State<MovieState> = _res
 

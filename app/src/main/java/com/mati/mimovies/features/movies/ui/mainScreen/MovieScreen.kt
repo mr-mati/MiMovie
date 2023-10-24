@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
@@ -220,7 +221,7 @@ fun TrendList() {
         R.drawable.banner_spider_man
     )
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { banners.size })
     val bannerIndex = remember { mutableStateOf(0) }
 
     LaunchedEffect(pagerState) {
@@ -248,7 +249,6 @@ fun TrendList() {
     ) {
         HorizontalPager(
             state = pagerState,
-            pageCount = banners.size,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(190.dp)
