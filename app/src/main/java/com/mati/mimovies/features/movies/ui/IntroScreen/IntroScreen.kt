@@ -69,7 +69,7 @@ fun IntroScreen(
                             inclusive = true
                         }
                     }
-                }, 5000)
+                }, 2000)
             }
         }
     }
