@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -528,7 +529,7 @@ fun Trailer(
         shape = RoundedCornerShape(8.dp)
     ) {
         val video = Uri.parse(
-            "https://s921.ifilo.net/filo/video/TVRRd01TOHdNeTh5Tmc9PQ==/YjNGRWJXRnFWUT09/qt2G-hl4-240.mp4"
+            "https://imdb-video.media-imdb.com/vi2389753881/1434659607842-pgv4ql-1626462120496.mp4?Expires=1698230725&Signature=ik~ElePtDMjeuQIN8Y52q2NUyfMMxQM~XnnCKM2OV~wA2XSJNQhKwlpljC-21RF8OrQpqua9WzxeycXSavlFNfZ2qw6S37MfbPygmDF2YcARzUrR5xXbwjsRuo0eM8QxLcActtxrHY37Oar8flTCxiMc1Usi4E6aFubWy0VRsrZxayH2PkRDx~xiY8PJoVqhAKB5BQxfFRpJXWGKzXtVN2pzKG~f1N~sbFbTL0CwS2gsp-xToFbPU5HrIUf4x6j~BDPHD9RZt78VbFXB0MEIu1yV0caquvc0~Az~H4BZXyDtkP606fllcjitPocTgJ1z~rXKWwRoKY3J0i2sXucSHg__&Key-Pair-Id=APKAIFLZBVQZ24NQH3KA"
         )
         VideoPlayer(video)
     }

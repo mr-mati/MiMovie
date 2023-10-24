@@ -9,6 +9,7 @@ interface MovieRepository {
     suspend fun getMovies(): Flow<ApiState<Movies>>
 
     suspend fun getMovieYou(): Flow<ApiState<Movies>>
+
     suspend fun getMoviesTop(): Flow<ApiState<Movies>>
 
 }

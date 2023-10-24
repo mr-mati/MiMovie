@@ -143,7 +143,7 @@ fun MovieScreen(
             }
             TitleList("New Showing", true)
             Column(
-                
+
                 modifier = Modifier
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
