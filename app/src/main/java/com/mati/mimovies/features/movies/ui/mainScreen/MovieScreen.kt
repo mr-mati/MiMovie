@@ -5,6 +5,8 @@
 
 package com.mati.mimovies.features.movies.ui.mainScreen
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -15,7 +17,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +54,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,19 +97,61 @@ fun MovieScreen(
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
+    var enabled by remember { mutableStateOf(true) }
+
+    Handler(Looper.getMainLooper()).postDelayed({
+        enabled = true
+    }, 2000)
+
     val response = viewModel.res.value
     val responseYou = viewModel.you.value
     val responseTop = viewModel.top.value
 
-    if (response.isLoading) {
-        ShimmerMain()
-    }
+    if (response.data.isEmpty()) {
+        if (response.isLoading) {
+            ShimmerMain()
+        } else if (response.error.isNotEmpty()) {
+            if (response.data.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Error",
+                        fontSize = 24.sp,
+                        color = Color.Red
+                    )
 
-    if (response.error.isNotEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = response.error)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = response.error,
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            navHostController.navigate(MovieNavigationItems.IntroScreen.route) {
+                                this.restoreState = true
+                                popUpTo(MovieNavigationItems.MovieScreen.route) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        Text(text = "Retry")
+                    }
+                }
+            }
         }
     }
+
     if (response.data.isNotEmpty()) {
         Column(
             modifier = Modifier
@@ -122,10 +170,11 @@ fun MovieScreen(
                         it.id!!
                     }
                 ) { response ->
-                    ListMoviesItem(results = response) {
+                    ListMoviesItem(results = response, {
+                        enabled = false
                         viewModel.setMovie(response)
                         navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                    }
+                    }, enabled = enabled)
                 }
             }
             TitleList("Top Rated", true)
@@ -136,10 +185,11 @@ fun MovieScreen(
                         it.id!!
                     }
                 ) { response ->
-                    ListMoviesItem(results = response) {
+                    ListMoviesItem(results = response, {
+                        enabled = false
                         viewModel.setMovie(response)
                         navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                    }
+                    }, enabled = enabled)
                 }
             }
             TitleList("New Showing", true)
@@ -149,10 +199,11 @@ fun MovieScreen(
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
                 repeat(response.data.size) { index ->
-                    NewShowing(res = response.data[index]) {
+                    NewShowing(res = response.data[index], {
+                        enabled = false
                         viewModel.setMovie(response.data[index])
                         navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                    }
+                    }, enabled = enabled)
                 }
             }
         }
@@ -354,14 +405,16 @@ fun Categories() {
 
 @Composable
 fun ListMoviesItem(
-    results: Movies.Results, onGettingClick: () -> Unit,
+    results: Movies.Results, onGettingClick: () -> Unit, enabled: Boolean,
 ) {
-
     Card(
         modifier = Modifier
             .width(150.dp)
             .height(180.dp)
             .padding(end = 4.dp)
+            .clickable(enabled = enabled) {
+                onGettingClick()
+            }
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
@@ -369,8 +422,7 @@ fun ListMoviesItem(
         colors = CardDefaults.cardColors(
             containerColor = Color.Gray,
         ),
-        shape = RoundedCornerShape(8.dp),
-        onClick = { onGettingClick() }
+        shape = RoundedCornerShape(8.dp)
     ) {
         Image(
             rememberAsyncImagePainter(
@@ -382,6 +434,7 @@ fun ListMoviesItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
+                .background( color = Color.Gray)
         )
     }
 }
@@ -390,10 +443,12 @@ fun ListMoviesItem(
 fun NewShowing(
     res: Movies.Results,
     onGettingClick: () -> Unit,
+    enabled: Boolean,
 ) {
     val scrollState = rememberScrollState()
     Card(
-        onClick = { onGettingClick() }
+        modifier = Modifier
+            .clickable(enabled = enabled) { onGettingClick() }
     ) {
         Row(
             modifier = Modifier
