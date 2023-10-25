@@ -66,19 +66,23 @@ fun IntroScreen(
             alignment = Alignment.BottomCenter,
             iterations = LottieConstants.IterateForever
         )
-        LaunchedEffect(Unit) {
+
+        getMainScreen(navHostController)
+
+        /*LaunchedEffect(Unit) {
             withContext(Main) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     getMainScreen(navHostController)
-                }, 2000)
+                }, 5000)
             }
-        }
+        }*/
     }
 }
 
 
 fun getMainScreen(navHostController: NavHostController) {
     navHostController.navigate(MovieNavigationItems.MovieScreen.route) {
+        this.restoreState = true
         popUpTo(MovieNavigationItems.IntroScreen.route) {
             inclusive = true
         }

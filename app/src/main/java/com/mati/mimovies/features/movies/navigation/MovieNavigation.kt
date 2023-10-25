@@ -28,14 +28,27 @@ fun MovieNavigation(
         navController = navHostController,
         startDestination = MovieNavigationItems.IntroScreen.route
     ) {
-        composable(MovieNavigationItems.IntroScreen.route) {
+        composable(MovieNavigationItems.IntroScreen.route,
+            exitTransition = {
+                slideOutVertically(
+                    targetOffsetY = { -3000 },
+                    animationSpec = tween(5000)
+                )
+            }
+            ) {
             IntroScreen(navHostController = navHostController)
         }
         composable(MovieNavigationItems.MovieScreen.route,
+            enterTransition = {
+                slideInVertically(
+                    initialOffsetY = { 50 },
+                    animationSpec = tween(3000)
+                )
+            },
             exitTransition = {
                 slideOutVertically(
                     targetOffsetY = { 50 },
-                    animationSpec = tween(8000)
+                    animationSpec = tween(5000)
                 )
             }
         ) {
@@ -45,34 +58,18 @@ fun MovieNavigation(
             enterTransition = {
                 slideInVertically(
                     initialOffsetY = { 3000 },
-                    animationSpec = tween(8000)
+                    animationSpec = tween(5000)
                 )
             },
             exitTransition = {
                 slideOutVertically(
                     targetOffsetY = { 3000 },
-                    animationSpec = tween(8000)
+                    animationSpec = tween(5000)
                 )
             }
         ) {
             MovieDetailScreen(viewModel, navHostController = navHostController)
         }
     }
-
-    /*val navHostController = rememberNavController()
-    NavHost(
-        navController = navHostController,
-        startDestination = MovieNavigationItems.IntroScreen.route
-    ) {
-        composable(MovieNavigationItems.IntroScreen.route) {
-            IntroScreen(navHostController = navHostController)
-        }
-        composable(MovieNavigationItems.MovieScreen.route) {
-            MovieScreen(viewModel = viewModel, navHostController = navHostController)
-        }
-        composable(MovieNavigationItems.MovieDetails.route) {
-            MovieDetailScreen(viewModel, navHostController = navHostController)
-        }
-    }*/
 
 }
