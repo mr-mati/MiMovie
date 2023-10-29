@@ -678,6 +678,7 @@ fun ListMovieShimmer() {
     ) {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.load))
         LottieAnimation(
+            restartOnPlay = false,
             modifier = Modifier
                 .width(100.dp)
                 .height(100.dp)
