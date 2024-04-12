@@ -1,12 +1,13 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
 package com.mati.mimovies.features.movies.ui.mainScreen
 
+import MainScreenShimmer
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -52,6 +53,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -66,6 +68,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,10 +77,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
@@ -109,8 +109,9 @@ fun MovieScreen(
 
     if (response.data.isEmpty()) {
         if (response.isLoading) {
-            ShimmerMain()
+            MainScreenShimmer(isVisible = true)
         } else if (response.error.isNotEmpty()) {
+            MainScreenShimmer(isVisible = false)
             if (response.data.isEmpty()) {
                 Column(
                     modifier = Modifier
@@ -151,14 +152,14 @@ fun MovieScreen(
             }
         }
     }
-
     if (response.data.isNotEmpty()) {
+        MainScreenShimmer(isVisible = false)
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
         ) {
-            TopToolbar()
+            TopToolbar(navHostController)
             Categories()
             TitleList("Trending", true)
             TrendList()
@@ -212,21 +213,22 @@ fun MovieScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopToolbar() {
+fun TopToolbar(navHostController: NavHostController) {
     TopAppBar(
         title = {
             Text(
-                text = "Mi Movies", style = TextStyle(
+                text = "Mi Movies", fontWeight = FontWeight.Bold, style = TextStyle(
                     color = MaterialTheme.colorScheme.tertiary,
+                    fontFamily = FontFamily(Font(R.font.primary_bold)),
                     fontSize = 18.sp
                 )
             )
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navHostController.navigate(MovieNavigationItems.SearchScreen.route) }) {
                 Icon(Icons.Default.Search, null)
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navHostController.navigate(MovieNavigationItems.ProfileScreen.route) }) {
                 Icon(Icons.Default.Person, null)
             }
         },
@@ -236,6 +238,7 @@ fun TopToolbar() {
 
 @Composable
 fun TitleList(text: String, action: Boolean) {
+    val context = LocalContext.current
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -251,7 +254,7 @@ fun TitleList(text: String, action: Boolean) {
             )
         )
         if (action) {
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { Toast.makeText(context, text, Toast.LENGTH_SHORT).show() }) {
                 Text(
                     text = "See All", style = TextStyle(
                         color = MaterialTheme.colorScheme.secondary,
@@ -273,11 +276,11 @@ fun TrendList() {
     )
 
     val pagerState = rememberPagerState(pageCount = { banners.size })
-    val bannerIndex = remember { mutableStateOf(0) }
+    val bannerIndex = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            bannerIndex.value = page
+            bannerIndex.intValue = page
         }
     }
 
@@ -336,9 +339,9 @@ fun TrendList() {
         ) {
             repeat(banners.size) { index ->
                 val height = 8.dp
-                val width = if (index == bannerIndex.value) 16.dp else 8.dp
+                val width = if (index == bannerIndex.intValue) 16.dp else 8.dp
                 val color =
-                    if (index == bannerIndex.value) MaterialTheme.colorScheme.secondary else Gray
+                    if (index == bannerIndex.intValue) MaterialTheme.colorScheme.secondary else Gray
 
                 Surface(
                     modifier = Modifier
@@ -420,7 +423,7 @@ fun ListMoviesItem(
             defaultElevation = 3.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Gray,
+            containerColor = Gray,
         ),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -434,7 +437,7 @@ fun ListMoviesItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .background( color = Color.Gray)
+                .background(color = Gray)
         )
     }
 }
@@ -578,6 +581,7 @@ fun GenreShowing(genre: String) {
     }
 }
 
+/*
 @Composable
 fun ShimmerMain() {
     Column(
@@ -586,7 +590,7 @@ fun ShimmerMain() {
             .padding(bottom = 16.dp)
             .fillMaxSize(),
     ) {
-        TopToolbar()
+        TopToolbarShimmer()
         Categories()
         TitleListShimmer(true)
         Card(
@@ -620,6 +624,31 @@ fun ShimmerMain() {
         }
         TitleListShimmer(true)
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopToolbarShimmer() {
+    TopAppBar(
+        title = {
+            Text(
+                text = "Mi Movies", fontWeight = FontWeight.Bold, style = TextStyle(
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontFamily = FontFamily(Font(R.font.primary_bold)),
+                    fontSize = 18.sp
+                )
+            )
+        },
+        actions = {
+            IconButton(onClick = { }) {
+                Icon(Icons.Default.Search, null)
+            }
+            IconButton(onClick = { }) {
+                Icon(Icons.Default.Person, null)
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary)
+    )
 }
 
 @Composable
@@ -689,4 +718,4 @@ fun ListMovieShimmer() {
             iterations = LottieConstants.IterateForever,
         )
     }
-}
+}*/
