@@ -13,6 +13,8 @@ import com.mati.mimovies.features.movies.ui.IntroScreen.IntroScreen
 import com.mati.mimovies.features.movies.ui.MovieViewModel
 import com.mati.mimovies.features.movies.ui.detailScreen.MovieDetailScreen
 import com.mati.mimovies.features.movies.ui.mainScreen.MovieScreen
+import com.mati.mimovies.features.movies.ui.profileScreen.ProfileScreen
+import com.mati.mimovies.features.movies.ui.searchScreen.SearchScreen
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -29,26 +31,20 @@ fun MovieNavigation(
         startDestination = MovieNavigationItems.IntroScreen.route
     ) {
         composable(MovieNavigationItems.IntroScreen.route,
-            exitTransition = {
-                slideOutVertically(
-                    targetOffsetY = { -3000 },
-                    animationSpec = tween(5000)
-                )
-            }
-            ) {
+        ) {
             IntroScreen(navHostController = navHostController)
         }
         composable(MovieNavigationItems.MovieScreen.route,
             enterTransition = {
                 slideInVertically(
                     initialOffsetY = { 50 },
-                    animationSpec = tween(3000)
+                    animationSpec = tween(1000)
                 )
             },
             exitTransition = {
                 slideOutVertically(
                     targetOffsetY = { 50 },
-                    animationSpec = tween(5000)
+                    animationSpec = tween(2500)
                 )
             }
         ) {
@@ -57,19 +53,28 @@ fun MovieNavigation(
         composable(MovieNavigationItems.MovieDetails.route,
             enterTransition = {
                 slideInVertically(
-                    initialOffsetY = { 3000 },
-                    animationSpec = tween(5000)
+                    initialOffsetY = { 2500 },
+                    animationSpec = tween(2000)
                 )
             },
             exitTransition = {
                 slideOutVertically(
-                    targetOffsetY = { 3000 },
-                    animationSpec = tween(5000)
+                    targetOffsetY = { 2500 },
+                    animationSpec = tween(1500)
                 )
             }
         ) {
-            MovieDetailScreen(viewModel, navHostController = navHostController)
+            MovieDetailScreen(viewModel = viewModel, navHostController = navHostController)
         }
+
+        composable(MovieNavigationItems.SearchScreen.route) {
+            SearchScreen(viewModel = viewModel, navHostController = navHostController)
+        }
+
+        composable(MovieNavigationItems.ProfileScreen.route) {
+            ProfileScreen(navHostController = navHostController)
+        }
+
     }
 
 }
