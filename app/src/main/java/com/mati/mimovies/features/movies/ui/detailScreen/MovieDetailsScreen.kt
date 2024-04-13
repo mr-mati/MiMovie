@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,8 +31,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -47,7 +54,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -55,8 +61,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
-import com.mati.mimovies.features.movies.ui.MediaPlayer.VideoPlayer
 import com.mati.mimovies.features.movies.ui.MovieViewModel
+import com.mati.mimovies.features.movies.ui.util.MediaPlayer.VideoPlayer
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 
@@ -65,6 +71,8 @@ fun MovieDetailScreen(
     viewModel: MovieViewModel,
     navHostController: NavHostController,
 ) {
+
+    val context = LocalContext.current
 
     val response = viewModel.movieDetails.value
     Log.d("main", "MovieDetailScreen: ${response.orginal_title}")
@@ -75,6 +83,18 @@ fun MovieDetailScreen(
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val scrollState = rememberScrollState()
+    val scrollStateGenre = rememberScrollState()
+
+    val scrollSheetState = rememberScrollState()
+
+    val sheetPlayState = rememberModalBottomSheetState()
+    var isSheetPlayOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val sheetDownloadState = rememberModalBottomSheetState()
+    var isSheetDownloadOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Column(
         modifier = Modifier
@@ -86,7 +106,9 @@ fun MovieDetailScreen(
         Header(response) {
             navHostController.popBackStack()
         }
-        ToolBox()
+        ToolBox(
+            onClickPlay = { isSheetPlayOpen = true },
+            onClickDownload = { isSheetDownloadOpen = true })
         Row(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -115,8 +137,14 @@ fun MovieDetailScreen(
                     37 -> categories.add("Westernv")
                 }
             }
-            categories.forEach {
-                GenreShowing(it)
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(scrollStateGenre)
+                    .padding(bottom = 4.dp, top = 8.dp, end = 8.dp)
+            ) {
+                categories.forEach {
+                    GenreShowing(it)
+                }
             }
         }
         Text(
@@ -134,6 +162,92 @@ fun MovieDetailScreen(
         TopCastList()
         TitleList("Trailer")
         Trailer()
+
+        if (isSheetPlayOpen) {
+            ModalBottomSheet(
+                sheetState = sheetPlayState,
+                onDismissRequest = { isSheetPlayOpen = false }
+            ) {
+                Column(
+
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .verticalScroll(scrollSheetState)
+
+                ) {
+
+                    TitleList(text = "English")
+
+                    ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
+
+                    }
+
+                    ButtonCustom(text = "720 HD", icon = R.drawable.play) {
+
+                    }
+
+                    ButtonCustom(text = "480", icon = R.drawable.play) {
+
+                    }
+
+                    TitleList(text = "Persian")
+
+                    ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
+
+                    }
+
+                    ButtonCustom(text = "720 HD", icon = R.drawable.play) {
+
+                    }
+
+                    ButtonCustom(text = "480", icon = R.drawable.play) {
+
+                    }
+
+                }
+            }
+        }
+
+
+        if (isSheetDownloadOpen) {
+            ModalBottomSheet(
+                sheetState = sheetDownloadState,
+                onDismissRequest = { isSheetDownloadOpen = false }
+            ) {
+                Column(
+
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .verticalScroll(scrollSheetState)
+
+                ) {
+
+                    ButtonCustom(text = "1080 HD", icon = R.drawable.ic_download) {
+
+                    }
+
+                    ButtonCustom(text = "720 HD", icon = R.drawable.ic_download) {
+
+                    }
+
+                    ButtonCustom(text = "480", icon = R.drawable.ic_download) {
+
+                    }
+
+                    TitleList(text = "Subtitle")
+
+                    ButtonCustom(text = "English subtitle", icon = R.drawable.ic_download) {
+
+                    }
+
+                    ButtonCustom(text = "Persian subtitle", icon = R.drawable.ic_download) {
+
+                    }
+
+                }
+            }
+        }
+
     }
 }
 
@@ -266,50 +380,10 @@ fun Header(
 }
 
 @Composable
-fun ToolBox() {
+fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
     Column {
-        Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 0.dp
-            ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            IconButton(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.secondary),
-                onClick = {
-                },
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.play),
-                        contentDescription = "Play",
-                        colorFilter = ColorFilter.tint(Color.White),
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(24.dp)
-                            .background(Color.Transparent)
-                    )
-                    Text(
-                        text = "Play",
-                        style = TextStyle(
-                            textAlign = TextAlign.Left,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.tertiary,
-                            fontSize = 18.sp,
-                            lineHeight = 24.sp,
-                            letterSpacing = 0.5.sp
-                        )
-                    )
-                }
-            }
+        ButtonCustom("Play", R.drawable.play) {
+            onClickPlay()
         }
         Card(
             elevation = CardDefaults.cardElevation(
@@ -319,7 +393,7 @@ fun ToolBox() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .padding(start = 16.dp, end = 16.dp)
+                .padding(start = 6.dp, end = 6.dp)
                 .background(color = Color.Gray)
         ) {}
         Row(
@@ -331,8 +405,8 @@ fun ToolBox() {
         ) {
             IconButton(
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp)
-                    .width(60.dp)
+                    .padding(start = 6.dp, end = 6.dp)
+                    .width(80.dp)
                     .height(60.dp),
                 onClick = { /*TODO*/ })
             {
@@ -355,8 +429,8 @@ fun ToolBox() {
             }
             IconButton(
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp)
-                    .width(60.dp)
+                    .padding(start = 6.dp, end = 6.dp)
+                    .width(80.dp)
                     .height(60.dp),
                 onClick = { /*TODO*/ })
             {
@@ -380,10 +454,10 @@ fun ToolBox() {
             }
             IconButton(
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp)
-                    .width(60.dp)
+                    .padding(start = 6.dp, end = 6.dp)
+                    .width(80.dp)
                     .height(60.dp),
-                onClick = { /*TODO*/ })
+                onClick = { onClickDownload() })
             {
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -405,8 +479,8 @@ fun ToolBox() {
             }
             IconButton(
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp)
-                    .width(60.dp)
+                    .padding(start = 6.dp, end = 6.dp)
+                    .width(80.dp)
                     .height(60.dp),
                 onClick = { /*TODO*/ })
             {
@@ -552,3 +626,50 @@ fun TitleList(text: String) {
         )
     }
 }
+
+@Composable
+fun ButtonCustom(text: String, icon: Int, onClick: () -> Unit) {
+    Card(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        ),
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(75.dp)
+            .padding(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.secondary)
+                .clickable(
+                    onClick = { onClick() }
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = text,
+                colorFilter = ColorFilter.tint(Color.White),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(24.dp)
+                    .background(Color.Transparent)
+            )
+            Text(
+                text = text,
+                style = TextStyle(
+                    textAlign = TextAlign.Left,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 18.sp,
+                    lineHeight = 24.sp,
+                    letterSpacing = 0.5.sp
+                )
+            )
+        }
+    }
+}
+
