@@ -491,19 +491,31 @@ fun NewShowing(
                 modifier = Modifier
                     .padding(top = 16.dp),
             ) {
-                Text(
-                    text = "${res.title}",
-                    modifier = Modifier
-                        .padding(8.dp),
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontSize = 16.sp
-                    ),
-                )
+                Row {
+                    Text(
+                        text = "${res.title}",
+                        modifier = Modifier
+                            .padding(8.dp),
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontSize = 16.sp
+                        ),
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 10.dp),
+                        text = res.release_date!!.take(4),
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            color = Color.LightGray
+                        ),
+                    )
+                }
                 Row(
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         Icons.Default.Star,
