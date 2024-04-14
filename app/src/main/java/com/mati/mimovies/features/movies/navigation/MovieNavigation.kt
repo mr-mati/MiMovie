@@ -72,7 +72,7 @@ fun MovieNavigation(
         }
 
         composable(MovieNavigationItems.ProfileScreen.route) {
-            ProfileScreen(navHostController = navHostController)
+            ProfileScreen(viewModel = viewModel, navHostController = navHostController)
         }
 
     }
