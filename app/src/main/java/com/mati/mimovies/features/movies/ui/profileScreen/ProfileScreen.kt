@@ -2,9 +2,9 @@ package com.mati.mimovies.features.movies.ui.profileScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,13 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,7 +59,7 @@ import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.utils.MovieNavigationItems
+import com.mati.mimovies.features.movies.ui.util.rippleIndication
 
 @Composable
 fun ProfileScreen(
@@ -92,22 +90,11 @@ fun ProfileScreen(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.onPrimary
     ) {
-
-        Icon(
-            painter = painterResource(id = R.drawable.ic_back), null,
-            tint = MaterialTheme.colorScheme.tertiary,
-            modifier = Modifier
-                .size(32.dp)
-                .background(Color.Transparent)
-
-        )
-
         Column(
             modifier = Modifier
-                /*.verticalScroll(scrollState)*/
+                .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
         ) {
-
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,7 +107,6 @@ fun ProfileScreen(
                 ),
                 shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp)
             ) {
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -128,9 +114,53 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp)
+                            .align(Alignment.Start),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable(
+                                    onClick = {
+                                        navHostController.popBackStack()
+                                    },
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = rippleIndication()
+                                ),
+                            painter = painterResource(id = R.drawable.ic_back),
+                            contentDescription = ""
+                        )
+                        IconButton(
+                            modifier = Modifier
+                                .background(Color.Transparent)
+                                .size(32.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(32.dp)
+                                ),
+                            onClick = {
+                                navHostController.popBackStack()
+                            },
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.Fit,
+                                painter = painterResource(id = R.drawable.ic_edit),
+                                contentDescription = ""
+                            )
+                        }
 
+                    }
                     Image(
-                        painter = painterResource(id = R.drawable.cast1), contentDescription = null,
+                        painter = painterResource(id = R.drawable.cast1),
+                        contentDescription = null,
                         modifier = Modifier
                             .size(150.dp)
                             .padding(8.dp)
@@ -139,7 +169,6 @@ fun ProfileScreen(
                             .align(Alignment.CenterHorizontally),
                         contentScale = ContentScale.Crop,
                     )
-
                     Text(
                         text = "Mr Mati",
                         fontSize = 26.sp,
@@ -151,16 +180,6 @@ fun ProfileScreen(
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = "mahd60mm60@gmail.com",
-                        fontSize = 14.sp,
-                        style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.primary_bold)),
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                        )
-                    )
 
                 }
             }
@@ -228,14 +247,14 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ItemSelection("لیست علاقه مندی", favoritesList.value) {
+                        ItemSelection("Favorites list", favoritesList.value) {
                             if (!it) {
                                 favoritesList.value = true
                                 viewedList.value = false
                             }
                         }
 
-                        ItemSelection("لیست مشاهده شده", viewedList.value) {
+                        ItemSelection("Viewed list", viewedList.value) {
                             if (!it) {
                                 viewedList.value = true
                                 favoritesList.value = false
@@ -253,9 +272,9 @@ fun ProfileScreen(
                             .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(26.dp))
+                    Spacer(modifier = Modifier.height(626.dp))
 
-                    if (favoritesList.value) {
+                    /*if (favoritesList.value) {
                         LazyVerticalGrid(
                             modifier = Modifier
                                 .scrollable(
@@ -296,7 +315,7 @@ fun ProfileScreen(
                                 }
                             }
                         }
-                    }
+                    }*/
 
                 }
 
@@ -480,24 +499,3 @@ fun ListMoviesItem(
         )
     }
 }
-
-@Composable
-fun Title(text: String) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 18.dp)
-    ) {
-        Text(
-            text = text, fontWeight = FontWeight.Bold, style = TextStyle(
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.tertiary,
-            )
-        )
-    }
-}
-
-@Composable
-fun rippleIndication() = rememberRipple(bounded = true, radius = 25.dp)
