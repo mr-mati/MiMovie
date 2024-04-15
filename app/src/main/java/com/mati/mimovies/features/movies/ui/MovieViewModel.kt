@@ -27,12 +27,31 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
     val _top: MutableState<MovieState> = mutableStateOf(MovieState())
     val top: State<MovieState> = _top
 
-    private val _movieDetails:MutableState<Movies.Results> = mutableStateOf(Movies.Results())
-    val movieDetails:MutableState<Movies.Results> = _movieDetails
+    val _search: MutableState<MovieState> = mutableStateOf(MovieState())
+    val search: State<MovieState> = _search
 
-    fun setMovie(data:Movies.Results){
+    private val _movieDetails: MutableState<Movies.Results> = mutableStateOf(Movies.Results())
+    val movieDetails: MutableState<Movies.Results> = _movieDetails
+
+    fun setMovie(data: Movies.Results) {
         _movieDetails.value = data
     }
+
+    fun searchMovies(name: String) {
+        viewModelScope.launch {
+            useCase.searchMovies(name)
+                .doOnSuccess {
+                    _search.value = MovieState(data = it!!)
+                }
+                .doOnFailure {
+                    _search.value = MovieState(error = it?.message!!)
+                }
+                .doOnLoading {
+                    _search.value = MovieState(isLoading = true)
+                }.collect()
+        }
+    }
+
 
     init {
         viewModelScope.launch {

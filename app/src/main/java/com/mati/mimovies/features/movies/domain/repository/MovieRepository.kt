@@ -12,4 +12,6 @@ interface MovieRepository {
 
     suspend fun getMoviesTop(): Flow<ApiState<Movies>>
 
+    suspend fun searchMovies(name: String): Flow<ApiState<Movies>>
+
 }

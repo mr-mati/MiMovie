@@ -10,9 +10,9 @@ import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
 
-    private val apiService: ApiService
+    private val apiService: ApiService,
 
-) : MovieRepository, BaseRepository() {
+    ) : MovieRepository, BaseRepository() {
 
     override suspend fun getMovies(): Flow<ApiState<Movies>> = safeApiCall {
         apiService.getMoviesList()
@@ -21,8 +21,13 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getMovieYou(): Flow<ApiState<Movies>> = safeApiCall {
         apiService.getMovieYou()
     }
+
     override suspend fun getMoviesTop(): Flow<ApiState<Movies>> = safeApiCall {
         apiService.getMoviesTop()
+    }
+
+    override suspend fun searchMovies(name: String): Flow<ApiState<Movies>> = safeApiCall {
+        apiService.searchMovies(name, 1)
     }
 
 }
