@@ -30,6 +30,14 @@ class MovieUseCase @Inject constructor(
         }
     }
 
+    suspend fun getMoviesUpcoming(): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMoviesUpcoming().map { results ->
+            results.map {
+                mapper.fromMap(it)
+            }
+        }
+    }
+
     suspend fun getTopMovies(): Flow<ApiState<List<Movies.Results>?>> {
         return repo.getMoviesTop().map { results ->
             results.map {

@@ -10,6 +10,8 @@ interface MovieRepository {
 
     suspend fun getMovieYou(): Flow<ApiState<Movies>>
 
+    suspend fun getMoviesUpcoming(): Flow<ApiState<Movies>>
+
     suspend fun getMoviesTop(): Flow<ApiState<Movies>>
 
     suspend fun searchMovies(name: String): Flow<ApiState<Movies>>

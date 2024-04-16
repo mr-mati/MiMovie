@@ -18,6 +18,9 @@ interface ApiService {
     @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e&page=2")
     suspend fun getMovieYou(): Response<Movies>
 
+    @GET("3/movie/upcoming?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMoviesUpcoming(): Response<Movies>
+
     @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun getMoviesTop(): Response<Movies>
 

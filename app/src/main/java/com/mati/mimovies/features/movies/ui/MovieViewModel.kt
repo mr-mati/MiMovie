@@ -24,6 +24,9 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
     val _you: MutableState<MovieState> = mutableStateOf(MovieState())
     val you: State<MovieState> = _you
 
+    val _upcoming: MutableState<MovieState> = mutableStateOf(MovieState())
+    val upcoming: State<MovieState> = _upcoming
+
     val _top: MutableState<MovieState> = mutableStateOf(MovieState())
     val top: State<MovieState> = _top
 
@@ -85,6 +88,21 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
     init {
         viewModelScope.launch {
+            useCase.getMoviesUpcoming()
+                .doOnSuccess {
+                    _upcoming.value = MovieState(data = it!!)
+                }
+                .doOnFailure {
+                    _upcoming.value = MovieState(error = it?.message!!)
+                }
+                .doOnLoading {
+                    _upcoming.value = MovieState(isLoading = true)
+                }.collect()
+        }
+    }
+
+    init {
+        viewModelScope.launch {
             useCase.getTopMovies()
                 .doOnSuccess {
                     _top.value = MovieState(data = it!!)
@@ -102,7 +120,7 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
 
 data class MovieState(
-    val data: List<Movies.Results> = emptyList(),
+    var data: List<Movies.Results> = emptyList(),
     val error: String = " ",
     val isLoading: Boolean = false,
 )
