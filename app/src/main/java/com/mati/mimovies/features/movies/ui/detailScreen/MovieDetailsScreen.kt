@@ -62,7 +62,9 @@ import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.features.movies.ui.MovieViewModel
+import com.mati.mimovies.features.movies.ui.util.ButtonCustom
 import com.mati.mimovies.features.movies.ui.util.MediaPlayer.VideoPlayer
+import com.mati.mimovies.features.movies.ui.util.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 
@@ -158,13 +160,14 @@ fun MovieDetailScreen(
                 letterSpacing = 0.5.sp
             )
         )
-        TitleList("Top Cast")
+        Title("Top Cast")
         TopCastList()
-        TitleList("Trailer")
+        Title("Trailer")
         Trailer()
 
         if (isSheetPlayOpen) {
             ModalBottomSheet(
+                containerColor = MaterialTheme.colorScheme.primary,
                 sheetState = sheetPlayState,
                 onDismissRequest = { isSheetPlayOpen = false }
             ) {
@@ -176,7 +179,7 @@ fun MovieDetailScreen(
 
                 ) {
 
-                    TitleList(text = "English")
+                    Title(text = "English")
 
                     ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
 
@@ -190,7 +193,7 @@ fun MovieDetailScreen(
 
                     }
 
-                    TitleList(text = "Persian")
+                    Title(text = "Persian")
 
                     ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
 
@@ -211,6 +214,7 @@ fun MovieDetailScreen(
 
         if (isSheetDownloadOpen) {
             ModalBottomSheet(
+                containerColor = MaterialTheme.colorScheme.primary,
                 sheetState = sheetDownloadState,
                 onDismissRequest = { isSheetDownloadOpen = false }
             ) {
@@ -234,7 +238,7 @@ fun MovieDetailScreen(
 
                     }
 
-                    TitleList(text = "Subtitle")
+                    Title(text = "Subtitle")
 
                     ButtonCustom(text = "English subtitle", icon = R.drawable.ic_download) {
 
@@ -608,68 +612,3 @@ fun Trailer(
         VideoPlayer(video)
     }
 }
-
-@Composable
-fun TitleList(text: String) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 18.dp)
-    ) {
-        Text(
-            text = text, fontWeight = FontWeight.Bold, style = TextStyle(
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.tertiary,
-            )
-        )
-    }
-}
-
-@Composable
-fun ButtonCustom(text: String, icon: Int, onClick: () -> Unit) {
-    Card(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
-        ),
-        shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(75.dp)
-            .padding(12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.secondary)
-                .clickable(
-                    onClick = { onClick() }
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = text,
-                colorFilter = ColorFilter.tint(Color.White),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(24.dp)
-                    .background(Color.Transparent)
-            )
-            Text(
-                text = text,
-                style = TextStyle(
-                    textAlign = TextAlign.Left,
-                    fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 18.sp,
-                    lineHeight = 24.sp,
-                    letterSpacing = 0.5.sp
-                )
-            )
-        }
-    }
-}
-
