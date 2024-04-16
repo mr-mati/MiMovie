@@ -27,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +70,7 @@ fun SearchScreen(
     navHostController: NavHostController,
 ) {
     var searchBox = remember { mutableStateOf("") }
-    val response = viewModel.search.value
+    var response = viewModel.search.value
 
     val scrollState = rememberScrollState()
 
@@ -115,29 +116,57 @@ fun SearchScreen(
                 }
             }
 
-            if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
-                Column(
+            if (response.isLoading) {
+                CircularProgressIndicator(
                     modifier = Modifier
-                        .padding(bottom = 4.dp, top = 8.dp)
-                ) {
-                    repeat(response.data.size) { index ->
-                        NewShowing(
-                            res = response.data[index]
-                        ) {
-                            viewModel.setMovie(response.data[index])
-                            navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                        .width(64.dp)
+                        .padding(top = 64.dp)
+                        .align(Alignment.CenterHorizontally),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    trackColor = MaterialTheme.colorScheme.surface,
+                )
+            } else if (response.data.isNotEmpty()) {
+                if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(bottom = 4.dp, top = 8.dp)
+                    ) {
+                        repeat(response.data.size) { index ->
+                            NewShowing(
+                                res = response.data[index]
+                            ) {
+                                viewModel.setMovie(response.data[index])
+                                navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                            }
                         }
                     }
+                } else {
+                    response.data = emptyList()
+                    Column(
+                        modifier = Modifier
+                            .padding(bottom = 4.dp, top = 8.dp)
+                    ) {
+
+                    }
                 }
-            } else {
+            }/* else if (response.error.isNotEmpty()) {
                 Column(
                     modifier = Modifier
-                        .padding(bottom = 4.dp, top = 8.dp)
+                        .padding(top = 64.dp)
+                        .align(Alignment.CenterHorizontally),
                 ) {
-
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 4.dp),
+                        text = "404 Not Found",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp,
+                            color = MaterialTheme.colorScheme.surface
+                        )
+                    )
                 }
-            }
-
+            }*/
         }
     }
 
@@ -247,9 +276,6 @@ fun SearchBox(searchBox: MutableState<String>, onClickSearch: () -> Unit) {
                 )
 
             }
-            /*ButtonCustom(text = "search", icon = R.drawable.ic_downloads) {
-                onClickSearch()
-            }*/
         }
     }
 }
