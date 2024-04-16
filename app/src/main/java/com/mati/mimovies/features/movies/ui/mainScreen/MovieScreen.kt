@@ -82,6 +82,7 @@ import com.mati.mimovies.R
 import com.mati.mimovies.data.model.Movies
 import com.mati.mimovies.data.network.ApiService
 import com.mati.mimovies.features.movies.ui.MovieViewModel
+import com.mati.mimovies.features.movies.ui.detailScreen.TopCastList
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
@@ -105,6 +106,7 @@ fun MovieScreen(
 
     val response = viewModel.res.value
     val responseYou = viewModel.you.value
+    val responseUpcoming = viewModel.upcoming.value
     val responseTop = viewModel.top.value
 
     if (response.data.isEmpty()) {
@@ -193,6 +195,25 @@ fun MovieScreen(
                     }, enabled = enabled)
                 }
             }
+            TitleList("Person popular", true)
+            TopCastList()
+
+            TitleList("Upcoming", true)
+            LazyRow {
+                items(
+                    responseUpcoming.data,
+                    key = {
+                        it.id!!
+                    }
+                ) { response ->
+                    ListMoviesItem(results = response, {
+                        enabled = false
+                        viewModel.setMovie(response)
+                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                    }, enabled = enabled)
+                }
+            }
+
             TitleList("New Showing", true)
             Column(
 
