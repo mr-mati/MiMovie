@@ -39,8 +39,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mati.mimovies.R
-import com.mati.mimovies.features.movies.ui.mainScreen.Categories
-import com.mati.mimovies.features.movies.ui.mainScreen.TopToolbar
+import com.mati.mimovies.features.movies.presenter.mainScreen.Categories
 
 @Composable
 fun MainScreenShimmer(isVisible: Boolean) {

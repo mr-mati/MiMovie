@@ -1,7 +1,7 @@
 package com.mati.mimovies.features.movies.domain.mapper
 
 import com.mati.mimovies.common.base.Mapper
-import com.mati.mimovies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Movies
 import javax.inject.Inject
 
 class MovieMapper @Inject constructor() : Mapper<Movies?, List<Movies.Results>?> {

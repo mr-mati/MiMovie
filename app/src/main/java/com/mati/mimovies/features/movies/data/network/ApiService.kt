@@ -1,6 +1,6 @@
-package com.mati.mimovies.data.network
+package com.mati.mimovies.features.movies.data.network
 
-import com.mati.mimovies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Movies
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

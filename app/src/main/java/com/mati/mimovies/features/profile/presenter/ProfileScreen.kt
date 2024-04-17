@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.ui.profileScreen
+package com.mati.mimovies.features.profile.presenter
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,16 +12,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -56,10 +59,11 @@ import coil.request.ImageRequest
 import com.example.movieui.core.theme.Shapes
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
-import com.mati.mimovies.data.model.Movies
-import com.mati.mimovies.data.network.ApiService
-import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.features.movies.ui.util.rippleIndication
+import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.util.rippleIndication
+import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
 fun ProfileScreen(
@@ -271,16 +275,10 @@ fun ProfileScreen(
                             .background(MaterialTheme.colorScheme.onPrimary)
                             .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(626.dp))
-
-                    /*if (favoritesList.value) {
+                    if (favoritesList.value) {
                         LazyVerticalGrid(
                             modifier = Modifier
-                                .scrollable(
-                                    orientation = Orientation.Vertical,
-                                    state = scrollState,
-                                ),
+                                .heightIn(max = 500.dp),
                             columns = GridCells.Fixed(3),
                         ) {
                             items(
@@ -299,6 +297,8 @@ fun ProfileScreen(
                         }
                     } else if (viewedList.value) {
                         LazyVerticalGrid(
+                            modifier = Modifier
+                                .heightIn(max = 500.dp),
                             columns = GridCells.Fixed(3)
                         ) {
                             items(
@@ -315,7 +315,7 @@ fun ProfileScreen(
                                 }
                             }
                         }
-                    }*/
+                    }
 
                 }
 

@@ -1,6 +1,6 @@
-package com.mati.mimovies.data.di
+package com.mati.mimovies.features.movies.data.di
 
-import com.mati.mimovies.data.repository.MovieRepositoryImpl
+import com.mati.mimovies.features.movies.data.repository.MovieRepositoryImpl
 import com.mati.mimovies.features.movies.domain.repository.MovieRepository
 import dagger.Binds
 import dagger.Module
@@ -14,7 +14,7 @@ abstract class RepositoryModule {
     @Binds
     abstract fun providerMovieRepository(
 
-        repo:MovieRepositoryImpl
+        repo: MovieRepositoryImpl
 
     ):MovieRepository
 

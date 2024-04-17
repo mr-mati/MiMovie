@@ -2,7 +2,7 @@ package com.mati.mimovies.features.movies.domain.usecase
 
 import com.mati.mimovies.common.base.ApiState
 import com.mati.mimovies.common.base.map
-import com.mati.mimovies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.mapper.MovieMapper
 import com.mati.mimovies.features.movies.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow

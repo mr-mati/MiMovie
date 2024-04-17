@@ -1,4 +1,4 @@
-package com.mati.mimovies.data.model
+package com.mati.mimovies.features.movies.data.model
 
 data class Movies(
 

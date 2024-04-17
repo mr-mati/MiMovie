@@ -1,6 +1,6 @@
-package com.mati.mimovies.data.di
+package com.mati.mimovies.features.movies.data.di
 
-import com.mati.mimovies.data.network.ApiService
+import com.mati.mimovies.features.movies.data.network.ApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module

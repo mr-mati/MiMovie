@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.mati.mimovies.features.movies.ui.searchScreen
+package com.mati.mimovies.features.movies.presenter.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,10 +58,10 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.mati.mimovies.R
-import com.mati.mimovies.data.model.Movies
-import com.mati.mimovies.data.network.ApiService
-import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.features.movies.ui.mainScreen.GenreShowing
+import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.mainScreen.GenreShowing
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
@@ -69,8 +69,8 @@ fun SearchScreen(
     viewModel: MovieViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
-    var searchBox = remember { mutableStateOf("") }
-    var response = viewModel.search.value
+    val searchBox = viewModel.searchBox
+    val response = viewModel.search.value
 
     val scrollState = rememberScrollState()
 
@@ -176,7 +176,7 @@ fun SearchScreen(
 @Composable
 fun SearchBox(searchBox: MutableState<String>, onClickSearch: () -> Unit) {
 
-    var showButton = remember { mutableStateOf(false) }
+    val showButton = remember { mutableStateOf(false) }
 
     Column {
         Card(

@@ -2,7 +2,7 @@
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
-package com.mati.mimovies.features.movies.ui.mainScreen
+package com.mati.mimovies.features.movies.presenter.mainScreen
 
 import MainScreenShimmer
 import android.os.Handler
@@ -79,10 +79,10 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
-import com.mati.mimovies.data.model.Movies
-import com.mati.mimovies.data.network.ApiService
-import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.features.movies.ui.detailScreen.TopCastList
+import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.detailScreen.TopCastList
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay

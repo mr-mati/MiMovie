@@ -1,13 +1,12 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.mati.mimovies.features.movies.ui.detailScreen
+package com.mati.mimovies.features.movies.presenter.detailScreen
 
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +44,6 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -59,12 +57,12 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
-import com.mati.mimovies.data.model.Movies
-import com.mati.mimovies.data.network.ApiService
-import com.mati.mimovies.features.movies.ui.MovieViewModel
-import com.mati.mimovies.features.movies.ui.util.ButtonCustom
-import com.mati.mimovies.features.movies.ui.util.MediaPlayer.VideoPlayer
-import com.mati.mimovies.features.movies.ui.util.Title
+import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.util.ButtonCustom
+import com.mati.mimovies.features.movies.presenter.util.MediaPlayer.VideoPlayer
+import com.mati.mimovies.features.movies.presenter.util.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 

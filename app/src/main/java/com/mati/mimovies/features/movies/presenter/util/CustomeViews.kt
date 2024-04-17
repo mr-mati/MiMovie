@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.ui.util
+package com.mati.mimovies.features.movies.presenter.util
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.ui
+package com.mati.mimovies.features.movies.presenter
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.mati.mimovies.common.base.doOnFailure
 import com.mati.mimovies.common.base.doOnLoading
 import com.mati.mimovies.common.base.doOnSuccess
-import com.mati.mimovies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.usecase.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -30,6 +30,7 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
     val _top: MutableState<MovieState> = mutableStateOf(MovieState())
     val top: State<MovieState> = _top
 
+    val searchBox = mutableStateOf("")
     val _search: MutableState<MovieState> = mutableStateOf(MovieState())
     val search: State<MovieState> = _search
 

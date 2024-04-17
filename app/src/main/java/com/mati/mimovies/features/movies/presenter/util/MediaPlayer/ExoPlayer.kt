@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.ui.util.MediaPlayer
+package com.mati.mimovies.features.movies.presenter.util.MediaPlayer
 
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize

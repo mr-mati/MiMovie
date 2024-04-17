@@ -1,7 +1,7 @@
 package com.mati.mimovies.features.movies.domain.repository
 
 import com.mati.mimovies.common.base.ApiState
-import com.mati.mimovies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Movies
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
