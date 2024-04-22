@@ -60,9 +60,9 @@ import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.util.ButtonCustom
+import com.mati.mimovies.utils.ButtonCustom
 import com.mati.mimovies.features.movies.presenter.util.MediaPlayer.VideoPlayer
-import com.mati.mimovies.features.movies.presenter.util.Title
+import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 
