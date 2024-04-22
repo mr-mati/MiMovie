@@ -13,15 +13,18 @@ import com.mati.mimovies.features.movies.presenter.IntroScreen.IntroScreen
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
 import com.mati.mimovies.features.movies.presenter.detailScreen.MovieDetailScreen
 import com.mati.mimovies.features.movies.presenter.mainScreen.MovieScreen
-import com.mati.mimovies.features.profile.presenter.ProfileScreen
 import com.mati.mimovies.features.movies.presenter.search.SearchScreen
+import com.mati.mimovies.features.profile.presenter.ProfileViewModel
+import com.mati.mimovies.features.profile.presenter.editProfile.ProfileEditScreen
+import com.mati.mimovies.features.profile.presenter.profileScreen.ProfileScreen
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MovieNavigation(
-    viewModel: MovieViewModel,
+    mainViewModel: MovieViewModel,
+    profileViewModel: ProfileViewModel,
 ) {
 
     val navHostController = rememberAnimatedNavController()
@@ -49,7 +52,7 @@ fun MovieNavigation(
                 )
             }
         ) {
-            MovieScreen(viewModel = viewModel, navHostController = navHostController)
+            MovieScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
         composable(
@@ -75,15 +78,19 @@ fun MovieNavigation(
                 }
             }
         ) {
-            MovieDetailScreen(viewModel = viewModel, navHostController = navHostController)
+            MovieDetailScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
         composable(MovieNavigationItems.SearchScreen.route) {
-            SearchScreen(viewModel = viewModel, navHostController = navHostController)
+            SearchScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
         composable(MovieNavigationItems.ProfileScreen.route) {
-            ProfileScreen(viewModel = viewModel, navHostController = navHostController)
+            ProfileScreen(viewModel = mainViewModel, navHostController = navHostController)
+        }
+
+        composable(MovieNavigationItems.ProfileEditScreen.route) {
+            ProfileEditScreen(viewModel = profileViewModel, navHostController = navHostController)
         }
 
     }

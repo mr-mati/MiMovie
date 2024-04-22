@@ -7,5 +7,5 @@ sealed class MovieNavigationItems(val route:String){
     object MovieDetails : MovieNavigationItems("movieDetails")
     object SearchScreen : MovieNavigationItems("searchScreen")
     object ProfileScreen : MovieNavigationItems("profileScreen")
-
+    object ProfileEditScreen : MovieNavigationItems("profileEditScreen")
 }
