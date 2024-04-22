@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.profile.presenter
+package com.mati.mimovies.features.profile.presenter.profileScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,14 +23,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,23 +45,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.movieui.core.theme.Shapes
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.util.rippleIndication
 import com.mati.mimovies.utils.MovieNavigationItems
+import com.mati.mimovies.utils.rippleIndication
 
 @Composable
 fun ProfileScreen(
@@ -78,17 +72,11 @@ fun ProfileScreen(
 
     val scrollState = rememberScrollState()
 
-
     var favoritesList = remember { mutableStateOf(true) }
     var viewedList = remember { mutableStateOf(false) }
 
     val response = viewModel.res.value
     val responseYou = viewModel.you.value
-
-    val name = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -149,7 +137,7 @@ fun ProfileScreen(
                                     shape = RoundedCornerShape(32.dp)
                                 ),
                             onClick = {
-                                navHostController.popBackStack()
+                                navHostController.navigate(MovieNavigationItems.ProfileEditScreen.route)
                             },
                         ) {
                             Image(
@@ -209,6 +197,49 @@ fun ProfileScreen(
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
+
+
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Image(
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .size(64.dp),
+                            painter = painterResource(id = R.drawable.ic_downloads),
+                            contentDescription = ""
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Downloads",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        )
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .padding(top = 4.dp, bottom = 4.dp)
+                                .background(Color.Gray)
+                                .align(Alignment.CenterHorizontally),
+                            color = Color.Gray
+                        ) {}
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "3 files in downloads",
+                            color = Color.Gray,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        )
+                    }
+
                 }
 
                 Card(
@@ -225,6 +256,49 @@ fun ProfileScreen(
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
+
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Image(
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .size(64.dp),
+                            painter = painterResource(id = R.drawable.ic_premium),
+                            contentDescription = ""
+                        )
+
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "Premium",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        )
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(1.dp)
+                                .padding(top = 4.dp, bottom = 4.dp)
+                                .background(Color.Gray)
+                                .align(Alignment.CenterHorizontally),
+                            color = Color.Gray
+                        ) {}
+                        Text(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "You don't have Premium",
+                            color = Color.Gray,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        )
+
+                    }
+
                 }
 
             }
@@ -320,50 +394,6 @@ fun ProfileScreen(
                 }
 
             }
-
-
-            /*Spacer(modifier = Modifier.height(16.dp))
-
-            Title("Name")
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            MainTextField(
-                edtValue = name.value,
-                icon = R.drawable.ic_person,
-                hint = "Name"
-            ) {  }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Title("Email")
-
-            MainTextField(
-                edtValue = email.value,
-                icon = R.drawable.ic_email,
-                hint = "Email"
-            ) {  }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Title("Password")
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            PasswordTextField(
-                edtValue = password.value,
-                icon = R.drawable.ic_password,
-                hint = "رمز عبور"
-            ) {  }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Title("Country/Region")
-
-            Spacer(modifier = Modifier.height(12.dp))*/
-
         }
     }
 }
@@ -400,68 +430,6 @@ fun ItemSelection(text: String, action: Boolean, onClick: (action: Boolean) -> U
             )
         )
     }
-}
-
-@Composable
-fun MainTextField(
-    edtValue: String,
-    icon: Int,
-    hint: String,
-    onValueChanges: (String) -> Unit,
-) {
-    OutlinedTextField(
-        label = { Text(hint) },
-        value = edtValue,
-        singleLine = true,
-        onValueChange = onValueChanges,
-        placeholder = { Text(hint) },
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(top = 12.dp),
-        shape = Shapes.medium,
-        leadingIcon = { Icon(painterResource(icon), null) }
-    )
-}
-
-@Composable
-fun PasswordTextField(
-    edtValue: String,
-    icon: Int,
-    hint: String,
-    onValueChanges: (String) -> Unit,
-) {
-
-    val passwordVisible = remember { mutableStateOf(false) }
-
-    OutlinedTextField(
-        label = { Text(hint) },
-        value = edtValue,
-        singleLine = true,
-        onValueChange = onValueChanges,
-        placeholder = { Text(hint) },
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(top = 12.dp),
-        shape = Shapes.medium,
-        leadingIcon = { Icon(painterResource(icon), null) },
-        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        trailingIcon = {
-
-            val image =
-                if (passwordVisible.value) painterResource(R.drawable.ic_invisible)
-                else painterResource(
-                    R.drawable.ic_visible
-                )
-            Icon(
-                painter = image,
-                contentDescription = null,
-                modifier = Modifier.clickable {
-                    passwordVisible.value = !passwordVisible.value
-                }
-            )
-        }
-    )
 }
 
 @Composable
