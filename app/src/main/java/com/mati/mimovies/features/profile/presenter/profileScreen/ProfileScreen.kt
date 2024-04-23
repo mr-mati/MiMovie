@@ -206,7 +206,8 @@ fun ProfileScreen(
                         Image(
                             modifier = Modifier
                                 .align(Alignment.End)
-                                .size(64.dp),
+                                .padding(top = 16.dp, end = 8.dp)
+                                .size(72.dp),
                             painter = painterResource(id = R.drawable.ic_downloads),
                             contentDescription = ""
                         )
@@ -264,7 +265,8 @@ fun ProfileScreen(
                         Image(
                             modifier = Modifier
                                 .align(Alignment.End)
-                                .size(64.dp),
+                                .padding(top = 16.dp, end = 8.dp)
+                                .size(72.dp),
                             painter = painterResource(id = R.drawable.ic_premium),
                             contentDescription = ""
                         )
