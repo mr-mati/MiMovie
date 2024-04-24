@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.mati.mimovies.features.auth.signIn.SignInViewModel
+import com.mati.mimovies.features.auth.signUp.SignUpViewModel
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
 import com.mati.mimovies.features.profile.presenter.ProfileViewModel
 import com.mati.mimovies.navigation.MovieNavigation
@@ -16,6 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    val signUpViewModel: SignUpViewModel by viewModels()
+    val signInViewModel: SignInViewModel by viewModels()
     val mainViewModel: MovieViewModel by viewModels()
     val profileViewModel: ProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +31,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.primary
                 ) {
-                    MovieNavigation(mainViewModel, profileViewModel)
+                    MovieNavigation(
+                        signUpViewModel = signUpViewModel,
+                        signInViewModel = signInViewModel,
+                        mainViewModel = mainViewModel,
+                        profileViewModel = profileViewModel
+                    )
                 }
             }
         }
