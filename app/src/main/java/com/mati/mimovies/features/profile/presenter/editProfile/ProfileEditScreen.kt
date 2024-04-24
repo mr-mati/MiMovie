@@ -135,6 +135,16 @@ fun ProfileEditScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            PasswordTextField(
+                edtValue = viewModel.number.value,
+                icon = R.drawable.ic_password,
+                hint = "Phone Number"
+            ) {
+                viewModel.number.value = it
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             MainTextField(
                 edtValue = viewModel.email.value,
                 icon = R.drawable.ic_email,

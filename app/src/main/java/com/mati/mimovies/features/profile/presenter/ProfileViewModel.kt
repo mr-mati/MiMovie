@@ -9,6 +9,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor() : ViewModel() {
 
     val name = mutableStateOf("")
+    val number = mutableStateOf("")
     val email = mutableStateOf("")
     val password = mutableStateOf("")
 

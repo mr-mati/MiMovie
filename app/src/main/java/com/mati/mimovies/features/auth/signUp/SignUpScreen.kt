@@ -2,6 +2,8 @@
 
 package com.mati.mimovies.features.auth.signUp
 
+import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,21 +33,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.movieui.core.theme.Shapes
+import com.mait.ahanmakan.util.NetworkChecker
 import com.mati.mimovies.R
+import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
 fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
+
+    val name = viewModel.name
+    val email = viewModel.email
+    val password = viewModel.password
+    val context = LocalContext.current
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -81,35 +96,82 @@ fun SignUpScreen(
                 verticalArrangement = Arrangement.Center
             ) {
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                    text = "SignUp",
+                    style = TextStyle(color = Color.Gray, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                )
+
+                Spacer(modifier = Modifier.height(26.dp))
 
                 MainTextField(
-                    edtValue = viewModel.name.value,
+                    edtValue = name.value,
                     icon = R.drawable.ic_person,
                     hint = "Name"
                 ) {
-                    viewModel.name.value = it
+                    name.value = it
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 MainTextField(
-                    edtValue = viewModel.email.value,
+                    edtValue = email.value,
                     icon = R.drawable.ic_email,
                     hint = "Email"
                 ) {
-                    viewModel.email.value = it
+                    email.value = it
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 PasswordTextField(
-                    edtValue = viewModel.password.value,
+                    edtValue = password.value,
                     icon = R.drawable.ic_password,
                     hint = "Password"
                 ) {
-                    viewModel.password.value = it
+                    password.value = it
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()) {
+                            if (password.value.length >= 8) {
+                                if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
+                                    if (NetworkChecker(context).isInternetConnected) {
+                                        navHostController.navigate(MovieNavigationItems.SignInScreen.route)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "please connect to internet",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                } else Toast.makeText(
+                                    context,
+                                    "فرمت ایمیل اشتباه میباشد",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else Toast.makeText(
+                                context,
+                                "پسورد باید حداقل شامل 8 کاراکتر باشد",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else Toast.makeText(
+                            context,
+                            "تمامی فیلد ها را میبایست پر کنید",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    modifier = Modifier.padding(top = 28.dp, bottom = 8.dp),
+                ) {
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "create account",
+                    )
+                }
+
 
             }
 
