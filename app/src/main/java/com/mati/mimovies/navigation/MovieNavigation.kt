@@ -9,9 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.composable
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.mati.mimovies.features.auth.signIn.SignInScreen
+import com.mati.mimovies.features.auth.AuthenticationScreen
 import com.mati.mimovies.features.auth.signIn.SignInViewModel
-import com.mati.mimovies.features.auth.signUp.SignUpScreen
 import com.mati.mimovies.features.auth.signUp.SignUpViewModel
 import com.mati.mimovies.features.movies.presenter.IntroScreen.IntroScreen
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
@@ -37,15 +36,15 @@ fun MovieNavigation(
 
     AnimatedNavHost(
         navController = navHostController,
-        startDestination = MovieNavigationItems.SignUpScreen.route
+        startDestination = MovieNavigationItems.AuthenticationScreen.route
     ) {
 
-        composable(MovieNavigationItems.SignUpScreen.route) {
-            SignUpScreen(viewModel = signUpViewModel, navHostController = navHostController)
-        }
-
-        composable(MovieNavigationItems.SignInScreen.route) {
-            SignInScreen(viewModel = signInViewModel, navHostController = navHostController)
+        composable(MovieNavigationItems.AuthenticationScreen.route) {
+            AuthenticationScreen(
+                signUpViewModel = signUpViewModel,
+                signInViewModel = signInViewModel,
+                navHostController = navHostController
+            )
         }
 
         composable(
