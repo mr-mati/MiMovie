@@ -2,6 +2,7 @@
 
 package com.mati.mimovies.features.auth
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,8 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.mati.mimovies.R
@@ -45,6 +47,10 @@ fun AuthenticationScreen(
     signInViewModel: SignInViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
+
+    // فعال کردن Edge-to-edge composition
+    val context = LocalContext.current
+    WindowCompat.setDecorFitsSystemWindows((context as? ComponentActivity)?.window!!, false)
 
     val sheetSignUpState = rememberModalBottomSheetState()
     var isSheetSignUpOpen by rememberSaveable {
@@ -103,8 +109,8 @@ fun AuthenticationScreen(
 
             if (isSheetSignInOpen) {
                 ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
-                sheetState = sheetSignInState,
-                onDismissRequest = { isSheetSignInOpen = false }) {
+                    sheetState = sheetSignInState,
+                    onDismissRequest = { isSheetSignInOpen = false }) {
                     SignInScreen(navHostController = navHostController, viewModel = signInViewModel)
                 }
             }

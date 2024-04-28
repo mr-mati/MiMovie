@@ -4,22 +4,17 @@ package com.mati.mimovies.features.auth.signUp
 
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,121 +57,101 @@ fun SignUpScreen(
 
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.onPrimary
+        color = MaterialTheme.colorScheme.primary
     ) {
 
-        Image(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp),
-            painter = painterResource(id = R.drawable.banner_sex_education),
-            contentDescription = ""
-        )
-
-        Card(
-            modifier = Modifier
-                .padding(top = 300.dp)
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-            shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                Text(
-                    modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
-                    text = "SignUp",
-                    style = TextStyle(color = Color.Gray, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Text(
+                modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                text = "SignUp",
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
                 )
+            )
 
-                Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
-                MainTextField(
-                    edtValue = name.value,
-                    icon = R.drawable.ic_person,
-                    hint = "Name"
-                ) {
-                    name.value = it
-                }
+            MainTextField(
+                edtValue = name.value,
+                icon = R.drawable.ic_person,
+                hint = "Name"
+            ) {
+                name.value = it
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                MainTextField(
-                    edtValue = email.value,
-                    icon = R.drawable.ic_email,
-                    hint = "Email"
-                ) {
-                    email.value = it
-                }
+            MainTextField(
+                edtValue = email.value,
+                icon = R.drawable.ic_email,
+                hint = "Email"
+            ) {
+                email.value = it
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                PasswordTextField(
-                    edtValue = password.value,
-                    icon = R.drawable.ic_password,
-                    hint = "Password"
-                ) {
-                    password.value = it
-                }
+            PasswordTextField(
+                edtValue = password.value,
+                icon = R.drawable.ic_password,
+                hint = "Password"
+            ) {
+                password.value = it
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
-                    onClick = {
-                        if (name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()) {
-                            if (password.value.length >= 8) {
-                                if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
-                                    if (NetworkChecker(context).isInternetConnected) {
-                                        navHostController.navigate(MovieNavigationItems.SignInScreen.route)
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "please connect to internet",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+            Button(
+                onClick = {
+                    if (name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty()) {
+                        if (password.value.length >= 8) {
+                            if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
+                                if (NetworkChecker(context).isInternetConnected) {
+                                    navHostController.navigate(MovieNavigationItems.IntroScreen.route) {
+                                        popUpTo(MovieNavigationItems.IntroScreen.route) {
+                                            inclusive = true
+                                        }
                                     }
-                                } else Toast.makeText(
-                                    context,
-                                    "فرمت ایمیل اشتباه میباشد",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "please connect to internet",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             } else Toast.makeText(
                                 context,
-                                "پسورد باید حداقل شامل 8 کاراکتر باشد",
+                                "فرمت ایمیل اشتباه میباشد",
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else Toast.makeText(
                             context,
-                            "تمامی فیلد ها را میبایست پر کنید",
+                            "پسورد باید حداقل شامل 8 کاراکتر باشد",
                             Toast.LENGTH_SHORT
                         ).show()
-                    },
-                    modifier = Modifier.padding(top = 28.dp, bottom = 8.dp),
-                ) {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = "create account",
-                    )
-                }
-
-
+                    } else Toast.makeText(
+                        context,
+                        "تمامی فیلد ها را میبایست پر کنید",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                modifier = Modifier.padding(top = 28.dp, bottom = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Text(
+                    modifier = Modifier.padding(8.dp),
+                    text = "create account", color = MaterialTheme.colorScheme.onPrimary
+                )
             }
-
         }
-
     }
 }
 

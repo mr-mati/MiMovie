@@ -4,28 +4,25 @@ package com.mati.mimovies.features.auth.signIn
 
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +44,7 @@ import androidx.navigation.NavHostController
 import com.example.movieui.core.theme.Shapes
 import com.mait.ahanmakan.util.NetworkChecker
 import com.mati.mimovies.R
+import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
@@ -60,105 +58,80 @@ fun SignInScreen(
     val context = LocalContext.current
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.onPrimary
+        color = MaterialTheme.colorScheme.primary
     ) {
-
-        Image(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp),
-            painter = painterResource(id = R.drawable.banner_sex_education),
-            contentDescription = ""
-        )
-
-        Card(
-            modifier = Modifier
-                .padding(top = 300.dp)
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-            shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
-                Text(
-                    modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
-                    text = "Login",
-                    style = TextStyle(
-                        color = Color.Gray,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+            Text(
+                modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                text = "Login",
+                style = TextStyle(
+                    color = Color.Gray,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
                 )
+            )
 
-                Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
-                MainTextField(
-                    edtValue = viewModel.userID.value,
-                    icon = R.drawable.ic_person,
-                    hint = "userName or email",
-                    placeholder = "UserID"
-                ) {
-                    viewModel.userID.value = it
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                PasswordTextField(
-                    edtValue = viewModel.password.value,
-                    icon = R.drawable.ic_password,
-                    hint = "Password"
-                ) {
-                    viewModel.password.value = it
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        if (userID.value.isNotEmpty() && password.value.isNotEmpty()) {
-                            if (Patterns.EMAIL_ADDRESS.matcher(userID.value).matches()) {
-                                if (NetworkChecker(context).isInternetConnected) {
-                                    navHostController.navigate(MovieNavigationItems.SignInScreen.route)
-                                } else {
-                                }
-                            } else Toast.makeText(
-                                context,
-                                "فرمت ایمیل اشتباه میباشد",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else Toast.makeText(
-                            context,
-                            "تمامی فیلد ها را میبایست پر کنید",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    },
-                    modifier = Modifier.padding(top = 28.dp, bottom = 8.dp),
-                ) {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = "Login",
-                    )
-                }
-
-
+            MainTextField(
+                edtValue = viewModel.userID.value,
+                icon = R.drawable.ic_person,
+                hint = "userName or email",
+                placeholder = "UserID"
+            ) {
+                viewModel.userID.value = it
             }
 
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
+            PasswordTextField(
+                edtValue = viewModel.password.value,
+                icon = R.drawable.ic_password,
+                hint = "Password"
+            ) {
+                viewModel.password.value = it
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (userID.value.isNotEmpty() && password.value.isNotEmpty()) {
+                        if (Patterns.EMAIL_ADDRESS.matcher(userID.value).matches()) {
+                            if (NetworkChecker(context).isInternetConnected) {
+                                navHostController.navigate(MovieNavigationItems.IntroScreen.route) {
+                                    popUpTo(MovieNavigationItems.IntroScreen.route){
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                            }
+                        } else Toast.makeText(
+                            context,
+                            "فرمت ایمیل اشتباه میباشد",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else Toast.makeText(
+                        context,
+                        "تمامی فیلد ها را میبایست پر کنید",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                modifier = Modifier.padding(top = 28.dp, bottom = 8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Text(
+                    modifier = Modifier.padding(8.dp),
+                    text = "Login", color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
     }
 }
 
