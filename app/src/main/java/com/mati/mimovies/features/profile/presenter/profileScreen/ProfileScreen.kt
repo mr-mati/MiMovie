@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -78,6 +79,8 @@ fun ProfileScreen(
     val response = viewModel.res.value
     val responseYou = viewModel.you.value
 
+    val itemHeight = 150.dp
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.onPrimary
@@ -103,7 +106,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
@@ -183,125 +186,9 @@ fun ProfileScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Card(
-                    modifier = Modifier
-                        .width(200.dp)
-                        .padding(start = 12.dp, end = 8.dp)
-                        .height(200.dp)
-                        .clickable { },
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 3.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
+                downloadCard()
 
-
-                    Column(
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        Image(
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .padding(top = 16.dp, end = 8.dp)
-                                .size(72.dp),
-                            painter = painterResource(id = R.drawable.ic_downloads),
-                            contentDescription = ""
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Downloads",
-                            color = Color.White,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        )
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .padding(top = 4.dp, bottom = 4.dp)
-                                .background(Color.Gray)
-                                .align(Alignment.CenterHorizontally),
-                            color = Color.Gray
-                        ) {}
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "3 files in downloads",
-                            color = Color.Gray,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        )
-                    }
-
-                }
-
-                Card(
-                    modifier = Modifier
-                        .width(200.dp)
-                        .padding(start = 8.dp, end = 12.dp)
-                        .height(200.dp)
-                        .clickable { },
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 3.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-
-                    Column(
-                        verticalArrangement = Arrangement.Center
-                    ) {
-
-                        Image(
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .padding(top = 16.dp, end = 8.dp)
-                                .size(72.dp),
-                            painter = painterResource(id = R.drawable.ic_premium),
-                            contentDescription = ""
-                        )
-
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "Premium",
-                            color = Color.White,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        )
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .padding(top = 4.dp, bottom = 4.dp)
-                                .background(Color.Gray)
-                                .align(Alignment.CenterHorizontally),
-                            color = Color.Gray
-                        ) {}
-                        Text(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            text = "You don't have Premium",
-                            color = Color.Gray,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp
-                            )
-                        )
-
-                    }
-
-                }
+                premiumCard()
 
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -392,8 +279,122 @@ fun ProfileScreen(
                             }
                         }
                     }
-
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun downloadCard() {
+    Card(
+        modifier = Modifier
+            .width(200.dp)
+            .padding(16.dp)
+            .height(180.dp)
+            .clickable { },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Image(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(52.dp),
+                painter = painterResource(id = R.drawable.ic_downloads),
+                contentDescription = ""
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 32.dp)
+                    .wrapContentSize(align = Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Downloads",
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                )
+                Text(
+                    text = "3 files in downloads",
+                    color = Color.Gray,
+                    style = TextStyle(
+                        fontSize = 14.sp
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun premiumCard() {
+    Card(
+        modifier = Modifier
+            .width(200.dp)
+            .padding(16.dp)
+            .height(180.dp)
+            .clickable { },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Image(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(52.dp),
+                painter = painterResource(id = R.drawable.ic_premium),
+                contentDescription = ""
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 32.dp)
+                    .wrapContentSize(align = Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Premium",
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                )
+                Text(
+                    text = "You don't have Premium",
+                    color = Color.Gray,
+                    style = TextStyle(
+                        fontSize = 14.sp
+                    )
+                )
 
             }
         }
