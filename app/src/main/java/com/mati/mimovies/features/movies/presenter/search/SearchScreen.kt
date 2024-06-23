@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
@@ -132,7 +134,7 @@ fun SearchScreen(
                             .padding(bottom = 4.dp, top = 8.dp)
                     ) {
                         repeat(response.data.size) { index ->
-                            NewShowing(
+                            SearchItem(
                                 res = response.data[index]
                             ) {
                                 viewModel.setMovie(response.data[index])
@@ -281,7 +283,7 @@ fun SearchBox(searchBox: MutableState<String>, onClickSearch: () -> Unit) {
 }
 
 @Composable
-fun NewShowing(
+fun SearchItem(
     res: Movies.Results,
     onGettingClick: () -> Unit,
 ) {
@@ -308,20 +310,19 @@ fun NewShowing(
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
+                val imagePainter = rememberImagePainter(
+                    data = "${ApiService.BASE_POSTER_URL}${res.poster_path}",
+                    builder = {
+                        crossfade(true)
+                    }
+                )
                 Image(
-                    rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
-                            .build()
-                    ),
+                    painter = imagePainter,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .paint(
-                            painterResource(id = R.drawable.bg),
-                            contentScale = ContentScale.FillBounds
-                        )
+                        .background(Gray)
                 )
             }
             Column(
