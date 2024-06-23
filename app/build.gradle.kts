@@ -117,4 +117,8 @@ dependencies {
     implementation(libs.exoplayer.ui)
 
     implementation(libs.coil.compose)
+
+    //shimmer effect
+    implementation(libs.compose.shimmer)
+
 }
