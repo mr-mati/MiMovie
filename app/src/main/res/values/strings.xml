@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mi Movies</string>
+    <string name="fullscreen">fullscreen</string>
 </resources>
