@@ -40,6 +40,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.presenter.mainScreen.Categories
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun MainScreenShimmer(isVisible: Boolean) {
@@ -57,6 +58,7 @@ fun MainScreenShimmer(isVisible: Boolean) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
+                    .shimmer()
                     .padding(4.dp),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 3.dp
@@ -110,6 +112,7 @@ fun TopToolbarShimmer() {
         colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary)
     )
 }
+
 @Composable
 fun TitleListShimmer(action: Boolean) {
     Row(
@@ -123,6 +126,7 @@ fun TitleListShimmer(action: Boolean) {
         Card(
             modifier = Modifier
                 .width(100.dp)
+                .shimmer()
                 .height(30.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 3.dp
@@ -136,6 +140,7 @@ fun TitleListShimmer(action: Boolean) {
             Card(
                 modifier = Modifier
                     .width(50.dp)
+                    .shimmer()
                     .height(30.dp),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 3.dp
@@ -155,6 +160,7 @@ fun ListMovieShimmer() {
         modifier = Modifier
             .width(150.dp)
             .height(180.dp)
+            .shimmer()
             .padding(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
@@ -169,6 +175,7 @@ fun ListMovieShimmer() {
             modifier = Modifier
                 .width(100.dp)
                 .height(100.dp)
+                .shimmer()
                 .align(Alignment.CenterHorizontally)
                 .padding(8.dp),
             composition = composition,
