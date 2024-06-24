@@ -79,8 +79,6 @@ fun ProfileScreen(
     val response = viewModel.res.value
     val responseYou = viewModel.you.value
 
-    val itemHeight = 150.dp
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.onPrimary
@@ -186,9 +184,9 @@ fun ProfileScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                downloadCard()
+                DownloadCard()
 
-                premiumCard()
+                PremiumCard()
 
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -286,7 +284,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun downloadCard() {
+fun DownloadCard() {
     Card(
         modifier = Modifier
             .width(200.dp)
@@ -344,7 +342,7 @@ fun downloadCard() {
 }
 
 @Composable
-fun premiumCard() {
+fun PremiumCard() {
     Card(
         modifier = Modifier
             .width(200.dp)

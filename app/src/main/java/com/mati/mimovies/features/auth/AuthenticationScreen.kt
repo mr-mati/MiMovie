@@ -47,11 +47,6 @@ fun AuthenticationScreen(
     signInViewModel: SignInViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
-
-    // فعال کردن Edge-to-edge composition
-    val context = LocalContext.current
-    WindowCompat.setDecorFitsSystemWindows((context as? ComponentActivity)?.window!!, false)
-
     val sheetSignUpState = rememberModalBottomSheetState()
     var isSheetSignUpOpen by rememberSaveable {
         mutableStateOf(false)
@@ -67,7 +62,7 @@ fun AuthenticationScreen(
     ) {
         Image(
             modifier = Modifier.fillMaxSize(),
-            painter = painterResource(R.drawable.img_intro),
+            painter = painterResource(R.drawable.tst),
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
