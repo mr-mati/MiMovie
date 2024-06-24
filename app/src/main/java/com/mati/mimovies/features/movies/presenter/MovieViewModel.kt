@@ -1,7 +1,10 @@
 package com.mati.mimovies.features.movies.presenter
 
+import android.graphics.Movie
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,27 +21,91 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel() {
 
+    var ID =  mutableIntStateOf(1)
+    var title =  mutableStateOf("")
+
     private val _res: MutableState<MovieState> = mutableStateOf(MovieState())
     val res: State<MovieState> = _res
 
-    val _you: MutableState<MovieState> = mutableStateOf(MovieState())
+    private val _you: MutableState<MovieState> = mutableStateOf(MovieState())
     val you: State<MovieState> = _you
 
-    val _upcoming: MutableState<MovieState> = mutableStateOf(MovieState())
+    private val _upcoming: MutableState<MovieState> = mutableStateOf(MovieState())
     val upcoming: State<MovieState> = _upcoming
 
-    val _top: MutableState<MovieState> = mutableStateOf(MovieState())
+    private val _top: MutableState<MovieState> = mutableStateOf(MovieState())
     val top: State<MovieState> = _top
 
     val searchBox = mutableStateOf("")
-    val _search: MutableState<MovieState> = mutableStateOf(MovieState())
+    private val _search: MutableState<MovieState> = mutableStateOf(MovieState())
     val search: State<MovieState> = _search
+
+    private val _more = mutableStateListOf<Movies.Results>()
+    val more: List<Movies.Results> = _more
 
     private val _movieDetails: MutableState<Movies.Results> = mutableStateOf(Movies.Results())
     val movieDetails: MutableState<Movies.Results> = _movieDetails
 
     fun setMovie(data: Movies.Results) {
         _movieDetails.value = data
+    }
+
+    fun getMoreMovies(id: Int, page: Int, clear: Boolean) {
+
+        if (clear) {
+            ID.value = id
+            _more.clear()
+        }
+
+        viewModelScope.launch {
+            when (ID.value) {
+                0 -> {
+                    useCase.getMovieYou(page)
+                        .doOnSuccess { newMovies ->
+                            newMovies!!.forEach {
+                                _more.add(it)
+                            }
+                        }.collect()
+                }
+
+                1 -> {
+                    useCase.getTopMovies(page)
+                        .doOnSuccess { newMovies ->
+                            newMovies!!.forEach {
+                                _more.add(it)
+                            }
+                        }.collect()
+                }
+
+                2 -> {
+                    useCase.getTopMovies(page)
+                        .doOnSuccess { newMovies ->
+                            newMovies!!.forEach {
+                                _more.add(it)
+                            }
+                        }.collect()
+                }
+
+                3 -> {
+                    useCase.getMoviesUpcoming(page)
+                        .doOnSuccess { newMovies ->
+                            newMovies!!.forEach {
+                                _more.add(it)
+                            }
+                        }.collect()
+                }
+
+                4 -> {
+                    useCase.getMovies(page)
+                        .doOnSuccess { newMovies ->
+                            newMovies!!.forEach {
+                                _more.add(it)
+                            }
+                        }.collect()
+                }
+
+            }
+        }
     }
 
     fun searchMovies(name: String) {
@@ -59,7 +126,7 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
     init {
         viewModelScope.launch {
-            useCase.getMovies()
+            useCase.getMovies(1)
                 .doOnSuccess {
                     _res.value = MovieState(data = it!!)
                 }
@@ -74,7 +141,7 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
     init {
         viewModelScope.launch {
-            useCase.getMovieYou()
+            useCase.getMovieYou(2)
                 .doOnSuccess {
                     _you.value = MovieState(data = it!!)
                 }
@@ -89,7 +156,7 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
     init {
         viewModelScope.launch {
-            useCase.getMoviesUpcoming()
+            useCase.getMoviesUpcoming(1)
                 .doOnSuccess {
                     _upcoming.value = MovieState(data = it!!)
                 }
@@ -104,7 +171,7 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
     init {
         viewModelScope.launch {
-            useCase.getTopMovies()
+            useCase.getTopMovies(1)
                 .doOnSuccess {
                     _top.value = MovieState(data = it!!)
                 }
