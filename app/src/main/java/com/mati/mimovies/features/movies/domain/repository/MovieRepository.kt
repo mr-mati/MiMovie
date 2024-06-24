@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
 
-    suspend fun getMovies(): Flow<ApiState<Movies>>
+    suspend fun getMovies(page: Int?): Flow<ApiState<Movies>>
 
-    suspend fun getMovieYou(): Flow<ApiState<Movies>>
+    suspend fun getMovieYou(page: Int?): Flow<ApiState<Movies>>
 
-    suspend fun getMoviesUpcoming(): Flow<ApiState<Movies>>
+    suspend fun getMoviesUpcoming(page: Int?): Flow<ApiState<Movies>>
 
-    suspend fun getMoviesTop(): Flow<ApiState<Movies>>
+    suspend fun getMoviesTop(page: Int?): Flow<ApiState<Movies>>
 
     suspend fun searchMovies(name: String): Flow<ApiState<Movies>>
 

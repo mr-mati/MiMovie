@@ -14,32 +14,32 @@ class MovieUseCase @Inject constructor(
     private val mapper: MovieMapper,
 ) {
 
-    suspend fun getMovies(): Flow<ApiState<List<Movies.Results>?>> {
-        return repo.getMovies().map { results ->
+    suspend fun getMovies(page: Int?): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMovies(page).map { results ->
             results.map {
                 mapper.fromMap(it)
             }
         }
     }
 
-    suspend fun getMovieYou(): Flow<ApiState<List<Movies.Results>?>> {
-        return repo.getMovieYou().map { results ->
+    suspend fun getMovieYou(page: Int?): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMovieYou(page).map { results ->
             results.map {
                 mapper.fromMap(it)
             }
         }
     }
 
-    suspend fun getMoviesUpcoming(): Flow<ApiState<List<Movies.Results>?>> {
-        return repo.getMoviesUpcoming().map { results ->
+    suspend fun getMoviesUpcoming(page: Int?): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMoviesUpcoming(page).map { results ->
             results.map {
                 mapper.fromMap(it)
             }
         }
     }
 
-    suspend fun getTopMovies(): Flow<ApiState<List<Movies.Results>?>> {
-        return repo.getMoviesTop().map { results ->
+    suspend fun getTopMovies(page: Int?): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getMoviesTop(page).map { results ->
             results.map {
                 mapper.fromMap(it)
             }

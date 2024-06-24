@@ -14,20 +14,20 @@ class MovieRepositoryImpl @Inject constructor(
 
     ) : MovieRepository, BaseRepository() {
 
-    override suspend fun getMovies(): Flow<ApiState<Movies>> = safeApiCall {
-        apiService.getMoviesList()
+    override suspend fun getMovies(page: Int?): Flow<ApiState<Movies>> = safeApiCall {
+        apiService.getMoviesList(page)
     }
 
-    override suspend fun getMovieYou(): Flow<ApiState<Movies>> = safeApiCall {
-        apiService.getMovieYou()
+    override suspend fun getMovieYou(page: Int?): Flow<ApiState<Movies>> = safeApiCall {
+        apiService.getMovieYou(page)
     }
 
-    override suspend fun getMoviesUpcoming(): Flow<ApiState<Movies>> = safeApiCall {
-        apiService.getMoviesUpcoming()
+    override suspend fun getMoviesUpcoming(page: Int?): Flow<ApiState<Movies>> = safeApiCall {
+        apiService.getMoviesUpcoming(page)
     }
 
-    override suspend fun getMoviesTop(): Flow<ApiState<Movies>> = safeApiCall {
-        apiService.getMoviesTop()
+    override suspend fun getMoviesTop(page: Int?): Flow<ApiState<Movies>> = safeApiCall {
+        apiService.getMoviesTop(page)
     }
 
     override suspend fun searchMovies(name: String): Flow<ApiState<Movies>> = safeApiCall {

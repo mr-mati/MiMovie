@@ -13,16 +13,24 @@ interface ApiService {
     }
 
     @GET("3/discover/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
-    suspend fun getMoviesList(): Response<Movies>
-
-    @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e&page=2")
-    suspend fun getMovieYou(): Response<Movies>
-
-    @GET("3/movie/upcoming?api_key=2c9c2076db9a90f62f31993f6588235e")
-    suspend fun getMoviesUpcoming(): Response<Movies>
+    suspend fun getMoviesList(
+        @Query("page") page: Int? = 1
+    ): Response<Movies>
 
     @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e")
-    suspend fun getMoviesTop(): Response<Movies>
+    suspend fun getMovieYou(
+        @Query("page") page: Int? = 2
+    ): Response<Movies>
+
+    @GET("3/movie/upcoming?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMoviesUpcoming(
+        @Query("page") page: Int? = 1
+    ): Response<Movies>
+
+    @GET("3/movie/top_rated?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMoviesTop(
+        @Query("page") page: Int? = 1
+    ): Response<Movies>
 
     @GET("3/search/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun searchMovies(
