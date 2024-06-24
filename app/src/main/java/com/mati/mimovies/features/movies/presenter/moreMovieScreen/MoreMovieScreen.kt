@@ -42,6 +42,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,6 +63,8 @@ fun MoreMovieScreen(
 ) {
 
     val response = viewModel.more
+    val title = viewModel.title.value
+
     val gridState = rememberLazyGridState()
     val lastVisibleItemIndex = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
 
@@ -101,6 +104,16 @@ fun MoreMovieScreen(
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.primary_bold)),
                         fontSize = 26.sp
+                    )
+                )
+                Text(
+                    modifier = Modifier.padding(start = 4.dp),
+                    text = title,
+                    style = TextStyle(
+                        textAlign = TextAlign.Justify,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontFamily = FontFamily(Font(R.font.primary_regular)),
+                        fontSize = 14.sp
                     )
                 )
             }

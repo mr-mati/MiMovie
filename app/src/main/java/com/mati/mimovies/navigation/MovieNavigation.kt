@@ -16,6 +16,7 @@ import com.mati.mimovies.features.movies.presenter.IntroScreen.IntroScreen
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
 import com.mati.mimovies.features.movies.presenter.detailScreen.MovieDetailScreen
 import com.mati.mimovies.features.movies.presenter.mainScreen.MovieScreen
+import com.mati.mimovies.features.movies.presenter.moreMovieScreen.MoreMovieScreen
 import com.mati.mimovies.features.movies.presenter.search.SearchScreen
 import com.mati.mimovies.features.profile.presenter.ProfileViewModel
 import com.mati.mimovies.features.profile.presenter.editProfile.ProfileEditScreen
@@ -36,7 +37,7 @@ fun MovieNavigation(
 
     AnimatedNavHost(
         navController = navHostController,
-        startDestination = MovieNavigationItems.AuthenticationScreen.route
+        startDestination = MovieNavigationItems.MovieScreen.route
     ) {
 
         composable(MovieNavigationItems.AuthenticationScreen.route) {
@@ -90,12 +91,13 @@ fun MovieNavigation(
                 } else {
                     null
                 }
-            }
+            },
+
         ) {
             MovieDetailScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
-        composable(MovieNavigationItems.SearchScreen.route) {
+        composable(MovieNavigationItems.SearchScreen.route,) {
             SearchScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
@@ -105,6 +107,10 @@ fun MovieNavigation(
 
         composable(MovieNavigationItems.ProfileEditScreen.route) {
             ProfileEditScreen(viewModel = profileViewModel, navHostController = navHostController)
+        }
+
+        composable(MovieNavigationItems.MoreMovieScreen.route) {
+            MoreMovieScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
     }
