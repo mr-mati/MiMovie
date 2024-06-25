@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,6 +29,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,8 +38,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +50,7 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -60,11 +67,14 @@ import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.utils.ButtonCustom
 import com.mati.mimovies.features.movies.presenter.util.MediaPlayer.VideoPlayer
+import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItem
+import com.mati.mimovies.utils.ButtonCustom
 import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
+import com.mati.mimovies.utils.MovieNavigationItems
+import kotlinx.coroutines.delay
 
 @Composable
 fun MovieDetailScreen(
@@ -163,6 +173,21 @@ fun MovieDetailScreen(
         Title("Trailer")
         Trailer()
 
+        val responseYou = viewModel.you.value
+        Title("For You")
+        LazyRow {
+            items(
+                responseYou.data,
+                key = {
+                    it.id!!
+                }
+            ) { response ->
+                MoviesItem(results = response) {
+                    viewModel.setMovie(response)
+                    navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                }
+            }
+        }
         if (isSheetPlayOpen) {
             ModalBottomSheet(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -256,7 +281,7 @@ fun MovieDetailScreen(
 @Composable
 fun Header(
     response: Movies.Results,
-    onGettingClick: () -> Unit,
+    onBackClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -310,7 +335,7 @@ fun Header(
                     modifier = Modifier
                         .fillMaxSize()
                         .paint(
-                            painterResource(id = R.drawable.bg),
+                            painterResource(id = R.drawable.icon),
                             contentScale = ContentScale.FillBounds
                         )
                 )
@@ -366,7 +391,7 @@ fun Header(
                     shape = RoundedCornerShape(32.dp)
                 ),
             onClick = {
-                onGettingClick()
+                onBackClick()
             },
         ) {
             Icon(
@@ -588,25 +613,46 @@ fun TopCastList(
 }
 
 @Composable
-fun Trailer(
-) {
+fun Trailer() {
+    var showVideoPlayer by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(5000)
+        showVideoPlayer = true
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
-            .padding(horizontal = 18.dp)
-            .padding(top = 8.dp),
+            .padding(16.dp),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
+            defaultElevation = 0.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiary,
+            containerColor = Color.Transparent,
         ),
         shape = RoundedCornerShape(8.dp)
     ) {
-        val video = Uri.parse(
-            "https://imdb-video.media-imdb.com/vi2389753881/1434659607842-pgv4ql-1626462120496.mp4?Expires=1698230725&Signature=ik~ElePtDMjeuQIN8Y52q2NUyfMMxQM~XnnCKM2OV~wA2XSJNQhKwlpljC-21RF8OrQpqua9WzxeycXSavlFNfZ2qw6S37MfbPygmDF2YcARzUrR5xXbwjsRuo0eM8QxLcActtxrHY37Oar8flTCxiMc1Usi4E6aFubWy0VRsrZxayH2PkRDx~xiY8PJoVqhAKB5BQxfFRpJXWGKzXtVN2pzKG~f1N~sbFbTL0CwS2gsp-xToFbPU5HrIUf4x6j~BDPHD9RZt78VbFXB0MEIu1yV0caquvc0~Az~H4BZXyDtkP606fllcjitPocTgJ1z~rXKWwRoKY3J0i2sXucSHg__&Key-Pair-Id=APKAIFLZBVQZ24NQH3KA"
-        )
-        VideoPlayer(video)
+        if (showVideoPlayer) {
+            val videoUri =
+                "https://www.rmp-streaming.com/media/big-buck-bunny-360p.mp4"
+            VideoPlayer(uri = videoUri, fullScreen = false) {
+
+            }
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .width(64.dp)
+                        .align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    trackColor = MaterialTheme.colorScheme.surface,
+                )
+            }
+        }
     }
 }

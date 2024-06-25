@@ -54,6 +54,7 @@ import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItem
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
@@ -108,7 +109,7 @@ fun MoreMovieScreen(
                 )
                 Text(
                     modifier = Modifier.padding(start = 4.dp),
-                    text = title,
+                    text = "($title)",
                     style = TextStyle(
                         textAlign = TextAlign.Justify,
                         color = MaterialTheme.colorScheme.tertiary,
@@ -126,7 +127,7 @@ fun MoreMovieScreen(
                 itemsIndexed(response) { index, item ->
                     val keyItem = index + item.id!!
                     key(keyItem) {
-                        ListMoviesItem(
+                        MoviesItem(
                             results = item,
                         ) {
                             viewModel.setMovie(item)
@@ -137,41 +138,5 @@ fun MoreMovieScreen(
             }
 
         }
-    }
-}
-
-
-@Composable
-fun ListMoviesItem(
-    results: Movies.Results, onGettingClick: () -> Unit,
-) {
-    Card(modifier = Modifier
-        .width(150.dp)
-        .height(180.dp)
-        .padding(end = 4.dp)
-        .clickable() {
-            onGettingClick()
-        }
-        .padding(8.dp), elevation = CardDefaults.cardElevation(
-        defaultElevation = 3.dp
-    ), colors = CardDefaults.cardColors(
-        containerColor = Color.Gray,
-    ), shape = RoundedCornerShape(8.dp))
-    {
-        val imagePainter = rememberImagePainter(
-            data = "${ApiService.BASE_POSTER_URL}${results.poster_path}",
-            builder = {
-                crossfade(true)
-            }
-        )
-
-        Image(
-            painter = imagePainter,
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.Gray)
-        )
     }
 }

@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -53,6 +53,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,8 +76,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
@@ -86,6 +85,11 @@ import com.mati.mimovies.features.movies.presenter.detailScreen.TopCastList
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItemEnabled
+
 
 @Composable
 fun MovieScreen(
@@ -112,7 +116,7 @@ fun MovieScreen(
     if (response.data.isEmpty()) {
         if (response.isLoading) {
             MainScreenShimmer(isVisible = true)
-        } else if (response.error.isNotEmpty()) {
+        } else if (response.error.length > 5) {
             MainScreenShimmer(isVisible = false)
             if (response.data.isEmpty()) {
                 Column(
@@ -163,58 +167,73 @@ fun MovieScreen(
         ) {
             TopToolbar(navHostController)
             Categories()
-            TitleList("Trending", true)
+            TitleList("Trending", true) {
+                viewModel.title.value = "Trending"
+                viewModel.getMoreMovies(1, 1, true)
+                navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
+            }
             TrendList()
-            TitleList("For You", true)
+            TitleList("For You", true) {
+                viewModel.title.value = "For You"
+                viewModel.getMoreMovies(0, 2, true)
+                navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
+            }
             LazyRow {
-                items(
-                    responseYou.data,
-                    key = {
-                        it.id!!
+                itemsIndexed(responseYou.data) { index, item ->
+                    val keyItem = index + item.id!!
+                    key(keyItem) {
+                        MoviesItemEnabled(results = item, {
+                            enabled = false
+                            viewModel.setMovie(item)
+                            navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                        }, enabled = enabled)
                     }
-                ) { response ->
-                    ListMoviesItem(results = response, {
-                        enabled = false
-                        viewModel.setMovie(response)
-                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                    }, enabled = enabled)
                 }
             }
-            TitleList("Top Rated", true)
+            TitleList("Top Rated", true) {
+                viewModel.title.value = "Top Rated"
+                viewModel.getMoreMovies(1, 1, true)
+                navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
+            }
             LazyRow {
-                items(
-                    responseTop.data,
-                    key = {
-                        it.id!!
+                itemsIndexed(responseTop.data) { index, item ->
+                    val keyItem = index + item.id!!
+                    key(keyItem) {
+                        MoviesItemEnabled(results = item, {
+                            enabled = false
+                            viewModel.setMovie(item)
+                            navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                        }, enabled = enabled)
                     }
-                ) { response ->
-                    ListMoviesItem(results = response, {
-                        enabled = false
-                        viewModel.setMovie(response)
-                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                    }, enabled = enabled)
                 }
             }
-            TitleList("Person popular", true)
+            TitleList("Person popular", true) {
+                viewModel.title.value = "Person popular"
+                viewModel.getMoreMovies(1, 1, true)
+                navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
+            }
             TopCastList()
 
-            TitleList("Upcoming", true)
+            TitleList("Upcoming", true) {
+                viewModel.title.value = "Upcoming"
+                viewModel.getMoreMovies(3, 1, true)
+                navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
+            }
             LazyRow {
-                items(
-                    responseUpcoming.data,
-                    key = {
-                        it.id!!
+                itemsIndexed(responseUpcoming.data) { index, item ->
+                    val keyItem = index + item.id!!
+                    key(keyItem) {
+                        MoviesItemEnabled(results = item, {
+                            enabled = false
+                            viewModel.setMovie(item)
+                            navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                        }, enabled = enabled)
                     }
-                ) { response ->
-                    ListMoviesItem(results = response, {
-                        enabled = false
-                        viewModel.setMovie(response)
-                        navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                    }, enabled = enabled)
                 }
             }
 
-            TitleList("New Showing", true)
+            TitleList("New Showing", false) {
+            }
             Column(
 
                 modifier = Modifier
@@ -258,7 +277,7 @@ fun TopToolbar(navHostController: NavHostController) {
 }
 
 @Composable
-fun TitleList(text: String, action: Boolean) {
+fun TitleList(text: String, action: Boolean, onClick: () -> Unit) {
     val context = LocalContext.current
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -275,7 +294,7 @@ fun TitleList(text: String, action: Boolean) {
             )
         )
         if (action) {
-            TextButton(onClick = { Toast.makeText(context, text, Toast.LENGTH_SHORT).show() }) {
+            TextButton(onClick = { onClick() }) {
                 Text(
                     text = "See All", style = TextStyle(
                         color = MaterialTheme.colorScheme.secondary,
@@ -341,15 +360,18 @@ fun TrendList() {
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
+                val imagePainter = rememberImagePainter(
+                    data = banners[index],
+                    builder = {
+                        crossfade(true)
+                    }
+                )
                 Image(
-                    painter = painterResource(id = banners[index]),
-                    contentDescription = "Banners",
-                    contentScale = ContentScale.FillBounds,
+                    painter = imagePainter,
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .paint(
-                            painterResource(id = R.drawable.bg),
-                            contentScale = ContentScale.FillBounds
-                        )
+                        .fillMaxSize()
                 )
             }
         }
@@ -415,6 +437,7 @@ fun Categories() {
                 Text(
                     text = categories[index],
                     modifier = Modifier.background(MaterialTheme.colorScheme.primary),
+                    color = MaterialTheme.colorScheme.tertiary,
                     style = TextStyle(
                         background = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Normal,
@@ -424,42 +447,6 @@ fun Categories() {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun ListMoviesItem(
-    results: Movies.Results, onGettingClick: () -> Unit, enabled: Boolean,
-) {
-    Card(
-        modifier = Modifier
-            .width(150.dp)
-            .height(180.dp)
-            .padding(end = 4.dp)
-            .clickable(enabled = enabled) {
-                onGettingClick()
-            }
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Gray,
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Image(
-            rememberAsyncImagePainter(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data("${ApiService.BASE_POSTER_URL}${results.poster_path}")
-                    .build()
-            ),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Gray)
-        )
     }
 }
 
@@ -492,20 +479,19 @@ fun NewShowing(
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
+                val imagePainter = rememberImagePainter(
+                    data = "${ApiService.BASE_POSTER_URL}${res.poster_path}",
+                    builder = {
+                        crossfade(true)
+                    }
+                )
                 Image(
-                    rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data("${ApiService.BASE_POSTER_URL}${res.poster_path}")
-                            .build()
-                    ),
+                    painter = imagePainter,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .paint(
-                            painterResource(id = R.drawable.bg),
-                            contentScale = ContentScale.FillBounds
-                        )
+                        .background(Gray)
                 )
             }
             Column(
