@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.mati.mimovies.features.auth.signIn.SignInViewModel
 import com.mati.mimovies.features.auth.signUp.SignUpViewModel
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.PersonViewModel
 import com.mati.mimovies.features.profile.presenter.ProfileViewModel
 import com.mati.mimovies.navigation.MovieNavigation
 import com.mati.mimovies.ui.theme.MiMoviesTheme
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
     val signUpViewModel: SignUpViewModel by viewModels()
     val signInViewModel: SignInViewModel by viewModels()
     val mainViewModel: MovieViewModel by viewModels()
+    val personViewModel: PersonViewModel by viewModels()
     val profileViewModel: ProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,7 @@ class MainActivity : ComponentActivity() {
                         signUpViewModel = signUpViewModel,
                         signInViewModel = signInViewModel,
                         mainViewModel = mainViewModel,
+                        personViewModel = personViewModel,
                         profileViewModel = profileViewModel
                     )
                 }
