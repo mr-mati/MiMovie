@@ -104,6 +104,7 @@ dependencies {
 
     //exo player
     implementation(libs.exoplayer)
+    implementation (libs.exoplayer.core)
 
     //Animations Lottie
     implementation(libs.lottie.compose)
