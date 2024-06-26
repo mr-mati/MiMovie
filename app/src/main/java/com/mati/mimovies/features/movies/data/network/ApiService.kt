@@ -1,6 +1,7 @@
 package com.mati.mimovies.features.movies.data.network
 
 import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Person
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -36,6 +37,11 @@ interface ApiService {
     suspend fun getNewShowing(
         @Query("page") page: Int? = 1
     ): Response<Movies>
+
+    @GET("3/person/popular?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getPersonPopular(
+        @Query("page") page: Int? = 1
+    ): Response<Person>
 
     @GET("3/search/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun searchMovies(
