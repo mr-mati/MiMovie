@@ -90,6 +90,7 @@ import coil.request.ImageRequest
 import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.presenter.PersonViewModel
 import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItemEnabled
+import com.mati.mimovies.features.movies.presenter.util.PersonItem.PersonPopularList
 import com.mati.mimovies.ui.theme.Blue
 
 
@@ -608,78 +609,6 @@ fun GenreShowing(genre: String) {
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 letterSpacing = 0.4.sp
-            )
-        )
-    }
-}
-
-@Composable
-fun PersonPopularList(
-    response: Person.Results,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Card(
-            modifier = Modifier
-                .width(130.dp)
-                .height(150.dp)
-                .padding(8.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 0.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent,
-            ),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Image(
-                rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data("${ApiService.BASE_POSTER_URL}${response.profile_path}")
-                        .build()
-                ),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Gray)
-            )
-        }
-
-        Row(
-            modifier = Modifier.padding(top = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Default.Person, null,
-                tint = Blue,
-            )
-            Text(
-                modifier = Modifier.padding(start = 4.dp),
-                text = "${response.popularity}",
-                style = TextStyle(
-                    textAlign = TextAlign.Justify,
-                    color = BlueLight,
-                    fontFamily = FontFamily(Font(R.font.primary_regular)),
-                    fontSize = 10.sp
-                )
-            )
-        }
-
-        val displayText = if (response.name?.length!! > 12) {
-            response.name.substring(0, 12)
-        } else {
-            response.name
-        }
-
-        Text(
-            modifier = Modifier.padding(top = 4.dp),
-            text = displayText,
-            style = TextStyle(
-                textAlign = TextAlign.Justify,
-                color = Color(0xFF808080),
-                fontFamily = FontFamily(Font(R.font.primary_regular)),
-                fontSize = 16.sp
             )
         )
     }

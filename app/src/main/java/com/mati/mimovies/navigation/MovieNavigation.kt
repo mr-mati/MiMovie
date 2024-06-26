@@ -14,6 +14,7 @@ import com.mati.mimovies.features.auth.signIn.SignInViewModel
 import com.mati.mimovies.features.auth.signUp.SignUpViewModel
 import com.mati.mimovies.features.movies.presenter.IntroScreen.IntroScreen
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.PersonViewModel
 import com.mati.mimovies.features.movies.presenter.detailScreen.MovieDetailScreen
 import com.mati.mimovies.features.movies.presenter.mainScreen.MovieScreen
 import com.mati.mimovies.features.movies.presenter.moreMovieScreen.MoreMovieScreen
@@ -30,6 +31,7 @@ fun MovieNavigation(
     signUpViewModel: SignUpViewModel,
     signInViewModel: SignInViewModel,
     mainViewModel: MovieViewModel,
+    personViewModel: PersonViewModel,
     profileViewModel: ProfileViewModel,
 ) {
 
@@ -67,7 +69,7 @@ fun MovieNavigation(
                 )
             }
         ) {
-            MovieScreen(viewModel = mainViewModel, navHostController = navHostController)
+            MovieScreen(viewModel = mainViewModel, personViewModel = personViewModel, navHostController = navHostController)
         }
 
         composable(
@@ -93,11 +95,11 @@ fun MovieNavigation(
                 }
             },
 
-        ) {
+            ) {
             MovieDetailScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
-        composable(MovieNavigationItems.SearchScreen.route,) {
+        composable(MovieNavigationItems.SearchScreen.route) {
             SearchScreen(viewModel = mainViewModel, navHostController = navHostController)
         }
 
