@@ -1,9 +1,11 @@
 package com.mati.mimovies.features.movies.data.network
 
+import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -48,5 +50,10 @@ interface ApiService {
         @Query("query") query: String,
         @Query("page") page: Int,
     ): Response<Movies>
+
+    @GET("3/movie/{movie_id}/images?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMovieImages(
+        @Path("movie_id") movieId: Long? = 1,
+    ): Response<MovieImages>
 
 }

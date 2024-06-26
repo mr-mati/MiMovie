@@ -1,6 +1,5 @@
 package com.mati.mimovies.features.movies.presenter
 
-import android.graphics.Movie
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.mati.mimovies.common.base.doOnFailure
 import com.mati.mimovies.common.base.doOnLoading
 import com.mati.mimovies.common.base.doOnSuccess
+import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.usecase.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,8 +49,12 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
     private val _movieDetails: MutableState<Movies.Results> = mutableStateOf(Movies.Results())
     val movieDetails: MutableState<Movies.Results> = _movieDetails
 
+    private val _movieImages: MutableState<MovieImagesState> = mutableStateOf(MovieImagesState())
+    val movieImages: MutableState<MovieImagesState> = _movieImages
+
     fun setMovie(data: Movies.Results) {
         _movieDetails.value = data
+        getMovieImage(data.id)
     }
 
     fun getMoreMovies(id: Int, page: Int, clear: Boolean) {
@@ -126,6 +130,20 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
         }
     }
 
+    fun getMovieImage(movieId: Long?) {
+        viewModelScope.launch {
+            useCase.getMovieImages(movieId)
+                .doOnSuccess {
+                    _movieImages.value = MovieImagesState(data = it.backdrops)
+                }
+                .doOnFailure {
+                    _movieImages.value = MovieImagesState(error = it?.message!!)
+                }
+                .doOnLoading {
+                    _movieImages.value = MovieImagesState(isLoading = true)
+                }.collect()
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -207,6 +225,12 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
 data class MovieState(
     var data: List<Movies.Results> = emptyList(),
+    val error: String = " ",
+    val isLoading: Boolean = false,
+)
+
+data class MovieImagesState(
+    var data: List<MovieImages.Backdrop> = emptyList(),
     val error: String = " ",
     val isLoading: Boolean = false,
 )
