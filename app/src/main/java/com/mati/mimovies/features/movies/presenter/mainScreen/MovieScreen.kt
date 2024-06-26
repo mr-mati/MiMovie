@@ -111,6 +111,7 @@ fun MovieScreen(
     val response = viewModel.res.value
     val responseYou = viewModel.you.value
     val responseUpcoming = viewModel.upcoming.value
+    val responseNewShowing = viewModel.newShowing.value
     val responseTop = viewModel.top.value
 
     if (response.data.isEmpty()) {
@@ -239,10 +240,10 @@ fun MovieScreen(
                 modifier = Modifier
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
-                repeat(response.data.size) { index ->
-                    NewShowing(res = response.data[index], {
+                repeat(responseNewShowing.data.size) { index ->
+                    NewShowing(res = responseNewShowing.data[index], {
                         enabled = false
-                        viewModel.setMovie(response.data[index])
+                        viewModel.setMovie(responseNewShowing.data[index])
                         navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                     }, enabled = enabled)
                 }

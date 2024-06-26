@@ -46,6 +46,14 @@ class MovieUseCase @Inject constructor(
         }
     }
 
+    suspend fun getNewShowing(page: Int?): Flow<ApiState<List<Movies.Results>?>> {
+        return repo.getNewShowing(page).map { results ->
+            results.map {
+                mapper.fromMap(it)
+            }
+        }
+    }
+
     suspend fun searchMovies(name: String): Flow<ApiState<List<Movies.Results>?>> {
         return repo.searchMovies(name).map { results ->
             results.map {

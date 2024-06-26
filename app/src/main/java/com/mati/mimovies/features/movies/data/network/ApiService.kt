@@ -32,6 +32,11 @@ interface ApiService {
         @Query("page") page: Int? = 1
     ): Response<Movies>
 
+    @GET("3/movie/now_playing?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getNewShowing(
+        @Query("page") page: Int? = 1
+    ): Response<Movies>
+
     @GET("3/search/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun searchMovies(
         @Query("query") query: String,
