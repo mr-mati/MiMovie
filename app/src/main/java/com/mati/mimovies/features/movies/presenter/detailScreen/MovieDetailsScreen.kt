@@ -1,26 +1,35 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package com.mati.mimovies.features.movies.presenter.detailScreen
 
-import android.net.Uri
+import android.graphics.ImageFormat
+import android.media.ImageReader
 import android.util.Log
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,19 +44,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
@@ -61,14 +74,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
+import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
 import com.mati.mimovies.features.movies.presenter.util.MediaPlayer.VideoPlayer
 import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItem
+import com.mati.mimovies.features.profile.presenter.profileScreen.ItemSelection
+import com.mati.mimovies.features.profile.presenter.profileScreen.ListMoviesItem
 import com.mati.mimovies.utils.ButtonCustom
 import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
@@ -87,6 +104,8 @@ fun MovieDetailScreen(
     val response = viewModel.movieDetails.value
     Log.d("main", "MovieDetailScreen: ${response.orginal_title}")
 
+    val responseImage = viewModel.movieImages.value
+
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
@@ -94,6 +113,9 @@ fun MovieDetailScreen(
 
     val scrollState = rememberScrollState()
     val scrollStateGenre = rememberScrollState()
+
+    var trailerVideo = remember { mutableStateOf(true) }
+    var trailerImages = remember { mutableStateOf(false) }
 
     val scrollSheetState = rememberScrollState()
 
@@ -116,8 +138,7 @@ fun MovieDetailScreen(
         Header(response) {
             navHostController.popBackStack()
         }
-        ToolBox(
-            onClickPlay = { isSheetPlayOpen = true },
+        ToolBox(onClickPlay = { isSheetPlayOpen = true },
             onClickDownload = { isSheetDownloadOpen = true })
         Row(
             modifier = Modifier
@@ -168,20 +189,73 @@ fun MovieDetailScreen(
                 letterSpacing = 0.5.sp
             )
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Title("Trailer")
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ItemSelection("Video", trailerVideo.value) {
+                        if (!it) {
+                            trailerVideo.value = true
+                            trailerImages.value = false
+                        }
+                    }
+
+                    ItemSelection("Images", trailerImages.value) {
+                        if (!it) {
+                            trailerImages.value = true
+                            trailerVideo.value = false
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(MaterialTheme.colorScheme.onPrimary)
+                        .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
+                )
+                if (trailerVideo.value) {
+                    Trailer()
+                } else if (trailerImages.value) {
+                    PosterList(responseImage.data)
+                }
+            }
+        }
+
+
         Title("Top Cast")
         TopCastList()
-        Title("Trailer")
-        Trailer()
 
         val responseYou = viewModel.you.value
         Title("For You")
         LazyRow {
-            items(
-                responseYou.data,
-                key = {
-                    it.id!!
-                }
-            ) { response ->
+            items(responseYou.data, key = {
+                it.id!!
+            }) { response ->
                 MoviesItem(results = response) {
                     viewModel.setMovie(response)
                     navHostController.navigate(MovieNavigationItems.MovieDetails.route)
@@ -189,11 +263,9 @@ fun MovieDetailScreen(
             }
         }
         if (isSheetPlayOpen) {
-            ModalBottomSheet(
-                containerColor = MaterialTheme.colorScheme.primary,
+            ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
                 sheetState = sheetPlayState,
-                onDismissRequest = { isSheetPlayOpen = false }
-            ) {
+                onDismissRequest = { isSheetPlayOpen = false }) {
                 Column(
 
                     modifier = Modifier
@@ -236,11 +308,9 @@ fun MovieDetailScreen(
 
 
         if (isSheetDownloadOpen) {
-            ModalBottomSheet(
-                containerColor = MaterialTheme.colorScheme.primary,
+            ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
                 sheetState = sheetDownloadState,
-                onDismissRequest = { isSheetDownloadOpen = false }
-            ) {
+                onDismissRequest = { isSheetDownloadOpen = false }) {
                 Column(
 
                     modifier = Modifier
@@ -306,8 +376,7 @@ fun Header(
             )
         )
         Column(
-            modifier = Modifier
-                .align(Alignment.Center),
+            modifier = Modifier.align(Alignment.Center),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -326,8 +395,7 @@ fun Header(
                 Image(
                     rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data("${ApiService.BASE_POSTER_URL}${response.poster_path}")
-                            .build()
+                            .data("${ApiService.BASE_POSTER_URL}${response.poster_path}").build()
                     ),
                     alignment = Alignment.CenterStart,
                     contentDescription = "",
@@ -354,16 +422,13 @@ fun Header(
                 )
             )
             Row(
-                modifier = Modifier
-                    .padding(8.dp)
+                modifier = Modifier.padding(8.dp)
             ) {
                 Icon(
-                    Icons.Default.Star,
-                    tint = Color.Yellow, contentDescription = null
+                    Icons.Default.Star, tint = Color.Yellow, contentDescription = null
                 )
                 Text(
-                    modifier = Modifier
-                        .padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     text = "${response.vote_average}/10 IMDb",
                     style = TextStyle(
                         color = BlueLight
@@ -395,7 +460,8 @@ fun Header(
             },
         ) {
             Icon(
-                Icons.Default.ArrowBack, null,
+                Icons.Default.ArrowBack,
+                null,
                 tint = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
                     .size(32.dp)
@@ -430,13 +496,11 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp)
-                    .width(80.dp)
-                    .height(60.dp),
-                onClick = { /*TODO*/ })
-            {
+            IconButton(modifier = Modifier
+                .padding(start = 6.dp, end = 6.dp)
+                .width(80.dp)
+                .height(60.dp),
+                onClick = { /*TODO*/ }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -446,21 +510,18 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                         contentDescription = "Add To List"
                     )
                     Text(
-                        text = "Add to list",
-                        style = TextStyle(
+                        text = "Add to list", style = TextStyle(
                             color = Color.Gray,
                             fontSize = 12.sp,
                         )
                     )
                 }
             }
-            IconButton(
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp)
-                    .width(80.dp)
-                    .height(60.dp),
-                onClick = { /*TODO*/ })
-            {
+            IconButton(modifier = Modifier
+                .padding(start = 6.dp, end = 6.dp)
+                .width(80.dp)
+                .height(60.dp),
+                onClick = { /*TODO*/ }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -470,8 +531,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                         contentDescription = "Rate"
                     )
                     Text(
-                        text = "Rate",
-                        style = TextStyle(
+                        text = "Rate", style = TextStyle(
                             textAlign = TextAlign.Center,
                             color = Color.Gray,
                             fontSize = 12.sp,
@@ -479,13 +539,11 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                     )
                 }
             }
-            IconButton(
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp)
-                    .width(80.dp)
-                    .height(60.dp),
-                onClick = { onClickDownload() })
-            {
+            IconButton(modifier = Modifier
+                .padding(start = 6.dp, end = 6.dp)
+                .width(80.dp)
+                .height(60.dp),
+                onClick = { onClickDownload() }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -495,8 +553,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                         contentDescription = "download"
                     )
                     Text(
-                        text = "Download",
-                        style = TextStyle(
+                        text = "Download", style = TextStyle(
                             textAlign = TextAlign.Center,
                             color = Color.Gray,
                             fontSize = 12.sp,
@@ -504,13 +561,11 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                     )
                 }
             }
-            IconButton(
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp)
-                    .width(80.dp)
-                    .height(60.dp),
-                onClick = { /*TODO*/ })
-            {
+            IconButton(modifier = Modifier
+                .padding(start = 6.dp, end = 6.dp)
+                .width(80.dp)
+                .height(60.dp),
+                onClick = { /*TODO*/ }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -520,8 +575,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                         contentDescription = "Share"
                     )
                     Text(
-                        text = "Share",
-                        style = TextStyle(
+                        text = "Share", style = TextStyle(
                             textAlign = TextAlign.Center,
                             color = Color.Gray,
                             fontSize = 12.sp,
@@ -635,15 +689,13 @@ fun Trailer() {
         shape = RoundedCornerShape(8.dp)
     ) {
         if (showVideoPlayer) {
-            val videoUri =
-                "https://www.rmp-streaming.com/media/big-buck-bunny-360p.mp4"
+            val videoUri = "https://www.rmp-streaming.com/media/big-buck-bunny-360p.mp4"
             VideoPlayer(uri = videoUri, fullScreen = false) {
 
             }
         } else {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -652,6 +704,83 @@ fun Trailer() {
                     color = MaterialTheme.colorScheme.onPrimary,
                     trackColor = MaterialTheme.colorScheme.surface,
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun PosterList(
+    banners: List<MovieImages.Backdrop>
+) {
+    val pagerState = rememberPagerState(pageCount = { banners.size })
+    val bannerIndex = remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            bannerIndex.intValue = page
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .padding(horizontal = 8.dp)
+    ) {
+        if (banners.isNotEmpty()) {
+            HorizontalPager(
+                state = pagerState, modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+            ) { index ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .padding(16.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 3.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    val imagePainter = rememberAsyncImagePainter(
+                        model = "https://image.tmdb.org/t/p/w500/${banners[index].file_path}",
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(R.drawable.icon),
+                        error = painterResource(R.drawable.icon)
+                    )
+                    Image(
+                        painter = imagePainter,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+            ) {
+                repeat(banners.size) { index ->
+                    val height = 8.dp
+                    val width = if (index == bannerIndex.intValue) 16.dp else 8.dp
+                    val color =
+                        if (index == bannerIndex.intValue) MaterialTheme.colorScheme.secondary else Color.Gray
+
+                    Surface(
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .size(width, height)
+                            .clip(RoundedCornerShape(20.dp)),
+                        color = color,
+                    ) {}
+                }
             }
         }
     }
