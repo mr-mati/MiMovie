@@ -62,7 +62,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
@@ -72,28 +71,32 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.detailScreen.TopCastList
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
-import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
+import com.mati.mimovies.features.movies.data.model.Person
+import com.mati.mimovies.features.movies.presenter.PersonViewModel
 import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItemEnabled
+import com.mati.mimovies.ui.theme.Blue
 
 
 @Composable
 fun MovieScreen(
     viewModel: MovieViewModel = hiltViewModel(),
+    personViewModel: PersonViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
     val scrollState = rememberScrollState()
@@ -113,6 +116,8 @@ fun MovieScreen(
     val responseUpcoming = viewModel.upcoming.value
     val responseNewShowing = viewModel.newShowing.value
     val responseTop = viewModel.top.value
+
+    val responsePerson = personViewModel.personPopular.value
 
     if (response.data.isEmpty()) {
         if (response.isLoading) {
@@ -213,7 +218,14 @@ fun MovieScreen(
                 viewModel.getMoreMovies(1, 1, true)
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
-            TopCastList()
+            LazyRow {
+                itemsIndexed(responsePerson.data) { index, item ->
+                    val keyItem = index + item.id!!
+                    key(keyItem) {
+                        PersonPopularList(response = item)
+                    }
+                }
+            }
 
             TitleList("Upcoming", true) {
                 viewModel.title.value = "Upcoming"
@@ -596,6 +608,78 @@ fun GenreShowing(genre: String) {
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 letterSpacing = 0.4.sp
+            )
+        )
+    }
+}
+
+@Composable
+fun PersonPopularList(
+    response: Person.Results,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
+            modifier = Modifier
+                .width(130.dp)
+                .height(150.dp)
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Transparent,
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Image(
+                rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("${ApiService.BASE_POSTER_URL}${response.profile_path}")
+                        .build()
+                ),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Gray)
+            )
+        }
+
+        Row(
+            modifier = Modifier.padding(top = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Default.Person, null,
+                tint = Blue,
+            )
+            Text(
+                modifier = Modifier.padding(start = 4.dp),
+                text = "${response.popularity}",
+                style = TextStyle(
+                    textAlign = TextAlign.Justify,
+                    color = BlueLight,
+                    fontFamily = FontFamily(Font(R.font.primary_regular)),
+                    fontSize = 10.sp
+                )
+            )
+        }
+
+        val displayText = if (response.name?.length!! > 12) {
+            response.name.substring(0, 12)
+        } else {
+            response.name
+        }
+
+        Text(
+            modifier = Modifier.padding(top = 4.dp),
+            text = displayText,
+            style = TextStyle(
+                textAlign = TextAlign.Justify,
+                color = Color(0xFF808080),
+                fontFamily = FontFamily(Font(R.font.primary_regular)),
+                fontSize = 16.sp
             )
         )
     }
