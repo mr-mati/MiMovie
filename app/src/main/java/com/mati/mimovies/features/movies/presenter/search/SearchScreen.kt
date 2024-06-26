@@ -41,12 +41,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -56,9 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
@@ -122,7 +118,6 @@ fun SearchScreen(
                 CircularProgressIndicator(
                     modifier = Modifier
                         .width(64.dp)
-                        .padding(top = 64.dp)
                         .align(Alignment.CenterHorizontally),
                     color = MaterialTheme.colorScheme.onPrimary,
                     trackColor = MaterialTheme.colorScheme.surface,
@@ -151,7 +146,7 @@ fun SearchScreen(
 
                     }
                 }
-            }/* else if (response.error.isNotEmpty()) {
+            } else if (response.error.length > 3) {
                 Column(
                     modifier = Modifier
                         .padding(top = 64.dp)
@@ -168,7 +163,7 @@ fun SearchScreen(
                         )
                     )
                 }
-            }*/
+            }
         }
     }
 
