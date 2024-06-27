@@ -215,9 +215,9 @@ fun MovieScreen(
                 }
             }
             TitleList("Person popular", true) {
-                viewModel.title.value = "Person popular"
-                viewModel.getMoreMovies(1, 1, true)
-                navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
+                personViewModel.title.value = "Person popular"
+                personViewModel.getMorePerson(1)
+                navHostController.navigate(MovieNavigationItems.MorePersonScreen.route)
             }
             LazyRow {
                 itemsIndexed(responsePerson.data) { index, item ->

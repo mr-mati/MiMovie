@@ -18,6 +18,7 @@ import com.mati.mimovies.features.movies.presenter.PersonViewModel
 import com.mati.mimovies.features.movies.presenter.detailScreen.MovieDetailScreen
 import com.mati.mimovies.features.movies.presenter.mainScreen.MovieScreen
 import com.mati.mimovies.features.movies.presenter.moreMovieScreen.MoreMovieScreen
+import com.mati.mimovies.features.movies.presenter.morePersonScreen.MorePersonScreen
 import com.mati.mimovies.features.movies.presenter.search.SearchScreen
 import com.mati.mimovies.features.profile.presenter.ProfileViewModel
 import com.mati.mimovies.features.profile.presenter.editProfile.ProfileEditScreen
@@ -113,6 +114,10 @@ fun MovieNavigation(
 
         composable(MovieNavigationItems.MoreMovieScreen.route) {
             MoreMovieScreen(viewModel = mainViewModel, navHostController = navHostController)
+        }
+
+        composable(MovieNavigationItems.MorePersonScreen.route) {
+            MorePersonScreen(viewModel = personViewModel, navHostController = navHostController)
         }
 
     }

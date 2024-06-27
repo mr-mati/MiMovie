@@ -250,18 +250,6 @@ fun MovieDetailScreen(
         Title("Top Cast")
         TopCastList()
 
-        val responseYou = viewModel.you.value
-        Title("For You")
-        LazyRow {
-            items(responseYou.data, key = {
-                it.id!!
-            }) { response ->
-                MoviesItem(results = response) {
-                    viewModel.setMovie(response)
-                    navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-                }
-            }
-        }
         if (isSheetPlayOpen) {
             ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
                 sheetState = sheetPlayState,
@@ -679,7 +667,7 @@ fun Trailer() {
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
-            .padding(16.dp),
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 0.dp
         ),
@@ -738,7 +726,7 @@ fun PosterList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
-                        .padding(16.dp),
+                        .padding(8.dp),
                     elevation = CardDefaults.cardElevation(
                         defaultElevation = 3.dp
                     ),
@@ -748,7 +736,7 @@ fun PosterList(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     val imagePainter = rememberAsyncImagePainter(
-                        model = "https://image.tmdb.org/t/p/w500/${banners[index].file_path}",
+                        model = "${ApiService.BASE_POSTER_URL}${banners[index].file_path}",
                         contentScale = ContentScale.Crop,
                         placeholder = painterResource(R.drawable.icon),
                         error = painterResource(R.drawable.icon)
