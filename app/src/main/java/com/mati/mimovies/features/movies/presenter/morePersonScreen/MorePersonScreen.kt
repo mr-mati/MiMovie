@@ -51,7 +51,7 @@ fun MorePersonScreen(
 
     LaunchedEffect(lastVisibleItemIndex) {
         if (lastVisibleItemIndex != null && lastVisibleItemIndex >= response.size - 1) {
-            viewModel.getMorePerson(page = response.size / 10 + 1)
+            viewModel.getMorePerson(page = response.size / 10 + 1, false)
         }
     }
 

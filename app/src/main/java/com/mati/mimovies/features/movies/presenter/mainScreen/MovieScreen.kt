@@ -216,7 +216,7 @@ fun MovieScreen(
             }
             TitleList("Person popular", true) {
                 personViewModel.title.value = "Person popular"
-                personViewModel.getMorePerson(1)
+                personViewModel.getMorePerson(1, true)
                 navHostController.navigate(MovieNavigationItems.MorePersonScreen.route)
             }
             LazyRow {
