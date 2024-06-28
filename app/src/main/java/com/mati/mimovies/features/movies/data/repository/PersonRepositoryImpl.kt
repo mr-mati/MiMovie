@@ -2,6 +2,7 @@ package com.mati.mimovies.features.movies.data.repository
 
 import com.mati.mimovies.common.base.ApiState
 import com.mati.mimovies.common.base.BaseRepository
+import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.domain.repository.PersonRepository
@@ -16,6 +17,10 @@ class PersonRepositoryImpl @Inject constructor(
 
     override suspend fun getPersonPopular(page: Int?): Flow<ApiState<Person>> = safeApiCall {
         apiService.getPersonPopular(page)
+    }
+
+    override suspend fun searchPerson(name: String): Flow<ApiState<Person>> = safeApiCall {
+        apiService.searchPersons(name, 1)
     }
 
 }

@@ -101,7 +101,7 @@ fun MovieNavigation(
         }
 
         composable(MovieNavigationItems.SearchScreen.route) {
-            SearchScreen(viewModel = mainViewModel, navHostController = navHostController)
+            SearchScreen(viewModel = mainViewModel, personViewModel = personViewModel,navHostController = navHostController)
         }
 
         composable(MovieNavigationItems.ProfileScreen.route) {

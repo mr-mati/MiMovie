@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,18 +59,31 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presenter.PersonViewModel
+import com.mati.mimovies.features.movies.presenter.detailScreen.PosterList
+import com.mati.mimovies.features.movies.presenter.detailScreen.Trailer
 import com.mati.mimovies.features.movies.presenter.mainScreen.GenreShowing
+import com.mati.mimovies.features.profile.presenter.profileScreen.ItemSelection
+import com.mati.mimovies.ui.theme.Blue
+import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
 fun SearchScreen(
     viewModel: MovieViewModel = hiltViewModel(),
+    personViewModel: PersonViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
     val searchBox = viewModel.searchBox
-    val response = viewModel.search.value
+
+    val responseMovies = viewModel.search.value
+    val responsePerson = personViewModel.search.value
+
+    val searchMovie = remember { mutableStateOf(true) }
+    val searchPerson = remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
 
@@ -111,63 +126,164 @@ fun SearchScreen(
             SearchBox(searchBox) {
                 if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
                     viewModel.searchMovies(searchBox.value)
+                    personViewModel.searchPerson(searchBox.value)
                 }
             }
 
-            if (response.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .width(64.dp)
-                        .align(Alignment.CenterHorizontally),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    trackColor = MaterialTheme.colorScheme.surface,
-                )
-            } else if (response.data.isNotEmpty()) {
-                if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
-                    Column(
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+
+                Column {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
                         modifier = Modifier
-                            .padding(bottom = 4.dp, top = 8.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        repeat(response.data.size) { index ->
-                            SearchItem(
-                                res = response.data[index]
-                            ) {
-                                viewModel.setMovie(response.data[index])
-                                navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                        ItemSelection("Movies", searchMovie.value) {
+                            if (!it) {
+                                searchMovie.value = true
+                                searchPerson.value = false
+                            }
+                        }
+
+                        ItemSelection("Persons", searchPerson.value) {
+                            if (!it) {
+                                searchPerson.value = true
+                                searchMovie.value = false
                             }
                         }
                     }
-                } else {
-                    response.data = emptyList()
-                    Column(
-                        modifier = Modifier
-                            .padding(bottom = 4.dp, top = 8.dp)
-                    ) {
 
-                    }
-                }
-            } else if (response.error.length > 3) {
-                Column(
-                    modifier = Modifier
-                        .padding(top = 64.dp)
-                        .align(Alignment.CenterHorizontally),
-                ) {
-                    Text(
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Spacer(
                         modifier = Modifier
-                            .padding(top = 4.dp),
-                        text = "404 Not Found",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp,
-                            color = MaterialTheme.colorScheme.surface
-                        )
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(MaterialTheme.colorScheme.onPrimary)
+                            .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
                     )
+                    if (searchMovie.value) {
+                        if (responseMovies.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(64.dp)
+                                    .width(64.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                trackColor = MaterialTheme.colorScheme.surface,
+                            )
+                        } else if (responseMovies.data.isNotEmpty()) {
+                            if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(bottom = 4.dp, top = 8.dp)
+                                ) {
+                                    repeat(responseMovies.data.size) { index ->
+                                        SearchMovieItem(
+                                            res = responseMovies.data[index]
+                                        ) {
+                                            viewModel.setMovie(responseMovies.data[index])
+                                            navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                                        }
+                                    }
+                                }
+                            } else {
+                                responseMovies.data = emptyList()
+                                Column(
+                                    modifier = Modifier
+                                        .padding(bottom = 4.dp, top = 8.dp)
+                                ) {
+
+                                }
+                            }
+                        } else if (responseMovies.error.length > 3) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(top = 64.dp)
+                                    .align(Alignment.CenterHorizontally),
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(top = 4.dp),
+                                    text = "404 Not Found",
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 22.sp,
+                                        color = MaterialTheme.colorScheme.surface
+                                    )
+                                )
+                            }
+                        }
+                    } else if (searchPerson.value) {
+                        if (responsePerson.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(64.dp)
+                                    .width(64.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                trackColor = MaterialTheme.colorScheme.surface,
+                            )
+                        } else if (responsePerson.data.isNotEmpty()) {
+                            if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(bottom = 4.dp, top = 8.dp)
+                                ) {
+                                    repeat(responsePerson.data.size) { index ->
+                                        SearchPersonItem(
+                                            res = responsePerson.data[index]
+                                        ) {
+
+                                        }
+                                    }
+                                }
+                            } else {
+                                responsePerson.data = emptyList()
+                                Column(
+                                    modifier = Modifier
+                                        .padding(bottom = 4.dp, top = 8.dp)
+                                ) {
+
+                                }
+                            }
+                        } else if (responsePerson.error.length > 3) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(top = 64.dp)
+                                    .align(Alignment.CenterHorizontally),
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(top = 4.dp),
+                                    text = "404 Not Found",
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 22.sp,
+                                        color = MaterialTheme.colorScheme.surface
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-
-
 }
 
 @Composable
@@ -278,7 +394,7 @@ fun SearchBox(searchBox: MutableState<String>, onClickSearch: () -> Unit) {
 }
 
 @Composable
-fun SearchItem(
+fun SearchMovieItem(
     res: Movies.Results,
     onGettingClick: () -> Unit,
 ) {
@@ -392,6 +508,116 @@ fun SearchItem(
                     categories.forEach {
                         GenreShowing(it)
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchPersonItem(
+    res: Person.Results,
+    onGettingClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .clickable { onGettingClick() }
+    ) {
+        Row(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primary)
+                .fillMaxWidth(),
+        ) {
+            Card(
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(180.dp)
+                    .padding(8.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                val imagePainter = rememberImagePainter(
+                    data = "${ApiService.BASE_POSTER_URL}${res.profile_path}",
+                    builder = {
+                        crossfade(true)
+                    }
+                )
+                Image(
+                    painter = imagePainter,
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Gray)
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .padding(top = 16.dp),
+            ) {
+                Text(
+                    text = "${res.name}",
+                    modifier = Modifier
+                        .padding(8.dp),
+                    fontWeight = FontWeight.Bold,
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 16.sp
+                    ),
+                )
+
+                Row {
+                    Text(
+                        text = "Gender : ",
+                        modifier = Modifier
+                            .padding(8.dp),
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.tertiary,
+                            fontSize = 16.sp
+                        ),
+                    )
+                    val gender = when(res.gender) {
+                        0 -> "Not set"
+                        1 -> "Female"
+                        2 -> "Male"
+                        else -> "Non-binary"
+                    }
+                    Text(
+                        text = gender,
+                        modifier = Modifier
+                            .padding(8.dp),
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            color = Blue,
+                            fontSize = 16.sp
+                        ),
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        Icons.Default.Person, null,
+                        tint = Blue,
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 4.dp),
+                        text = "${res.popularity}",
+                        style = TextStyle(
+                            textAlign = TextAlign.Justify,
+                            color = BlueLight,
+                            fontFamily = FontFamily(Font(R.font.primary_regular)),
+                            fontSize = 10.sp
+                        )
+                    )
                 }
             }
         }

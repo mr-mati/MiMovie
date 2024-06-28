@@ -11,6 +11,7 @@ class PersonMapper @Inject constructor() : Mapper<Person?, List<Person.Results>?
         return from?.results?.map {
             Person.Results(
                 id = it.id,
+                gender = it.gender,
                 name = it.name,
                 original_name = it.original_name,
                 popularity = it.popularity,

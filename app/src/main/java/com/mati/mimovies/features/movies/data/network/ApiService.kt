@@ -13,6 +13,7 @@ interface ApiService {
     companion object {
         const val BASE_URL = "https://api.themoviedb.org/"
         const val BASE_POSTER_URL = "https://image.tmdb.org/t/p/w500/"
+        const val BASE_POSTER_PERSON = "https://image.tmdb.org/t/p/original/"
     }
 
     @GET("3/discover/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
@@ -50,6 +51,12 @@ interface ApiService {
         @Query("query") query: String,
         @Query("page") page: Int,
     ): Response<Movies>
+
+    @GET("3//search/person?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun searchPersons(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+    ): Response<Person>
 
     @GET("3/movie/{movie_id}/images?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun getMovieImages(

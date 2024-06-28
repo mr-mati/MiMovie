@@ -7,6 +7,7 @@ import com.mati.mimovies.features.movies.domain.mapper.PersonMapper
 import com.mati.mimovies.features.movies.domain.repository.PersonRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import retrofit2.http.Query
 import javax.inject.Inject
 
 class PersonUseCase @Inject constructor(
@@ -20,4 +21,13 @@ class PersonUseCase @Inject constructor(
             }
         }
     }
+
+    suspend fun searchPerson(name: String): Flow<ApiState<List<Person.Results>?>> {
+        return repo.searchPerson(name).map { results ->
+            results.map {
+                mapper.fromMap(it)
+            }
+        }
+    }
+
 }

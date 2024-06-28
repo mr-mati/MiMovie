@@ -28,7 +28,13 @@ class PersonViewModel @Inject constructor(val useCase: PersonUseCase) : ViewMode
     private val _morePerson = mutableStateListOf<Person.Results>()
     val morePerson: List<Person.Results> = _morePerson
 
-    fun getMorePerson(page: Int) {
+    private val _search: MutableState<PersonStats> = mutableStateOf(PersonStats())
+    val search: State<PersonStats> = _search
+
+    fun getMorePerson(page: Int, clear: Boolean) {
+        if (clear) {
+            _morePerson.clear()
+        }
         viewModelScope.launch {
             useCase.getPersonPopular(page)
                 .doOnSuccess { newList ->
@@ -54,6 +60,20 @@ class PersonViewModel @Inject constructor(val useCase: PersonUseCase) : ViewMode
         }
     }
 
+    fun searchPerson(name: String) {
+        viewModelScope.launch {
+            useCase.searchPerson(name)
+                .doOnSuccess {
+                    _search.value = PersonStats(data = it!!)
+                }
+                .doOnFailure {
+                    _search.value = PersonStats(error = it?.message!!)
+                }
+                .doOnLoading {
+                    _search.value = PersonStats(isLoading = true)
+                }.collect()
+        }
+    }
 
 }
 
