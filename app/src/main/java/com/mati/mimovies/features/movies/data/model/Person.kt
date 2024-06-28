@@ -8,6 +8,7 @@ data class Person(
 ) {
     data class Results(
         val id: Int? = 0,
+        val gender: Int? = 0,
         val name: String? = "",
         val original_name: String? = "",
         val popularity: Double? = 0.0,
