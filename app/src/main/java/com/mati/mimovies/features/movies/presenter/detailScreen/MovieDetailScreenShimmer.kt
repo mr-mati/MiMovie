@@ -29,8 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import com.mati.mimovies.R
 import com.mati.mimovies.utils.Title
 import com.valentinilk.shimmer.shimmer
@@ -38,10 +41,14 @@ import com.valentinilk.shimmer.shimmer
 @Composable
 fun MovieDetailScreenShimmer(isVisible: Boolean) {
 
+    val view = LocalView.current
+    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primary)
-            .padding(bottom = 16.dp)
+            .padding(bottom = 16.dp, top = statusBarHeight)
             .fillMaxSize(),
     ) {
         HeaderShimmer()
@@ -106,6 +113,7 @@ fun HeaderShimmer(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 16.dp)
             .height(350.dp),
     ) {
         Column(
@@ -133,6 +141,7 @@ fun HeaderShimmer(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .width(150.dp)
                     .shimmer()
+                    .padding(top = 16.dp)
                     .height(30.dp),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 3.dp
