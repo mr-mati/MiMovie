@@ -36,6 +36,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -54,6 +55,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -65,14 +67,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
@@ -95,12 +102,20 @@ import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun MovieDetailScreen(
     viewModel: MovieViewModel,
     navHostController: NavHostController,
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.isNavigationBarVisible = false
+    systemUiController.isStatusBarVisible = false
+    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
+    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val response = viewModel.movieDetails.value.data
     if (response != null) {
@@ -113,9 +128,8 @@ fun MovieDetailScreen(
 
         val systemUiController = rememberSystemUiController()
         systemUiController.isNavigationBarVisible = false
-        systemUiController.isStatusBarVisible = false
         systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
-        systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+        systemUiController.setStatusBarColor(Color.Transparent)
 
         val scrollState = rememberScrollState()
         val scrollStateGenre = rememberScrollState()
@@ -132,6 +146,24 @@ fun MovieDetailScreen(
         val sheetDownloadState = rememberModalBottomSheetState()
         var isSheetDownloadOpen by rememberSaveable {
             mutableStateOf(false)
+        }
+
+        val context = LocalContext.current
+        val currentContext by rememberUpdatedState(context)
+
+        LaunchedEffect(scrollState) {
+            snapshotFlow { scrollState.value }
+                .map { scrollValue ->
+                    scrollValue >= 50.dp.toPx(currentContext)
+                }
+                .distinctUntilChanged()
+                .collect { hide ->
+                    if (hide) {
+                        systemUiController.isStatusBarVisible = false
+                    } else {
+                        systemUiController.isStatusBarVisible = true
+                    }
+                }
         }
 
         Column(
@@ -162,6 +194,19 @@ fun MovieDetailScreen(
                     }
                 }
             }
+            Text(
+                text = response.original_title,
+                modifier = Modifier.padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    textAlign = TextAlign.Left,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 26.sp,
+                    lineHeight = 24.sp,
+                    letterSpacing = 0.5.sp
+                )
+            )
             Text(
                 text = response.overview,
                 modifier = Modifier.padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
@@ -317,7 +362,7 @@ fun MovieDetailScreen(
                 }
             }
         }
-    } else if(viewModel.movieDetails.value.isLoading) {
+    } else if (viewModel.movieDetails.value.isLoading) {
         MovieDetailScreenShimmer(true)
     }
 }
@@ -350,8 +395,20 @@ fun Header(
                     }).build()
             )
         )
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .height(100.dp),
+            alignment = Alignment.Center,
+            painter = painterResource(id = R.drawable.tst),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+        )
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(top = 42.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -370,7 +427,8 @@ fun Header(
                 Image(
                     rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data("${ApiService.BASE_POSTER_URL}${response.poster_path}").build()
+                            .data("${ApiService.BASE_POSTER_URL}${response.poster_path}")
+                            .build()
                     ),
                     alignment = Alignment.CenterStart,
                     contentDescription = "",
@@ -383,8 +441,13 @@ fun Header(
                         )
                 )
             }
+            val title = if (response.title?.length!! > 25) {
+                response.title.substring(0, 25) + "..."
+            } else {
+                response.title
+            }
             Text(
-                text = response.title,
+                text = title,
                 modifier = Modifier.padding(top = 12.dp),
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(
@@ -411,38 +474,56 @@ fun Header(
                 )
             }
         }
-        Image(
+        Row(
             modifier = Modifier
+                .padding(top = 16.dp)
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .height(100.dp),
-            alignment = Alignment.Center,
-            painter = painterResource(id = R.drawable.tst),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-        )
-        IconButton(
-            modifier = Modifier
-                .padding(16.dp)
-                .background(Color.Transparent)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.secondary,
-                    shape = RoundedCornerShape(32.dp)
-                ),
-            onClick = {
-                onBackClick()
-            },
+                .background(Color.Transparent),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                Icons.Default.ArrowBack,
-                null,
-                tint = MaterialTheme.colorScheme.tertiary,
+            IconButton(
                 modifier = Modifier
-                    .size(32.dp)
+                    .padding(16.dp)
                     .background(Color.Transparent)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = RoundedCornerShape(32.dp)
+                    ),
+                onClick = {
+                    onBackClick()
+                },
+            ) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    null,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(Color.Transparent)
 
-            )
+                )
+            }
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    Icons.Default.Person, null,
+                    tint = White,
+                )
+                Text(
+                    modifier = Modifier.padding(start = 4.dp),
+                    text = "${response.popularity}",
+                    style = TextStyle(
+                        textAlign = TextAlign.Justify,
+                        color = BlueLight,
+                        fontFamily = FontFamily(Font(R.font.primary_regular)),
+                        fontSize = 10.sp
+                    )
+                )
+            }
         }
     }
 }
@@ -759,4 +840,8 @@ fun PosterList(
             }
         }
     }
+}
+
+fun Dp.toPx(context: android.content.Context): Float {
+    return this.value * context.resources.displayMetrics.density
 }

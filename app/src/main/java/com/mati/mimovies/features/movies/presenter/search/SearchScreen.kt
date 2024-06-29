@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
@@ -77,6 +78,13 @@ fun SearchScreen(
     personViewModel: PersonViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.isNavigationBarVisible = false
+    systemUiController.isStatusBarVisible = false
+    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
+    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+
     val searchBox = viewModel.searchBox
 
     val responseMovies = viewModel.search.value

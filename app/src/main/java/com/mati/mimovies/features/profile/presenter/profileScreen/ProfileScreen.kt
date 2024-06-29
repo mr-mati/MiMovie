@@ -68,6 +68,7 @@ fun ProfileScreen(
 
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
+    systemUiController.isStatusBarVisible = false
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.secondary)
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.secondary)
 

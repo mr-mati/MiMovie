@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
 import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItem
@@ -43,6 +44,12 @@ fun MoreMovieScreen(
     viewModel: MovieViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.isNavigationBarVisible = false
+    systemUiController.isStatusBarVisible = false
+    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
+    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
     val response = viewModel.more
     val title = viewModel.title.value

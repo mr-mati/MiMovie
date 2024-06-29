@@ -103,6 +103,7 @@ fun MovieScreen(
     val scrollState = rememberScrollState()
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
+    systemUiController.isStatusBarVisible = true
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
