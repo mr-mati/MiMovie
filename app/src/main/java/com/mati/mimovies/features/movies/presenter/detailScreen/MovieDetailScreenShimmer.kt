@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +70,7 @@ fun MovieDetailScreenShimmer(isVisible: Boolean) {
                     ),
                     shape = RoundedCornerShape(24.dp)
                 ) {}
+                Spacer(modifier = Modifier.width(16.dp))
                 Card(
                     modifier = Modifier
                         .width(100.dp)
@@ -83,10 +85,17 @@ fun MovieDetailScreenShimmer(isVisible: Boolean) {
                     shape = RoundedCornerShape(24.dp)
                 ) {}
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Title("Trailer")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Title("Trailer")
 
+        CircularProgressIndicator(
+            modifier = Modifier
+                .width(64.dp)
+                .align(Alignment.CenterHorizontally),
+            color = MaterialTheme.colorScheme.onPrimary,
+            trackColor = MaterialTheme.colorScheme.surface,
+        )
     }
 
 }
@@ -119,30 +128,10 @@ fun HeaderShimmer(modifier: Modifier = Modifier) {
             ) {
 
             }
-        }
 
-        Card(
-            modifier = Modifier
-                .width(150.dp)
-                .shimmer()
-                .height(30.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Gray,
-            ),
-            shape = RoundedCornerShape(24.dp)
-        ) {}
-        Row(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            Icon(
-                Icons.Default.Star, tint = Color.Yellow, contentDescription = null
-            )
             Card(
                 modifier = Modifier
-                    .width(70.dp)
+                    .width(150.dp)
                     .shimmer()
                     .height(30.dp),
                 elevation = CardDefaults.cardElevation(
@@ -153,17 +142,27 @@ fun HeaderShimmer(modifier: Modifier = Modifier) {
                 ),
                 shape = RoundedCornerShape(24.dp)
             ) {}
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star, tint = Color.Yellow, contentDescription = null
+                )
+                Card(
+                    modifier = Modifier
+                        .width(70.dp)
+                        .shimmer()
+                        .height(30.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 3.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Gray,
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                ) {}
+            }
         }
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .height(100.dp),
-            alignment = Alignment.Center,
-            painter = painterResource(id = R.drawable.tst),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-        )
         IconButton(
             modifier = Modifier
                 .padding(16.dp)
