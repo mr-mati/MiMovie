@@ -23,6 +23,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -44,11 +47,10 @@ fun MorePersonScreen(
     navHostController: NavHostController
 ) {
 
-    val systemUiController = rememberSystemUiController()
-    systemUiController.isNavigationBarVisible = false
-    systemUiController.isStatusBarVisible = false
-    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
-    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+    val view = LocalView.current
+    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+    val statusBarHeight =
+        with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
     val response = viewModel.morePerson
     val title = viewModel.title.value
@@ -65,7 +67,7 @@ fun MorePersonScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 64.dp), color = MaterialTheme.colorScheme.primary
+            .padding(top = statusBarHeight), color = MaterialTheme.colorScheme.primary
     ) {
         Column() {
             Spacer(modifier = Modifier.height(16.dp))

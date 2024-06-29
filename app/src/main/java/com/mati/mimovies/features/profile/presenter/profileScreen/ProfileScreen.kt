@@ -41,6 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -48,6 +50,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
@@ -68,9 +71,12 @@ fun ProfileScreen(
 
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
-    systemUiController.isStatusBarVisible = false
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.secondary)
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.secondary)
+
+    val view = LocalView.current
+    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
     val scrollState = rememberScrollState()
 
@@ -81,7 +87,8 @@ fun ProfileScreen(
     val responseYou = viewModel.you.value
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .padding(top = statusBarHeight),
         color = MaterialTheme.colorScheme.onPrimary
     ) {
         Column(

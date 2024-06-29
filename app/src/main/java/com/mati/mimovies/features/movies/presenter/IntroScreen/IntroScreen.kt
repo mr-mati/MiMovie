@@ -13,8 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -37,9 +40,14 @@ fun IntroScreen(
     systemUiController.setNavigationBarColor(BlueLight)
     systemUiController.setStatusBarColor(BlueLight)
 
+    val view = LocalView.current
+    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = statusBarHeight)
             .background(BlueLight),
         contentAlignment = Alignment.Center,
     ) {

@@ -2,6 +2,7 @@
 
 package com.mati.mimovies.features.movies.presenter.search
 
+import android.view.LayoutInflater
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,6 +47,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -54,6 +57,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
@@ -79,11 +84,9 @@ fun SearchScreen(
     navHostController: NavHostController,
 ) {
 
-    val systemUiController = rememberSystemUiController()
-    systemUiController.isNavigationBarVisible = false
-    systemUiController.isStatusBarVisible = false
-    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
-    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+    val view = LocalView.current
+    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
     val searchBox = viewModel.searchBox
 
@@ -96,7 +99,8 @@ fun SearchScreen(
     val scrollState = rememberScrollState()
 
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .padding(top = statusBarHeight),
         color = MaterialTheme.colorScheme.primary
     ) {
         Column(

@@ -2,11 +2,7 @@
 
 package com.mati.mimovies.features.movies.presenter.detailScreen
 
-import android.graphics.ImageFormat
-import android.graphics.Movie
-import android.media.ImageReader
 import android.util.Log
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,15 +16,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -79,27 +69,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
-import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
 import com.mati.mimovies.features.movies.presenter.MovieViewModel
 import com.mati.mimovies.features.movies.presenter.util.MediaPlayer.VideoPlayer
-import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItem
 import com.mati.mimovies.features.profile.presenter.profileScreen.ItemSelection
-import com.mati.mimovies.features.profile.presenter.profileScreen.ListMoviesItem
 import com.mati.mimovies.utils.ButtonCustom
 import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
-import com.mati.mimovies.utils.MovieNavigationItems
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -113,9 +97,8 @@ fun MovieDetailScreen(
 
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
-    systemUiController.isStatusBarVisible = false
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
-    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+        systemUiController.setStatusBarColor(Color.Transparent)
 
     val response = viewModel.movieDetails.value.data
     if (response != null) {
@@ -126,16 +109,11 @@ fun MovieDetailScreen(
 
         val responseImage = viewModel.movieImages.value
 
-        val systemUiController = rememberSystemUiController()
-        systemUiController.isNavigationBarVisible = false
-        systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
-        systemUiController.setStatusBarColor(Color.Transparent)
-
         val scrollState = rememberScrollState()
         val scrollStateGenre = rememberScrollState()
 
-        var trailerVideo = remember { mutableStateOf(true) }
-        var trailerImages = remember { mutableStateOf(false) }
+        val trailerVideo = remember { mutableStateOf(true) }
+        val trailerImages = remember { mutableStateOf(false) }
 
         val scrollSheetState = rememberScrollState()
 
@@ -213,7 +191,7 @@ fun MovieDetailScreen(
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(
                     fontWeight = FontWeight.Normal,
-                    color = Color.Gray,
+                    color = Gray,
                     fontSize = 14.sp,
                     letterSpacing = 0.5.sp
                 )
@@ -362,7 +340,7 @@ fun MovieDetailScreen(
                 }
             }
         }
-    } else if (viewModel.movieDetails.value.isLoading) {
+    } else if (viewModel.movieDetails.value.isLoading || viewModel.movieDetails.value.error.length >= 3) {
         MovieDetailScreenShimmer(true)
     }
 }
@@ -441,7 +419,7 @@ fun Header(
                         )
                 )
             }
-            val title = if (response.title?.length!! > 25) {
+            val title = if (response.title.length > 25) {
                 response.title.substring(0, 25) + "..."
             } else {
                 response.title
@@ -543,7 +521,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                 .fillMaxWidth()
                 .height(1.dp)
                 .padding(start = 6.dp, end = 6.dp)
-                .background(color = Color.Gray)
+                .background(color = Gray)
         ) {}
         Row(
             modifier = Modifier
@@ -567,7 +545,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                     )
                     Text(
                         text = "Add to list", style = TextStyle(
-                            color = Color.Gray,
+                            color = Gray,
                             fontSize = 12.sp,
                         )
                     )
@@ -589,7 +567,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                     Text(
                         text = "Rate", style = TextStyle(
                             textAlign = TextAlign.Center,
-                            color = Color.Gray,
+                            color = Gray,
                             fontSize = 12.sp,
                         )
                     )
@@ -611,7 +589,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                     Text(
                         text = "Download", style = TextStyle(
                             textAlign = TextAlign.Center,
-                            color = Color.Gray,
+                            color = Gray,
                             fontSize = 12.sp,
                         )
                     )
@@ -633,7 +611,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                     Text(
                         text = "Share", style = TextStyle(
                             textAlign = TextAlign.Center,
-                            color = Color.Gray,
+                            color = Gray,
                             fontSize = 12.sp,
                         )
                     )
@@ -649,7 +627,7 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                 .fillMaxWidth()
                 .height(1.dp)
                 .padding(start = 16.dp, end = 16.dp)
-                .background(color = Color.Gray)
+                .background(color = Gray)
         ) {}
     }
 }
@@ -827,7 +805,7 @@ fun PosterList(
                     val height = 8.dp
                     val width = if (index == bannerIndex.intValue) 16.dp else 8.dp
                     val color =
-                        if (index == bannerIndex.intValue) MaterialTheme.colorScheme.secondary else Color.Gray
+                        if (index == bannerIndex.intValue) MaterialTheme.colorScheme.secondary else Gray
 
                     Surface(
                         modifier = Modifier
