@@ -3,6 +3,7 @@
 package com.mati.mimovies.features.movies.presenter.detailScreen
 
 import android.graphics.ImageFormat
+import android.graphics.Movie
 import android.media.ImageReader
 import android.util.Log
 import androidx.compose.animation.core.tween
@@ -78,6 +79,7 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
+import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
@@ -91,6 +93,7 @@ import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
+import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.delay
 
 @Composable
@@ -99,246 +102,229 @@ fun MovieDetailScreen(
     navHostController: NavHostController,
 ) {
 
-    val context = LocalContext.current
+    val response = viewModel.movieDetails.value.data
+    if (response != null) {
 
-    val response = viewModel.movieDetails.value
-    Log.d("main", "MovieDetailScreen: ${response.orginal_title}")
+        MovieDetailScreenShimmer(false)
 
-    val responseImage = viewModel.movieImages.value
+        Log.d("main", "MovieDetailScreen: ${response.original_title}")
 
-    val systemUiController = rememberSystemUiController()
-    systemUiController.isNavigationBarVisible = false
-    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
-    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+        val responseImage = viewModel.movieImages.value
 
-    val scrollState = rememberScrollState()
-    val scrollStateGenre = rememberScrollState()
+        val systemUiController = rememberSystemUiController()
+        systemUiController.isNavigationBarVisible = false
+        systemUiController.isStatusBarVisible = false
+        systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
+        systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
 
-    var trailerVideo = remember { mutableStateOf(true) }
-    var trailerImages = remember { mutableStateOf(false) }
+        val scrollState = rememberScrollState()
+        val scrollStateGenre = rememberScrollState()
 
-    val scrollSheetState = rememberScrollState()
+        var trailerVideo = remember { mutableStateOf(true) }
+        var trailerImages = remember { mutableStateOf(false) }
 
-    val sheetPlayState = rememberModalBottomSheetState()
-    var isSheetPlayOpen by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val sheetDownloadState = rememberModalBottomSheetState()
-    var isSheetDownloadOpen by rememberSaveable {
-        mutableStateOf(false)
-    }
+        val scrollSheetState = rememberScrollState()
 
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
-            .verticalScroll(scrollState)
-            .padding(bottom = 16.dp)
-            .fillMaxSize(),
-    ) {
-        Header(response) {
-            navHostController.popBackStack()
+        val sheetPlayState = rememberModalBottomSheetState()
+        var isSheetPlayOpen by rememberSaveable {
+            mutableStateOf(false)
         }
-        ToolBox(onClickPlay = { isSheetPlayOpen = true },
-            onClickDownload = { isSheetDownloadOpen = true })
-        Row(
+        val sheetDownloadState = rememberModalBottomSheetState()
+        var isSheetDownloadOpen by rememberSaveable {
+            mutableStateOf(false)
+        }
+
+        Column(
             modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .padding(top = 16.dp, bottom = 16.dp)
+                .background(MaterialTheme.colorScheme.primary)
+                .verticalScroll(scrollState)
+                .padding(bottom = 16.dp)
+                .fillMaxSize(),
         ) {
-            val genre = response.genre_ids
-            val categories = arrayListOf<String>()
-            repeat(genre!!.size) { i ->
-                when (genre[i]) {
-                    28 -> categories.add("Action")
-                    12 -> categories.add("Adventure")
-                    16 -> categories.add("Animation")
-                    35 -> categories.add("Comedy")
-                    80 -> categories.add("Crime")
-                    99 -> categories.add("Documentary")
-                    18 -> categories.add("Drama")
-                    10751 -> categories.add("Family")
-                    36 -> categories.add("History")
-                    27 -> categories.add("Horror")
-                    10402 -> categories.add("Music")
-                    9648 -> categories.add("Mystery")
-                    878 -> categories.add("Science Fiction")
-                    10770 -> categories.add("TV Movie")
-                    53 -> categories.add("Thriller")
-                    10752 -> categories.add("War")
-                    37 -> categories.add("Westernv")
-                }
+            Header(response) {
+                navHostController.popBackStack()
             }
+            ToolBox(onClickPlay = { isSheetPlayOpen = true },
+                onClickDownload = { isSheetDownloadOpen = true })
             Row(
                 modifier = Modifier
-                    .horizontalScroll(scrollStateGenre)
-                    .padding(bottom = 4.dp, top = 8.dp, end = 8.dp)
+                    .padding(horizontal = 8.dp)
+                    .padding(top = 16.dp, bottom = 16.dp)
             ) {
-                categories.forEach {
-                    GenreShowing(it)
-                }
-            }
-        }
-        Text(
-            text = "${response.overview}",
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                fontWeight = FontWeight.Normal,
-                color = Color.Gray,
-                fontSize = 14.sp,
-                letterSpacing = 0.5.sp
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Title("Trailer")
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp, end = 12.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-            ),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-
-            Column {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                        .horizontalScroll(scrollStateGenre)
+                        .padding(bottom = 4.dp, top = 8.dp, end = 8.dp)
                 ) {
-                    ItemSelection("Video", trailerVideo.value) {
-                        if (!it) {
-                            trailerVideo.value = true
-                            trailerImages.value = false
-                        }
-                    }
-
-                    ItemSelection("Images", trailerImages.value) {
-                        if (!it) {
-                            trailerImages.value = true
-                            trailerVideo.value = false
-                        }
+                    val genre = response.genres
+                    genre.forEach { item ->
+                        GenreShowing(item.name)
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(MaterialTheme.colorScheme.onPrimary)
-                        .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
+            }
+            Text(
+                text = response.overview,
+                modifier = Modifier.padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray,
+                    fontSize = 14.sp,
+                    letterSpacing = 0.5.sp
                 )
-                if (trailerVideo.value) {
-                    Trailer()
-                } else if (trailerImages.value) {
-                    PosterList(responseImage.data)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Title("Trailer")
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+
+                Column {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ItemSelection("Video", trailerVideo.value) {
+                            if (!it) {
+                                trailerVideo.value = true
+                                trailerImages.value = false
+                            }
+                        }
+
+                        ItemSelection("Images", trailerImages.value) {
+                            if (!it) {
+                                trailerImages.value = true
+                                trailerVideo.value = false
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(MaterialTheme.colorScheme.onPrimary)
+                            .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
+                    )
+                    if (trailerVideo.value) {
+                        Trailer()
+                    } else if (trailerImages.value) {
+                        PosterList(responseImage.data)
+                    }
+                }
+            }
+
+
+            Title("Top Cast")
+            TopCastList()
+
+            if (isSheetPlayOpen) {
+                ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
+                    sheetState = sheetPlayState,
+                    onDismissRequest = { isSheetPlayOpen = false }) {
+                    Column(
+
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .verticalScroll(scrollSheetState)
+
+                    ) {
+
+                        Title(text = "English")
+
+                        ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
+
+                        }
+
+                        ButtonCustom(text = "720 HD", icon = R.drawable.play) {
+
+                        }
+
+                        ButtonCustom(text = "480", icon = R.drawable.play) {
+
+                        }
+
+                        Title(text = "Persian")
+
+                        ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
+
+                        }
+
+                        ButtonCustom(text = "720 HD", icon = R.drawable.play) {
+
+                        }
+
+                        ButtonCustom(text = "480", icon = R.drawable.play) {
+
+                        }
+
+                    }
+                }
+            }
+
+
+            if (isSheetDownloadOpen) {
+                ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
+                    sheetState = sheetDownloadState,
+                    onDismissRequest = { isSheetDownloadOpen = false }) {
+                    Column(
+
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .verticalScroll(scrollSheetState)
+
+                    ) {
+
+                        ButtonCustom(text = "1080 HD", icon = R.drawable.ic_download) {
+
+                        }
+
+                        ButtonCustom(text = "720 HD", icon = R.drawable.ic_download) {
+
+                        }
+
+                        ButtonCustom(text = "480", icon = R.drawable.ic_download) {
+
+                        }
+
+                        Title(text = "Subtitle")
+
+                        ButtonCustom(text = "English subtitle", icon = R.drawable.ic_download) {
+
+                        }
+
+                        ButtonCustom(text = "Persian subtitle", icon = R.drawable.ic_download) {
+
+                        }
+
+                    }
                 }
             }
         }
-
-
-        Title("Top Cast")
-        TopCastList()
-
-        if (isSheetPlayOpen) {
-            ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
-                sheetState = sheetPlayState,
-                onDismissRequest = { isSheetPlayOpen = false }) {
-                Column(
-
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .verticalScroll(scrollSheetState)
-
-                ) {
-
-                    Title(text = "English")
-
-                    ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
-
-                    }
-
-                    ButtonCustom(text = "720 HD", icon = R.drawable.play) {
-
-                    }
-
-                    ButtonCustom(text = "480", icon = R.drawable.play) {
-
-                    }
-
-                    Title(text = "Persian")
-
-                    ButtonCustom(text = "1080 HD", icon = R.drawable.play) {
-
-                    }
-
-                    ButtonCustom(text = "720 HD", icon = R.drawable.play) {
-
-                    }
-
-                    ButtonCustom(text = "480", icon = R.drawable.play) {
-
-                    }
-
-                }
-            }
-        }
-
-
-        if (isSheetDownloadOpen) {
-            ModalBottomSheet(containerColor = MaterialTheme.colorScheme.primary,
-                sheetState = sheetDownloadState,
-                onDismissRequest = { isSheetDownloadOpen = false }) {
-                Column(
-
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .verticalScroll(scrollSheetState)
-
-                ) {
-
-                    ButtonCustom(text = "1080 HD", icon = R.drawable.ic_download) {
-
-                    }
-
-                    ButtonCustom(text = "720 HD", icon = R.drawable.ic_download) {
-
-                    }
-
-                    ButtonCustom(text = "480", icon = R.drawable.ic_download) {
-
-                    }
-
-                    Title(text = "Subtitle")
-
-                    ButtonCustom(text = "English subtitle", icon = R.drawable.ic_download) {
-
-                    }
-
-                    ButtonCustom(text = "Persian subtitle", icon = R.drawable.ic_download) {
-
-                    }
-
-                }
-            }
-        }
-
+    } else if(viewModel.movieDetails.value.isLoading) {
+        MovieDetailScreenShimmer(true)
     }
 }
 
 @Composable
 fun Header(
-    response: Movies.Results,
+    response: MovieDetail,
     onBackClick: () -> Unit,
 ) {
     Box(
@@ -349,6 +335,7 @@ fun Header(
         Image(
             modifier = Modifier
                 .fillMaxSize()
+                .shimmer()
                 .blur(
                     radiusX = 20.dp,
                     radiusY = 20.dp,
@@ -397,7 +384,7 @@ fun Header(
                 )
             }
             Text(
-                text = "${response.title}",
+                text = response.title,
                 modifier = Modifier.padding(top = 12.dp),
                 fontWeight = FontWeight.Bold,
                 style = TextStyle(

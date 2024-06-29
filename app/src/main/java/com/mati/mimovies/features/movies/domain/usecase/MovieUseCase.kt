@@ -2,6 +2,7 @@ package com.mati.mimovies.features.movies.domain.usecase
 
 import com.mati.mimovies.common.base.ApiState
 import com.mati.mimovies.common.base.map
+import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.mapper.MovieMapper
@@ -67,5 +68,8 @@ class MovieUseCase @Inject constructor(
         return repo.getMovieImages(movieId)
     }
 
+    suspend fun getMovieDetail(movieId: Long?): Flow<ApiState<MovieDetail>> {
+        return repo.getMovieDetail(movieId)
+    }
 
 }

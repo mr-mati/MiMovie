@@ -1,5 +1,6 @@
 package com.mati.mimovies.features.movies.data.network
 
+import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
@@ -41,10 +42,15 @@ interface ApiService {
         @Query("page") page: Int? = 1
     ): Response<Movies>
 
-    @GET("3/person/popular?api_key=2c9c2076db9a90f62f31993f6588235e")
-    suspend fun getPersonPopular(
-        @Query("page") page: Int? = 1
-    ): Response<Person>
+    @GET("3/movie/{movie_id}?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMovieDetail(
+        @Path("movie_id") movieId: Long? = 1,
+    ): Response<MovieDetail>
+
+    @GET("3/movie/{movie_id}/images?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getMovieImages(
+        @Path("movie_id") movieId: Long? = 1,
+    ): Response<MovieImages>
 
     @GET("3/search/movie?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun searchMovies(
@@ -52,15 +58,15 @@ interface ApiService {
         @Query("page") page: Int,
     ): Response<Movies>
 
+    @GET("3/person/popular?api_key=2c9c2076db9a90f62f31993f6588235e")
+    suspend fun getPersonPopular(
+        @Query("page") page: Int? = 1
+    ): Response<Person>
+
     @GET("3//search/person?api_key=2c9c2076db9a90f62f31993f6588235e")
     suspend fun searchPersons(
         @Query("query") query: String,
         @Query("page") page: Int,
     ): Response<Person>
-
-    @GET("3/movie/{movie_id}/images?api_key=2c9c2076db9a90f62f31993f6588235e")
-    suspend fun getMovieImages(
-        @Path("movie_id") movieId: Long? = 1,
-    ): Response<MovieImages>
 
 }

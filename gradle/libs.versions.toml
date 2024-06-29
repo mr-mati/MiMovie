@@ -2,7 +2,7 @@
 accompanistNavigationAnimation = "0.33.2-alpha"
 accompanistPager = "0.28.0"
 accompanistSystemuicontroller = "0.17.0"
-activityCompose = "1.7.0"
+activity = "1.9.0"
 agp = "8.4.0"
 animation = "1.7.0-beta03"
 coilCompose = "2.1.0"
@@ -34,7 +34,8 @@ material3Android = "1.2.1"
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-compose-bom-v20230300 = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }

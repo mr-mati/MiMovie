@@ -2,6 +2,7 @@ package com.mati.mimovies.features.movies.data.repository
 
 import com.mati.mimovies.common.base.ApiState
 import com.mati.mimovies.common.base.BaseRepository
+import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
@@ -41,6 +42,10 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getMovieImages(movieId: Long?): Flow<ApiState<MovieImages>> = safeApiCall {
         apiService.getMovieImages(movieId)
+    }
+
+    override suspend fun getMovieDetail(movieId: Long?): Flow<ApiState<MovieDetail>> = safeApiCall {
+        apiService.getMovieDetail(movieId)
     }
 
 }

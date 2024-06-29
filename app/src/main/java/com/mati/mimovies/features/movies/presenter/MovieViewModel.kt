@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.mati.mimovies.common.base.doOnFailure
 import com.mati.mimovies.common.base.doOnLoading
 import com.mati.mimovies.common.base.doOnSuccess
+import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.usecase.MovieUseCase
@@ -19,10 +20,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel() {
+class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : ViewModel() {
 
-    var ID =  mutableIntStateOf(1)
-    var title =  mutableStateOf("")
+    var ID = mutableIntStateOf(1)
+    var title = mutableStateOf("")
 
     private val _res: MutableState<MovieState> = mutableStateOf(MovieState())
     val res: State<MovieState> = _res
@@ -46,26 +47,21 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
     private val _more = mutableStateListOf<Movies.Results>()
     val more: List<Movies.Results> = _more
 
-    private val _movieDetails: MutableState<Movies.Results> = mutableStateOf(Movies.Results())
-    val movieDetails: MutableState<Movies.Results> = _movieDetails
+    private val _movieDetails: MutableState<MovieDetailStats> = mutableStateOf(MovieDetailStats())
+    val movieDetails: MutableState<MovieDetailStats> = _movieDetails
 
     private val _movieImages: MutableState<MovieImagesState> = mutableStateOf(MovieImagesState())
     val movieImages: MutableState<MovieImagesState> = _movieImages
 
-    fun setMovie(data: Movies.Results) {
-        _movieDetails.value = data
-        getMovieImage(data.id)
-    }
-
     fun getMoreMovies(id: Int, page: Int, clear: Boolean) {
 
         if (clear) {
-            ID.value = id
+            ID.intValue = id
             _more.clear()
         }
 
         viewModelScope.launch {
-            when (ID.value) {
+            when (ID.intValue) {
                 0 -> {
                     useCase.getMovieYou(page)
                         .doOnSuccess { newMovies ->
@@ -130,7 +126,27 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
         }
     }
 
-    fun getMovieImage(movieId: Long?) {
+    fun setMovie(data: Movies.Results) {
+        getMovieDetail(data.id)
+        getMovieImage(data.id)
+    }
+
+    private fun getMovieDetail(movieId: Long?) {
+        viewModelScope.launch {
+            useCase.getMovieDetail(movieId)
+                .doOnSuccess {
+                    _movieDetails.value = MovieDetailStats(data = it)
+                }
+                .doOnFailure {
+                    _movieDetails.value = MovieDetailStats(error = it?.message!!)
+                }
+                .doOnLoading {
+                    _movieDetails.value = MovieDetailStats(isLoading = true)
+                }.collect()
+        }
+    }
+
+    private fun getMovieImage(movieId: Long?) {
         viewModelScope.launch {
             useCase.getMovieImages(movieId)
                 .doOnSuccess {
@@ -225,6 +241,12 @@ class MovieViewModel @Inject constructor(val useCase: MovieUseCase) : ViewModel(
 
 data class MovieState(
     var data: List<Movies.Results> = emptyList(),
+    val error: String = " ",
+    val isLoading: Boolean = false,
+)
+
+data class MovieDetailStats(
+    var data: MovieDetail? = null,
     val error: String = " ",
     val isLoading: Boolean = false,
 )
