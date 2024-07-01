@@ -10,6 +10,8 @@ interface MovieRepository {
 
     suspend fun getMovies(page: Int?): Flow<ApiState<Movies>>
 
+    suspend fun getMovieTrending(): Flow<ApiState<Movies>>
+
     suspend fun getMovieYou(page: Int?): Flow<ApiState<Movies>>
 
     suspend fun getMoviesUpcoming(page: Int?): Flow<ApiState<Movies>>

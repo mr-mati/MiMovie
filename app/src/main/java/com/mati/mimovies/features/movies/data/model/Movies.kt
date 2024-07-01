@@ -14,6 +14,7 @@ data class Movies(
         val genre_ids: List<Int>? = listOf(0, 0),
         val overview: String? = "",
         val poster_path: String? = "",
+        val backdrop_path: String? = "",
         val release_date: String? = "",
         val vote_average: String? = "",
     )

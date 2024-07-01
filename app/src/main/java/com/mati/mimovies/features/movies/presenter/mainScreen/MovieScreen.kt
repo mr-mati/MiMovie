@@ -114,6 +114,7 @@ fun MovieScreen(
     }, 2000)
 
     val response = viewModel.res.value
+    val responseTrending = viewModel.trending.value
     val responseYou = viewModel.you.value
     val responseUpcoming = viewModel.upcoming.value
     val responseNewShowing = viewModel.newShowing.value
@@ -175,15 +176,21 @@ fun MovieScreen(
         ) {
             TopToolbar(navHostController)
             Categories()
-            TitleList("Trending", true) {
-                viewModel.title.value = "Trending"
-                viewModel.getMoreMovies(1, 1, true)
+
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            TitleList("Trending", false) {
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
-            TrendList()
+            Spacer(modifier = Modifier.padding(bottom = 8.dp))
+            TrendList(responseTrending.data, { item ->
+                enabled = false
+                viewModel.setMovie(item)
+                navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+            }, enabled = enabled)
+
             TitleList("For You", true) {
                 viewModel.title.value = "For You"
-                viewModel.getMoreMovies(0, 2, true)
+                viewModel.getMoreMovies(1, 2, true)
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             LazyRow {
@@ -200,7 +207,7 @@ fun MovieScreen(
             }
             TitleList("Top Rated", true) {
                 viewModel.title.value = "Top Rated"
-                viewModel.getMoreMovies(1, 1, true)
+                viewModel.getMoreMovies(2, 1, true)
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             LazyRow {
@@ -322,94 +329,119 @@ fun TitleList(text: String, action: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun TrendList() {
-    val banners = listOf(
-        R.drawable.banner_oppenheimer,
-        R.drawable.banner_barbie,
-        R.drawable.banner_sex_education,
-        R.drawable.banner_spider_man
-    )
+fun TrendList(banners: List<Movies.Results>, onClick: (Movies.Results) -> Unit, enabled: Boolean) {
 
     val pagerState = rememberPagerState(pageCount = { banners.size })
     val bannerIndex = remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            bannerIndex.intValue = page
+    if (enabled) {
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.currentPage }.collect { page ->
+                bannerIndex.intValue = page
+            }
         }
+
+        /// auto scroll
+        LaunchedEffect(Unit) {
+            while (true) {
+                delay(10000)
+                tween<Float>(1500)
+                if (banners.isNotEmpty()) {
+                    pagerState.animateScrollToPage(
+                        page = (pagerState.currentPage + 1) % banners.size
+                    )
+                }
+            }
+        }
+
     }
 
-    /// auto scroll
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(10000)
-            tween<Float>(1500)
-            pagerState.animateScrollToPage(
-                page = (pagerState.currentPage + 1) % banners.size
-            )
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(190.dp)
-            .padding(horizontal = 8.dp)
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HorizontalPager(
-            state = pagerState,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(190.dp)
-        ) { index ->
-            Card(
+                .padding(horizontal = 8.dp)
+        ) {
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(4.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 3.dp
-                ),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                val imagePainter = rememberImagePainter(
-                    data = banners[index],
-                    builder = {
-                        crossfade(true)
-                    }
-                )
-                Image(
-                    painter = imagePainter,
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
+                    .height(190.dp)
+            ) { index ->
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
-        ) {
-            repeat(banners.size) { index ->
-                val height = 8.dp
-                val width = if (index == bannerIndex.intValue) 16.dp else 8.dp
-                val color =
-                    if (index == bannerIndex.intValue) MaterialTheme.colorScheme.secondary else Gray
-
-                Surface(
-                    modifier = Modifier
-                        .padding(end = 6.dp)
-                        .size(width, height)
-                        .clip(RoundedCornerShape(20.dp)),
-                    color = color,
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clickable(enabled = enabled) {
+                            onClick(banners[index])
+                        }
+                        .padding(4.dp),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 3.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
+                    val imagePainter = rememberAsyncImagePainter(
+                        model = "${ApiService.BASE_POSTER_URL}${banners[index].backdrop_path}"
+                    )
+                    Image(
+                        painter = imagePainter,
+                        contentDescription = "",
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
                 }
             }
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+            ) {
+                repeat(banners.size) { index ->
+                    val height = 8.dp
+                    val width = if (index == bannerIndex.intValue) 16.dp else 8.dp
+                    val color =
+                        if (index == bannerIndex.intValue) MaterialTheme.colorScheme.secondary else Gray
+
+                    Surface(
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .size(width, height)
+                            .clip(RoundedCornerShape(20.dp)),
+                        color = color,
+                    ) {
+                    }
+                }
+            }
+        }
+        if (banners[bannerIndex.intValue] != null) {
+            val response = banners[bannerIndex.intValue]
+            val title = if (response.title != null && response.title.length > 25) {
+                response.title.substring(0, 25) + "..."
+            } else {
+                response.title
+            }
+            Text(
+                text = "$title",
+                modifier = Modifier.padding(top = 12.dp),
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    textAlign = TextAlign.Left,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 14.sp,
+                    lineHeight = 14.sp,
+                    letterSpacing = 0.5.sp
+                )
+            )
         }
     }
 }

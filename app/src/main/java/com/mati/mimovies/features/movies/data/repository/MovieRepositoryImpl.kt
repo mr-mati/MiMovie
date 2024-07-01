@@ -20,6 +20,10 @@ class MovieRepositoryImpl @Inject constructor(
         apiService.getMoviesList(page)
     }
 
+    override suspend fun getMovieTrending(): Flow<ApiState<Movies>> = safeApiCall {
+        apiService.getMovieTrending()
+    }
+
     override suspend fun getMovieYou(page: Int?): Flow<ApiState<Movies>> = safeApiCall {
         apiService.getMovieYou(page)
     }

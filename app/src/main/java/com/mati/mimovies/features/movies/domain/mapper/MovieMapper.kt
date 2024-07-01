@@ -16,6 +16,7 @@ class MovieMapper @Inject constructor() : Mapper<Movies?, List<Movies.Results>?>
                 genre_ids = it.genre_ids,
                 overview = it.overview,
                 poster_path = it.poster_path,
+                backdrop_path = it.backdrop_path,
                 release_date = it.release_date,
                 vote_average = it.vote_average
             )
