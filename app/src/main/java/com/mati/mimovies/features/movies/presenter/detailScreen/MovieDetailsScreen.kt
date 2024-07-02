@@ -85,7 +85,6 @@ import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 import com.valentinilk.shimmer.shimmer
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -704,10 +703,10 @@ fun TopCastList(
 fun Trailer() {
     var showVideoPlayer by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         delay(5000)
         showVideoPlayer = true
-    }
+    }*/
 
     Card(
         modifier = Modifier

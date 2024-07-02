@@ -424,22 +424,19 @@ fun TrendList(banners: List<Movies.Results>, onClick: (Movies.Results) -> Unit, 
         }
         if (banners[bannerIndex.intValue] != null) {
             val response = banners[bannerIndex.intValue]
-            val title = if (response.title != null && response.title.length > 25) {
-                response.title.substring(0, 25) + "..."
+            val title = if (response.title != null && response.title.length > 40) {
+                response.title.substring(0, 40) + "..."
             } else {
                 response.title
             }
             Text(
+                modifier = Modifier.padding(top = 4.dp),
                 text = "$title",
-                modifier = Modifier.padding(top = 12.dp),
-                fontWeight = FontWeight.Bold,
                 style = TextStyle(
-                    textAlign = TextAlign.Left,
-                    fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 14.sp,
-                    lineHeight = 14.sp,
-                    letterSpacing = 0.5.sp
+                    textAlign = TextAlign.Justify,
+                    color = Color(0xFF808080),
+                    fontFamily = FontFamily(Font(R.font.primary_regular)),
+                    fontSize = 16.sp
                 )
             )
         }
