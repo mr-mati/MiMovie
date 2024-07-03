@@ -135,11 +135,7 @@ fun MovieDetailScreen(
                 }
                 .distinctUntilChanged()
                 .collect { hide ->
-                    if (hide) {
-                        systemUiController.isStatusBarVisible = false
-                    } else {
-                        systemUiController.isStatusBarVisible = true
-                    }
+                    systemUiController.isStatusBarVisible = !hide
                 }
         }
 
@@ -701,7 +697,7 @@ fun TopCastList(
 
 @Composable
 fun Trailer() {
-    var showVideoPlayer by remember { mutableStateOf(false) }
+    val showVideoPlayer by remember { mutableStateOf(false) }
 
     /*LaunchedEffect(Unit) {
         delay(5000)

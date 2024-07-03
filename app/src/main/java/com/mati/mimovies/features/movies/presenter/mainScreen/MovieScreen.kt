@@ -7,7 +7,6 @@ package com.mati.mimovies.features.movies.presenter.mainScreen
 import MainScreenShimmer
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -65,8 +64,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -86,12 +83,9 @@ import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
-import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.presenter.PersonViewModel
 import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItemEnabled
 import com.mati.mimovies.features.movies.presenter.util.PersonItem.PersonPopularList
-import com.mati.mimovies.ui.theme.Blue
 
 
 @Composable
@@ -182,11 +176,13 @@ fun MovieScreen(
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
-            TrendList(responseTrending.data, { item ->
-                enabled = false
-                viewModel.setMovie(item)
-                navHostController.navigate(MovieNavigationItems.MovieDetails.route)
-            }, enabled = enabled)
+            if (responseTrending.data.isNotEmpty()) {
+                TrendList(responseTrending.data, { item ->
+                    enabled = false
+                    viewModel.setMovie(item)
+                    navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                }, enabled = enabled)
+            }
 
             TitleList("For You", true) {
                 viewModel.title.value = "For You"
@@ -300,7 +296,6 @@ fun TopToolbar(navHostController: NavHostController) {
 
 @Composable
 fun TitleList(text: String, action: Boolean, onClick: () -> Unit) {
-    val context = LocalContext.current
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -422,24 +417,22 @@ fun TrendList(banners: List<Movies.Results>, onClick: (Movies.Results) -> Unit, 
                 }
             }
         }
-        if (banners[bannerIndex.intValue] != null) {
-            val response = banners[bannerIndex.intValue]
-            val title = if (response.title != null && response.title.length > 40) {
-                response.title.substring(0, 40) + "..."
-            } else {
-                response.title
-            }
-            Text(
-                modifier = Modifier.padding(top = 4.dp),
-                text = "$title",
-                style = TextStyle(
-                    textAlign = TextAlign.Justify,
-                    color = Color(0xFF808080),
-                    fontFamily = FontFamily(Font(R.font.primary_regular)),
-                    fontSize = 16.sp
-                )
-            )
+        val response = banners[bannerIndex.intValue]
+        val title = if (response.title != null && response.title.length > 40) {
+            response.title.substring(0, 40) + "..."
+        } else {
+            response.title
         }
+        Text(
+            modifier = Modifier.padding(top = 4.dp),
+            text = "$title",
+            style = TextStyle(
+                textAlign = TextAlign.Justify,
+                color = Color(0xFF808080),
+                fontFamily = FontFamily(Font(R.font.primary_regular)),
+                fontSize = 16.sp
+            )
+        )
     }
 }
 
