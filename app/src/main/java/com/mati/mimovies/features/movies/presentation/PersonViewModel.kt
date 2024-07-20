@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.presenter
+package com.mati.mimovies.features.movies.presentation
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.mati.mimovies.common.base.doOnFailure
 import com.mati.mimovies.common.base.doOnLoading
 import com.mati.mimovies.common.base.doOnSuccess
-import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.domain.usecase.PersonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

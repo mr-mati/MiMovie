@@ -1,8 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.mati.mimovies.features.movies.presenter.search
+package com.mati.mimovies.features.movies.presentation.search
 
-import android.view.LayoutInflater
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,22 +56,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.data.network.ApiService
-import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.PersonViewModel
-import com.mati.mimovies.features.movies.presenter.detailScreen.PosterList
-import com.mati.mimovies.features.movies.presenter.detailScreen.Trailer
-import com.mati.mimovies.features.movies.presenter.mainScreen.GenreShowing
-import com.mati.mimovies.features.profile.presenter.profileScreen.ItemSelection
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.PersonViewModel
+import com.mati.mimovies.features.movies.presentation.mainScreen.GenreShowing
+import com.mati.mimovies.features.profile.presentation.profileScreen.ItemSelection
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems

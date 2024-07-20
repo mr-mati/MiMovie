@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.mati.mimovies.features.profile.presenter.editProfile
+package com.mati.mimovies.features.profile.presentation.editProfile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -47,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.movieui.core.theme.Shapes
 import com.mati.mimovies.R
-import com.mati.mimovies.features.profile.presenter.ProfileViewModel
+import com.mati.mimovies.features.profile.presentation.ProfileViewModel
 import com.mati.mimovies.utils.Title
 import com.mati.mimovies.utils.rippleIndication
 

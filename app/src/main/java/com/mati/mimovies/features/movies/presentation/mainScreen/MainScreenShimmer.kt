@@ -39,7 +39,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mati.mimovies.R
-import com.mati.mimovies.features.movies.presenter.mainScreen.Categories
+import com.mati.mimovies.features.movies.presentation.mainScreen.Categories
 import com.valentinilk.shimmer.shimmer
 
 @Composable

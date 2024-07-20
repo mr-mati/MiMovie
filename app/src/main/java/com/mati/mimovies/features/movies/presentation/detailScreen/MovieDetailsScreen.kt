@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
-package com.mati.mimovies.features.movies.presenter.detailScreen
+package com.mati.mimovies.features.movies.presentation.detailScreen
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -77,9 +77,9 @@ import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.network.ApiService
-import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.util.MediaPlayer.VideoPlayer
-import com.mati.mimovies.features.profile.presenter.profileScreen.ItemSelection
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.util.MediaPlayer.VideoPlayer
+import com.mati.mimovies.features.profile.presentation.profileScreen.ItemSelection
 import com.mati.mimovies.utils.ButtonCustom
 import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue

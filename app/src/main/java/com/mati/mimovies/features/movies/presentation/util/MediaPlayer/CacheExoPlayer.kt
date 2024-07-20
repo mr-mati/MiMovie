@@ -1,7 +1,6 @@
-package com.mati.mimovies.features.movies.presenter.util.MediaPlayer
+package com.mati.mimovies.features.movies.presentation.util.MediaPlayer
 
 import android.content.Context
-import com.google.android.exoplayer2.database.DatabaseProvider
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.upstream.cache.Cache
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor

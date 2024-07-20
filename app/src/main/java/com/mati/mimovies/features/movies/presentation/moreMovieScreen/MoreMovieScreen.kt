@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.presenter.morePersonScreen
+package com.mati.mimovies.features.movies.presentation.moreMovieScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -36,14 +36,14 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
-import com.mati.mimovies.features.movies.presenter.PersonViewModel
-import com.mati.mimovies.features.movies.presenter.util.PersonItem.PersonPopularList
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.util.MoviesItem.MoviesItem
+import com.mati.mimovies.utils.MovieNavigationItems
 
 @Composable
-fun MorePersonScreen(
-    viewModel: PersonViewModel = hiltViewModel(),
+fun MoreMovieScreen(
+    viewModel: MovieViewModel = hiltViewModel(),
     navHostController: NavHostController
 ) {
 
@@ -52,7 +52,7 @@ fun MorePersonScreen(
     val statusBarHeight =
         with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
-    val response = viewModel.morePerson
+    val response = viewModel.more
     val title = viewModel.title.value
 
     val gridState = rememberLazyGridState()
@@ -60,7 +60,7 @@ fun MorePersonScreen(
 
     LaunchedEffect(lastVisibleItemIndex) {
         if (lastVisibleItemIndex != null && lastVisibleItemIndex >= response.size - 1) {
-            viewModel.getMorePerson(page = response.size / 10 + 1, false)
+            viewModel.getMoreMovies(viewModel.ID.value, page = response.size / 10 + 1, false)
         }
     }
 
@@ -118,7 +118,12 @@ fun MorePersonScreen(
                 itemsIndexed(response) { index, item ->
                     val keyItem = index + item.id!!
                     key(keyItem) {
-                        PersonPopularList(item)
+                        MoviesItem(
+                            results = item,
+                        ) {
+                            viewModel.setMovie(item)
+                            navHostController.navigate(MovieNavigationItems.MovieDetails.route)
+                        }
                     }
                 }
             }

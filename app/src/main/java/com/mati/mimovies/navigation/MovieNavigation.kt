@@ -12,17 +12,17 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.mati.mimovies.features.auth.AuthenticationScreen
 import com.mati.mimovies.features.auth.signIn.SignInViewModel
 import com.mati.mimovies.features.auth.signUp.SignUpViewModel
-import com.mati.mimovies.features.movies.presenter.IntroScreen.IntroScreen
-import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.PersonViewModel
-import com.mati.mimovies.features.movies.presenter.detailScreen.MovieDetailScreen
-import com.mati.mimovies.features.movies.presenter.mainScreen.MovieScreen
-import com.mati.mimovies.features.movies.presenter.moreMovieScreen.MoreMovieScreen
-import com.mati.mimovies.features.movies.presenter.morePersonScreen.MorePersonScreen
-import com.mati.mimovies.features.movies.presenter.search.SearchScreen
-import com.mati.mimovies.features.profile.presenter.ProfileViewModel
-import com.mati.mimovies.features.profile.presenter.editProfile.ProfileEditScreen
-import com.mati.mimovies.features.profile.presenter.profileScreen.ProfileScreen
+import com.mati.mimovies.features.movies.presentation.IntroScreen.IntroScreen
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.PersonViewModel
+import com.mati.mimovies.features.movies.presentation.detailScreen.MovieDetailScreen
+import com.mati.mimovies.features.movies.presentation.mainScreen.MovieScreen
+import com.mati.mimovies.features.movies.presentation.moreMovieScreen.MoreMovieScreen
+import com.mati.mimovies.features.movies.presentation.morePersonScreen.MorePersonScreen
+import com.mati.mimovies.features.movies.presentation.search.SearchScreen
+import com.mati.mimovies.features.profile.presentation.ProfileViewModel
+import com.mati.mimovies.features.profile.presentation.editProfile.ProfileEditScreen
+import com.mati.mimovies.features.profile.presentation.profileScreen.ProfileScreen
 import com.mati.mimovies.utils.MovieNavigationItems
 
 @SuppressLint("CoroutineCreationDuringComposition")

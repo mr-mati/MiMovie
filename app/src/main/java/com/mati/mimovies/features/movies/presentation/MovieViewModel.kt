@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.presenter
+package com.mati.mimovies.features.movies.presentation
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

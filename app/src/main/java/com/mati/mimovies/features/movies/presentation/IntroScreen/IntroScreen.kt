@@ -1,6 +1,6 @@
 @file:OptIn(DelicateCoroutinesApi::class)
 
-package com.mati.mimovies.features.movies.presenter.IntroScreen
+package com.mati.mimovies.features.movies.presentation.IntroScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image

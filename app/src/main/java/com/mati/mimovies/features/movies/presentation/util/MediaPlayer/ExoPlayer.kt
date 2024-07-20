@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.movies.presenter.util.MediaPlayer
+package com.mati.mimovies.features.movies.presentation.util.MediaPlayer
 
 import android.app.Activity
 import android.content.pm.ActivityInfo

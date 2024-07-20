@@ -11,9 +11,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.mati.mimovies.features.auth.signIn.SignInViewModel
 import com.mati.mimovies.features.auth.signUp.SignUpViewModel
-import com.mati.mimovies.features.movies.presenter.MovieViewModel
-import com.mati.mimovies.features.movies.presenter.PersonViewModel
-import com.mati.mimovies.features.profile.presenter.ProfileViewModel
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.PersonViewModel
+import com.mati.mimovies.features.profile.presentation.ProfileViewModel
 import com.mati.mimovies.navigation.MovieNavigation
 import com.mati.mimovies.ui.theme.MiMoviesTheme
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.profile.presenter
+package com.mati.mimovies.features.profile.presentation
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

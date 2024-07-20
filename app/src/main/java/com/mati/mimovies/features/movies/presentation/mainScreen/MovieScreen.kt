@@ -2,7 +2,7 @@
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 
-package com.mati.mimovies.features.movies.presenter.mainScreen
+package com.mati.mimovies.features.movies.presentation.mainScreen
 
 import MainScreenShimmer
 import android.os.Handler
@@ -78,14 +78,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
-import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
 import com.mati.mimovies.ui.theme.BlueLight
 import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
 import coil.compose.rememberImagePainter
-import com.mati.mimovies.features.movies.presenter.PersonViewModel
-import com.mati.mimovies.features.movies.presenter.util.MoviesItem.MoviesItemEnabled
-import com.mati.mimovies.features.movies.presenter.util.PersonItem.PersonPopularList
+import com.mati.mimovies.features.movies.presentation.PersonViewModel
+import com.mati.mimovies.features.movies.presentation.util.MoviesItem.MoviesItemEnabled
+import com.mati.mimovies.features.movies.presentation.util.PersonItem.PersonPopularList
 
 
 @Composable

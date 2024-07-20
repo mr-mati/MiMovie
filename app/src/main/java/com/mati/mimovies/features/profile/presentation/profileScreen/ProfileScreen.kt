@@ -1,4 +1,4 @@
-package com.mati.mimovies.features.profile.presenter.profileScreen
+package com.mati.mimovies.features.profile.presentation.profileScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,7 +59,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
-import com.mati.mimovies.features.movies.presenter.MovieViewModel
+import com.mati.mimovies.features.movies.presentation.MovieViewModel
 import com.mati.mimovies.utils.MovieNavigationItems
 import com.mati.mimovies.utils.rippleIndication
 
