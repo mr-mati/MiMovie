@@ -17,6 +17,7 @@ hiltAndroidGradlePlugin = "2.40.1"
 hiltNavigationCompose = "1.2.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
+roomRuntime = "2.6.1"
 uiTestJunit4 = "1.6.8"
 kotlin = "1.8.10"
 kotlinxCoroutinesAndroid = "1.7.3"
@@ -51,6 +52,9 @@ androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecyc
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3Android" }
 androidx-material3-android = { module = "androidx.compose.material3:material3-android", version.ref = "material3Android" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }

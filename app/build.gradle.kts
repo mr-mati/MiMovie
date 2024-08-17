@@ -105,7 +105,7 @@ dependencies {
 
     //exo player
     implementation(libs.exoplayer)
-    implementation (libs.exoplayer.core)
+    implementation(libs.exoplayer.core)
 
     //Animations Lottie
     implementation(libs.lottie.compose)
@@ -122,5 +122,11 @@ dependencies {
 
     //shimmer effect
     implementation(libs.compose.shimmer)
+
+    //Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    annotationProcessor(libs.androidx.room.compiler)
+    kapt(libs.androidx.room.compiler)
 
 }
