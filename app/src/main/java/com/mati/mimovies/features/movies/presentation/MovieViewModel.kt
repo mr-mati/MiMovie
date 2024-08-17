@@ -1,17 +1,16 @@
 package com.mati.mimovies.features.movies.presentation
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mati.mimovies.common.base.doOnFailure
 import com.mati.mimovies.common.base.doOnLoading
 import com.mati.mimovies.common.base.doOnSuccess
-import com.mati.mimovies.features.movies.data.model.MovieDetail
-import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.usecase.MovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,27 +24,10 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
     var ID = mutableIntStateOf(1)
     var title = mutableStateOf("")
 
-    private val _res: MutableState<MovieState> = mutableStateOf(MovieState())
-    val res: State<MovieState> = _res
-
-    private val _trending: MutableState<MovieState> = mutableStateOf(MovieState())
-    val trending: State<MovieState> = _trending
-
-    private val _you: MutableState<MovieState> = mutableStateOf(MovieState())
-    val you: State<MovieState> = _you
-
-    private val _upcoming: MutableState<MovieState> = mutableStateOf(MovieState())
-    val upcoming: State<MovieState> = _upcoming
-
-    private val _newShowing: MutableState<MovieState> = mutableStateOf(MovieState())
-    val newShowing: State<MovieState> = _newShowing
-
-    private val _top: MutableState<MovieState> = mutableStateOf(MovieState())
-    val top: State<MovieState> = _top
+    var state by mutableStateOf(MovieState())
+        private set
 
     val searchBox = mutableStateOf("")
-    private val _search: MutableState<MovieState> = mutableStateOf(MovieState())
-    val search: State<MovieState> = _search
 
     private val _more = mutableStateListOf<Movies.Results>()
     val more: List<Movies.Results> = _more
@@ -56,103 +38,110 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
     private val _movieImages: MutableState<MovieImagesState> = mutableStateOf(MovieImagesState())
     val movieImages: MutableState<MovieImagesState> = _movieImages
 
-    fun getMoreMovies(id: Int, page: Int, clear: Boolean) {
-
-        if (clear) {
-            ID.intValue = id
-            _more.clear()
-        }
-
-        viewModelScope.launch {
-            when (ID.intValue) {
-
-                1 -> {
-                    useCase.getMovieYou(page)
-                        .doOnSuccess { newMovies ->
-                            newMovies!!.forEach {
-                                _more.add(it)
-                            }
+    fun onEvent(event: MovieEvent) {
+        when (event) {
+            is MovieEvent.GetMovieDetail -> {
+                viewModelScope.launch {
+                    useCase.getMovieDetail(event.movieId)
+                        .doOnSuccess {
+                            _movieDetails.value = MovieDetailStats(data = it)
+                        }
+                        .doOnFailure {
+                            _movieDetails.value = MovieDetailStats(error = it?.message!!)
+                        }
+                        .doOnLoading {
+                            _movieDetails.value = MovieDetailStats(isLoading = true)
                         }.collect()
                 }
-
-                2 -> {
-                    useCase.getTopMovies(page)
-                        .doOnSuccess { newMovies ->
-                            newMovies!!.forEach {
-                                _more.add(it)
-                            }
-                        }.collect()
-                }
-
-                3 -> {
-                    useCase.getMoviesUpcoming(page)
-                        .doOnSuccess { newMovies ->
-                            newMovies!!.forEach {
-                                _more.add(it)
-                            }
-                        }.collect()
-                }
-
-                4 -> {
-                    useCase.getMovies(page)
-                        .doOnSuccess { newMovies ->
-                            newMovies!!.forEach {
-                                _more.add(it)
-                            }
-                        }.collect()
-                }
-
             }
-        }
-    }
 
-    fun searchMovies(name: String) {
-        viewModelScope.launch {
-            useCase.searchMovies(name)
-                .doOnSuccess {
-                    _search.value = MovieState(data = it!!)
+            is MovieEvent.GetMovieImage -> {
+                viewModelScope.launch {
+                    useCase.getMovieImages(event.movieId)
+                        .doOnSuccess {
+                            _movieImages.value = MovieImagesState(data = it.backdrops)
+                        }
+                        .doOnFailure {
+                            _movieImages.value = MovieImagesState(error = it?.message!!)
+                        }
+                        .doOnLoading {
+                            _movieImages.value = MovieImagesState(isLoading = true)
+                        }.collect()
                 }
-                .doOnFailure {
-                    _search.value = MovieState(error = it?.message!!)
-                }
-                .doOnLoading {
-                    _search.value = MovieState(isLoading = true)
-                }.collect()
-        }
-    }
+            }
 
-    fun setMovie(data: Movies.Results) {
-        getMovieDetail(data.id)
-        getMovieImage(data.id)
-    }
+            is MovieEvent.GetMoreMovies -> {
+                viewModelScope.launch {
 
-    private fun getMovieDetail(movieId: Long?) {
-        viewModelScope.launch {
-            useCase.getMovieDetail(movieId)
-                .doOnSuccess {
-                    _movieDetails.value = MovieDetailStats(data = it)
-                }
-                .doOnFailure {
-                    _movieDetails.value = MovieDetailStats(error = it?.message!!)
-                }
-                .doOnLoading {
-                    _movieDetails.value = MovieDetailStats(isLoading = true)
-                }.collect()
-        }
-    }
+                    if (event.clear) {
+                        ID.intValue = event.id
+                        _more.clear()
+                    }
+                    when (ID.intValue) {
 
-    private fun getMovieImage(movieId: Long?) {
-        viewModelScope.launch {
-            useCase.getMovieImages(movieId)
-                .doOnSuccess {
-                    _movieImages.value = MovieImagesState(data = it.backdrops)
+                        1 -> {
+                            useCase.getMovieYou(event.page)
+                                .doOnSuccess { newMovies ->
+                                    newMovies!!.forEach {
+                                        _more.add(it)
+                                    }
+                                }.collect()
+                        }
+
+                        2 -> {
+                            useCase.getTopMovies(event.page)
+                                .doOnSuccess { newMovies ->
+                                    newMovies!!.forEach {
+                                        _more.add(it)
+                                    }
+                                }.collect()
+                        }
+
+                        3 -> {
+                            useCase.getMoviesUpcoming(event.page)
+                                .doOnSuccess { newMovies ->
+                                    newMovies!!.forEach {
+                                        _more.add(it)
+                                    }
+                                }.collect()
+                        }
+
+                        4 -> {
+                            useCase.getMovies(event.page)
+                                .doOnSuccess { newMovies ->
+                                    newMovies!!.forEach {
+                                        _more.add(it)
+                                    }
+                                }.collect()
+                        }
+
+                    }
                 }
-                .doOnFailure {
-                    _movieImages.value = MovieImagesState(error = it?.message!!)
+            }
+
+            is MovieEvent.GetSearchMovie -> {
+                viewModelScope.launch {
+                    useCase.searchMovies(event.name)
+                        .doOnSuccess {
+                            state = state.copy(
+                                search = checkNotNull(it),
+                                isLoading = false
+                            )
+                        }
+                        .doOnFailure {
+                            state = state.copy(
+                                error = checkNotNull(it?.message),
+                                isLoading = false
+
+                            )
+                        }
+                        .doOnLoading {
+                            state = state.copy(
+                                isLoading = true
+                            )
+                        }.collect()
                 }
-                .doOnLoading {
-                    _movieImages.value = MovieImagesState(isLoading = true)
-                }.collect()
+            }
         }
     }
 
@@ -160,13 +149,19 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
         viewModelScope.launch {
             useCase.getMovies(1)
                 .doOnSuccess {
-                    _res.value = MovieState(data = it!!)
+                    state = state.copy(
+                        responseMovie = checkNotNull(it)
+                    )
                 }
                 .doOnFailure {
-                    _res.value = MovieState(error = it?.message!!)
+                    state = state.copy(
+                        error = checkNotNull(it?.message)
+                    )
                 }
                 .doOnLoading {
-                    _res.value = MovieState(isLoading = true)
+                    state = state.copy(
+                        isLoading = true
+                    )
                 }.collect()
         }
     }
@@ -175,13 +170,19 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
         viewModelScope.launch {
             useCase.getMovieTrending()
                 .doOnSuccess {
-                    _trending.value = MovieState(data = it!!)
+                    state = state.copy(
+                        trendingMovie = checkNotNull(it)
+                    )
                 }
                 .doOnFailure {
-                    _trending.value = MovieState(error = it?.message!!)
+                    state = state.copy(
+                        error = checkNotNull(it?.message)
+                    )
                 }
                 .doOnLoading {
-                    _trending.value = MovieState(isLoading = true)
+                    state = state.copy(
+                        isLoading = true
+                    )
                 }.collect()
         }
     }
@@ -190,13 +191,19 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
         viewModelScope.launch {
             useCase.getMovieYou(2)
                 .doOnSuccess {
-                    _you.value = MovieState(data = it!!)
+                    state = state.copy(
+                        youMovie = checkNotNull(it)
+                    )
                 }
                 .doOnFailure {
-                    _you.value = MovieState(error = it?.message!!)
+                    state = state.copy(
+                        error = checkNotNull(it?.message)
+                    )
                 }
                 .doOnLoading {
-                    _you.value = MovieState(isLoading = true)
+                    state = state.copy(
+                        isLoading = true
+                    )
                 }.collect()
         }
     }
@@ -205,13 +212,19 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
         viewModelScope.launch {
             useCase.getMoviesUpcoming(1)
                 .doOnSuccess {
-                    _upcoming.value = MovieState(data = it!!)
+                    state = state.copy(
+                        upcoming = checkNotNull(it)
+                    )
                 }
                 .doOnFailure {
-                    _upcoming.value = MovieState(error = it?.message!!)
+                    state = state.copy(
+                        error = checkNotNull(it?.message)
+                    )
                 }
                 .doOnLoading {
-                    _upcoming.value = MovieState(isLoading = true)
+                    state = state.copy(
+                        isLoading = true
+                    )
                 }.collect()
         }
     }
@@ -220,13 +233,19 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
         viewModelScope.launch {
             useCase.getNewShowing(1)
                 .doOnSuccess {
-                    _newShowing.value = MovieState(data = it!!)
+                    state = state.copy(
+                        newShowing = checkNotNull(it)
+                    )
                 }
                 .doOnFailure {
-                    _newShowing.value = MovieState(error = it?.message!!)
+                    state = state.copy(
+                        error = checkNotNull(it?.message)
+                    )
                 }
                 .doOnLoading {
-                    _newShowing.value = MovieState(isLoading = true)
+                    state = state.copy(
+                        isLoading = true
+                    )
                 }.collect()
         }
     }
@@ -235,34 +254,21 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
         viewModelScope.launch {
             useCase.getTopMovies(1)
                 .doOnSuccess {
-                    _top.value = MovieState(data = it!!)
+                    state = state.copy(
+                        top = checkNotNull(it)
+                    )
                 }
                 .doOnFailure {
-                    _top.value = MovieState(error = it?.message!!)
+                    state = state.copy(
+                        error = checkNotNull(it?.message)
+                    )
                 }
                 .doOnLoading {
-                    _top.value = MovieState(isLoading = true)
+                    state = state.copy(
+                        isLoading = true
+                    )
                 }.collect()
         }
     }
 
 }
-
-
-data class MovieState(
-    var data: List<Movies.Results> = emptyList(),
-    val error: String = " ",
-    val isLoading: Boolean = false,
-)
-
-data class MovieDetailStats(
-    var data: MovieDetail? = null,
-    val error: String = " ",
-    val isLoading: Boolean = false,
-)
-
-data class MovieImagesState(
-    var data: List<MovieImages.Backdrop> = emptyList(),
-    val error: String = " ",
-    val isLoading: Boolean = false,
-)

@@ -76,18 +76,21 @@ fun ProfileScreen(
 
     val view = LocalView.current
     val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
-    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
+    val statusBarHeight =
+        with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
     val scrollState = rememberScrollState()
 
     var favoritesList = remember { mutableStateOf(true) }
     var viewedList = remember { mutableStateOf(false) }
 
-    val response = viewModel.res.value
-    val responseYou = viewModel.you.value
+    val state = viewModel.state
+    val response = state.responseMovie
+    val responseYou = state.youMovie
 
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(top = statusBarHeight),
         color = MaterialTheme.colorScheme.onPrimary
     ) {
@@ -251,7 +254,7 @@ fun ProfileScreen(
                             columns = GridCells.Fixed(3),
                         ) {
                             items(
-                                response.data,
+                                response,
                                 key = {
                                     it.id!!
                                 }
@@ -259,7 +262,7 @@ fun ProfileScreen(
                                 ListMoviesItem(
                                     results = response,
                                 ) {
-                                    viewModel.setMovie(response)
+                                    //viewModel.setMovie(response)
                                     navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                                 }
                             }
@@ -271,7 +274,7 @@ fun ProfileScreen(
                             columns = GridCells.Fixed(3)
                         ) {
                             items(
-                                responseYou.data,
+                                responseYou,
                                 key = {
                                     it.id!!
                                 }
@@ -279,7 +282,7 @@ fun ProfileScreen(
                                 ListMoviesItem(
                                     results = responseYou,
                                 ) {
-                                    viewModel.setMovie(responseYou)
+                                    //viewModel.setMovie(responseYou)
                                     navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                                 }
                             }

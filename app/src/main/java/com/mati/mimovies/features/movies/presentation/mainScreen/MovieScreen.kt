@@ -74,18 +74,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presentation.MovieEvent
 import com.mati.mimovies.features.movies.presentation.MovieViewModel
-import com.mati.mimovies.ui.theme.BlueLight
-import com.mati.mimovies.utils.MovieNavigationItems
-import kotlinx.coroutines.delay
-import coil.compose.rememberImagePainter
 import com.mati.mimovies.features.movies.presentation.PersonViewModel
 import com.mati.mimovies.features.movies.presentation.util.MoviesItem.MoviesItemEnabled
 import com.mati.mimovies.features.movies.presentation.util.PersonItem.PersonPopularList
+import com.mati.mimovies.ui.theme.BlueLight
+import com.mati.mimovies.utils.MovieNavigationItems
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -107,21 +108,22 @@ fun MovieScreen(
         enabled = true
     }, 2000)
 
-    val response = viewModel.res.value
-    val responseTrending = viewModel.trending.value
-    val responseYou = viewModel.you.value
-    val responseUpcoming = viewModel.upcoming.value
-    val responseNewShowing = viewModel.newShowing.value
-    val responseTop = viewModel.top.value
+    val state = viewModel.state
+    val response = state.responseMovie
+    val responseTrending = state.trendingMovie
+    val responseYou = state.youMovie
+    val responseUpcoming = state.upcoming
+    val responseNewShowing = state.newShowing
+    val responseTop = state.top
 
     val responsePerson = personViewModel.personPopular.value
 
-    if (response.data.isEmpty()) {
-        if (response.isLoading) {
+    if (response.isEmpty()) {
+        if (state.isLoading) {
             MainScreenShimmer(isVisible = true)
-        } else if (response.error.length > 5) {
+        } else if (state.error.length > 5) {
             MainScreenShimmer(isVisible = false)
-            if (response.data.isEmpty()) {
+            if (response.isEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -138,7 +140,7 @@ fun MovieScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = response.error,
+                        text = state.error,
                         fontSize = 16.sp
                     )
 
@@ -161,7 +163,7 @@ fun MovieScreen(
             }
         }
     }
-    if (response.data.isNotEmpty()) {
+    if (response.isNotEmpty()) {
         MainScreenShimmer(isVisible = false)
         Column(
             modifier = Modifier
@@ -176,26 +178,28 @@ fun MovieScreen(
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             Spacer(modifier = Modifier.padding(bottom = 8.dp))
-            if (responseTrending.data.isNotEmpty()) {
-                TrendList(responseTrending.data, { item ->
+            if (responseTrending.isNotEmpty()) {
+                TrendList(responseTrending, { item ->
                     enabled = false
-                    viewModel.setMovie(item)
+                    viewModel.onEvent(MovieEvent.GetMovieDetail(item.id!!))
+                    viewModel.onEvent(MovieEvent.GetMovieImage(item.id))
                     navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                 }, enabled = enabled)
             }
 
             TitleList("For You", true) {
                 viewModel.title.value = "For You"
-                viewModel.getMoreMovies(1, 2, true)
+                viewModel.onEvent(MovieEvent.GetMoreMovies(1, 2, true))
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             LazyRow {
-                itemsIndexed(responseYou.data) { index, item ->
+                itemsIndexed(responseYou) { index, item ->
                     val keyItem = index + item.id!!
                     key(keyItem) {
                         MoviesItemEnabled(results = item, {
                             enabled = false
-                            viewModel.setMovie(item)
+                            viewModel.onEvent(MovieEvent.GetMovieDetail(item.id))
+                            viewModel.onEvent(MovieEvent.GetMovieImage(item.id))
                             navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                         }, enabled = enabled)
                     }
@@ -203,16 +207,17 @@ fun MovieScreen(
             }
             TitleList("Top Rated", true) {
                 viewModel.title.value = "Top Rated"
-                viewModel.getMoreMovies(2, 1, true)
+                viewModel.onEvent(MovieEvent.GetMoreMovies(2, 1, true))
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             LazyRow {
-                itemsIndexed(responseTop.data) { index, item ->
+                itemsIndexed(responseTop) { index, item ->
                     val keyItem = index + item.id!!
                     key(keyItem) {
                         MoviesItemEnabled(results = item, {
                             enabled = false
-                            viewModel.setMovie(item)
+                            viewModel.onEvent(MovieEvent.GetMovieDetail(item.id!!))
+                            viewModel.onEvent(MovieEvent.GetMovieImage(item.id!!))
                             navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                         }, enabled = enabled)
                     }
@@ -234,16 +239,17 @@ fun MovieScreen(
 
             TitleList("Upcoming", true) {
                 viewModel.title.value = "Upcoming"
-                viewModel.getMoreMovies(3, 1, true)
+                viewModel.onEvent(MovieEvent.GetMoreMovies(3, 1, true))
                 navHostController.navigate(MovieNavigationItems.MoreMovieScreen.route)
             }
             LazyRow {
-                itemsIndexed(responseUpcoming.data) { index, item ->
+                itemsIndexed(responseUpcoming) { index, item ->
                     val keyItem = index + item.id!!
                     key(keyItem) {
                         MoviesItemEnabled(results = item, {
                             enabled = false
-                            viewModel.setMovie(item)
+                            viewModel.onEvent(MovieEvent.GetMovieDetail(item.id))
+                            viewModel.onEvent(MovieEvent.GetMovieImage(item.id))
                             navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                         }, enabled = enabled)
                     }
@@ -257,10 +263,11 @@ fun MovieScreen(
                 modifier = Modifier
                     .padding(bottom = 4.dp, top = 8.dp)
             ) {
-                repeat(responseNewShowing.data.size) { index ->
-                    NewShowing(res = responseNewShowing.data[index], {
+                repeat(responseNewShowing.size) { index ->
+                    NewShowing(res = responseNewShowing[index], {
                         enabled = false
-                        viewModel.setMovie(responseNewShowing.data[index])
+                        viewModel.onEvent(MovieEvent.GetMovieDetail(responseNewShowing[index].id!!))
+                        viewModel.onEvent(MovieEvent.GetMovieImage(responseNewShowing[index].id!!))
                         navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                     }, enabled = enabled)
                 }

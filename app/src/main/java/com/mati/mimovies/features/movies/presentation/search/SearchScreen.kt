@@ -64,6 +64,7 @@ import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.data.model.Person
 import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presentation.MovieEvent
 import com.mati.mimovies.features.movies.presentation.MovieViewModel
 import com.mati.mimovies.features.movies.presentation.PersonViewModel
 import com.mati.mimovies.features.movies.presentation.mainScreen.GenreShowing
@@ -81,11 +82,13 @@ fun SearchScreen(
 
     val view = LocalView.current
     val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
-    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
+    val statusBarHeight =
+        with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
     val searchBox = viewModel.searchBox
 
-    val responseMovies = viewModel.search.value
+    val state = viewModel.state
+    var responseMovies = state.search
     val responsePerson = personViewModel.search.value
 
     val searchMovie = remember { mutableStateOf(true) }
@@ -94,7 +97,8 @@ fun SearchScreen(
     val scrollState = rememberScrollState()
 
     Surface(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(top = statusBarHeight),
         color = MaterialTheme.colorScheme.primary
     ) {
@@ -132,7 +136,7 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(4.dp))
             SearchBox(searchBox) {
                 if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
-                    viewModel.searchMovies(searchBox.value)
+                    viewModel.onEvent(MovieEvent.GetSearchMovie(searchBox.value))
                     personViewModel.searchPerson(searchBox.value)
                 }
             }
@@ -184,7 +188,7 @@ fun SearchScreen(
                             .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
                     )
                     if (searchMovie.value) {
-                        if (responseMovies.isLoading) {
+                        if (state.isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .padding(64.dp)
@@ -193,23 +197,32 @@ fun SearchScreen(
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 trackColor = MaterialTheme.colorScheme.surface,
                             )
-                        } else if (responseMovies.data.isNotEmpty()) {
+                        } else if (responseMovies.isNotEmpty()) {
                             if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
                                 Column(
                                     modifier = Modifier
                                         .padding(bottom = 4.dp, top = 8.dp)
                                 ) {
-                                    repeat(responseMovies.data.size) { index ->
+                                    repeat(responseMovies.size) { index ->
                                         SearchMovieItem(
-                                            res = responseMovies.data[index]
+                                            res = responseMovies[index]
                                         ) {
-                                            viewModel.setMovie(responseMovies.data[index])
+                                            viewModel.onEvent(
+                                                MovieEvent.GetMovieDetail(
+                                                    responseMovies[index].id!!
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                MovieEvent.GetMovieImage(
+                                                    responseMovies[index].id!!
+                                                )
+                                            )
                                             navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                                         }
                                     }
                                 }
                             } else {
-                                responseMovies.data = emptyList()
+                                responseMovies = emptyList()
                                 Column(
                                     modifier = Modifier
                                         .padding(bottom = 4.dp, top = 8.dp)
@@ -217,7 +230,7 @@ fun SearchScreen(
 
                                 }
                             }
-                        } else if (responseMovies.error.length > 3) {
+                        } else if (state.error.length > 3) {
                             Column(
                                 modifier = Modifier
                                     .padding(top = 64.dp)
@@ -589,7 +602,7 @@ fun SearchPersonItem(
                             fontSize = 16.sp
                         ),
                     )
-                    val gender = when(res.gender) {
+                    val gender = when (res.gender) {
                         0 -> "Not set"
                         1 -> "Female"
                         2 -> "Male"

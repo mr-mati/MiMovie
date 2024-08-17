@@ -37,6 +37,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.mati.mimovies.R
+import com.mati.mimovies.features.movies.presentation.MovieEvent
 import com.mati.mimovies.features.movies.presentation.MovieViewModel
 import com.mati.mimovies.features.movies.presentation.util.MoviesItem.MoviesItem
 import com.mati.mimovies.utils.MovieNavigationItems
@@ -60,7 +61,13 @@ fun MoreMovieScreen(
 
     LaunchedEffect(lastVisibleItemIndex) {
         if (lastVisibleItemIndex != null && lastVisibleItemIndex >= response.size - 1) {
-            viewModel.getMoreMovies(viewModel.ID.value, page = response.size / 10 + 1, false)
+            viewModel.onEvent(
+                MovieEvent.GetMoreMovies(
+                    viewModel.ID.value,
+                    page = response.size / 10 + 1,
+                    false
+                )
+            )
         }
     }
 
@@ -121,7 +128,8 @@ fun MoreMovieScreen(
                         MoviesItem(
                             results = item,
                         ) {
-                            viewModel.setMovie(item)
+                            viewModel.onEvent(MovieEvent.GetMovieDetail(item.id))
+                            viewModel.onEvent(MovieEvent.GetMovieImage(item.id))
                             navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                         }
                     }
