@@ -33,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,15 +56,19 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mati.mimovies.R
-import com.mati.mimovies.features.movies.data.model.Movies
+import com.mati.mimovies.features.movies.data.local.entity.FavoriteEntity
+import com.mati.mimovies.features.movies.data.local.entity.WatchEntity
 import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presentation.MovieEvent
 import com.mati.mimovies.features.movies.presentation.MovieViewModel
+import com.mati.mimovies.features.profile.presentation.ProfileViewModel
 import com.mati.mimovies.utils.MovieNavigationItems
 import com.mati.mimovies.utils.rippleIndication
 
 @Composable
 fun ProfileScreen(
     viewModel: MovieViewModel = hiltViewModel(),
+    viewModelProfile: ProfileViewModel = hiltViewModel(),
     navHostController: NavHostController,
 ) {
 
@@ -74,6 +77,9 @@ fun ProfileScreen(
     systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.secondary)
     systemUiController.setStatusBarColor(MaterialTheme.colorScheme.secondary)
 
+    val favoritesList = viewModelProfile.favoritesList
+    val viewedList = viewModelProfile.viewedList
+
     val view = LocalView.current
     val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
     val statusBarHeight =
@@ -81,12 +87,9 @@ fun ProfileScreen(
 
     val scrollState = rememberScrollState()
 
-    var favoritesList = remember { mutableStateOf(true) }
-    var viewedList = remember { mutableStateOf(false) }
-
     val state = viewModel.state
-    val response = state.responseMovie
-    val responseYou = state.youMovie
+    val responseFavorite = state.favoriteList
+    val responseWatch = state.watchList
 
     Surface(
         modifier = Modifier
@@ -248,41 +251,45 @@ fun ProfileScreen(
                             .padding(start = 2.dp, end = 2.dp, top = 16.dp, bottom = 26.dp)
                     )
                     if (favoritesList.value) {
+                        viewModel.onEvent(MovieEvent.GetFavoriteList)
                         LazyVerticalGrid(
                             modifier = Modifier
-                                .heightIn(max = 500.dp),
+                                .heightIn(min = 200.dp, max = 500.dp),
                             columns = GridCells.Fixed(3),
                         ) {
                             items(
-                                response,
+                                responseFavorite,
                                 key = {
-                                    it.id!!
+                                    it.id
                                 }
-                            ) { response ->
-                                ListMoviesItem(
-                                    results = response,
+                            ) { responseFavorite ->
+                                ItemFavoriteList(
+                                    results = responseFavorite,
                                 ) {
-                                    //viewModel.setMovie(response)
+                                    viewModel.onEvent(MovieEvent.GetMovieDetail(responseFavorite.id.toLong()))
+                                    viewModel.onEvent(MovieEvent.GetMovieImage(responseFavorite.id.toLong()))
                                     navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                                 }
                             }
                         }
                     } else if (viewedList.value) {
+                        viewModel.onEvent(MovieEvent.GetWatchList)
                         LazyVerticalGrid(
                             modifier = Modifier
-                                .heightIn(max = 500.dp),
+                                .heightIn(min = 200.dp, max = 500.dp),
                             columns = GridCells.Fixed(3)
                         ) {
                             items(
-                                responseYou,
+                                responseWatch,
                                 key = {
-                                    it.id!!
+                                    it.id
                                 }
-                            ) { responseYou ->
-                                ListMoviesItem(
-                                    results = responseYou,
+                            ) { responseWatch ->
+                                ItemWatchList(
+                                    results = responseWatch,
                                 ) {
-                                    //viewModel.setMovie(responseYou)
+                                    viewModel.onEvent(MovieEvent.GetMovieDetail(responseWatch.id.toLong()))
+                                    viewModel.onEvent(MovieEvent.GetMovieImage(responseWatch.id.toLong()))
                                     navHostController.navigate(MovieNavigationItems.MovieDetails.route)
                                 }
                             }
@@ -445,8 +452,44 @@ fun ItemSelection(text: String, action: Boolean, onClick: (action: Boolean) -> U
 }
 
 @Composable
-fun ListMoviesItem(
-    results: Movies.Results, onGettingClick: () -> Unit,
+fun ItemFavoriteList(
+    results: FavoriteEntity, onGettingClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .width(150.dp)
+            .height(180.dp)
+            .padding(end = 4.dp)
+            .clickable() {
+                onGettingClick()
+            }
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Gray,
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Image(
+            rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data("${ApiService.BASE_POSTER_URL}${results.poster_path}")
+                    .build()
+            ),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Gray)
+        )
+    }
+}
+
+@Composable
+fun ItemWatchList(
+    results: WatchEntity, onGettingClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier

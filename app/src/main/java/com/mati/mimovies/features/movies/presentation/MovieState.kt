@@ -1,5 +1,7 @@
 package com.mati.mimovies.features.movies.presentation
 
+import com.mati.mimovies.features.movies.data.local.entity.FavoriteEntity
+import com.mati.mimovies.features.movies.data.local.entity.WatchEntity
 import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
@@ -12,6 +14,8 @@ data class MovieState(
     val newShowing: List<Movies.Results> = emptyList(),
     val top: List<Movies.Results> = emptyList(),
     val search: List<Movies.Results> = emptyList(),
+    val favoriteList: List<FavoriteEntity> = emptyList(),
+    val watchList: List<WatchEntity> = emptyList(),
     val error: String = " ",
     val isLoading: Boolean = false
 )

@@ -7,8 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.mati.mimovies.features.auth.signIn.SignInViewModel
 import com.mati.mimovies.features.auth.signUp.SignUpViewModel
 import com.mati.mimovies.features.movies.presentation.MovieViewModel
@@ -16,6 +22,7 @@ import com.mati.mimovies.features.movies.presentation.PersonViewModel
 import com.mati.mimovies.features.profile.presentation.ProfileViewModel
 import com.mati.mimovies.navigation.MovieNavigation
 import com.mati.mimovies.ui.theme.MiMoviesTheme
+import com.mati.mimovies.utils.UiEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

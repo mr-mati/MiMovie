@@ -2,6 +2,7 @@
 
 package com.mati.mimovies.features.movies.presentation.detailScreen
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -41,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +63,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -77,22 +80,26 @@ import com.mati.mimovies.R
 import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.network.ApiService
+import com.mati.mimovies.features.movies.presentation.MovieEvent
 import com.mati.mimovies.features.movies.presentation.MovieViewModel
 import com.mati.mimovies.features.movies.presentation.util.MediaPlayer.VideoPlayer
 import com.mati.mimovies.features.profile.presentation.profileScreen.ItemSelection
-import com.mati.mimovies.utils.ButtonCustom
-import com.mati.mimovies.utils.Title
 import com.mati.mimovies.ui.theme.Blue
 import com.mati.mimovies.ui.theme.BlueLight
+import com.mati.mimovies.utils.ButtonCustom
+import com.mati.mimovies.utils.Title
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun MovieDetailScreen(
     viewModel: MovieViewModel,
     navHostController: NavHostController,
 ) {
+
+    val addedToList = mutableStateOf(false)
 
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
@@ -149,8 +156,35 @@ fun MovieDetailScreen(
             Header(response) {
                 navHostController.popBackStack()
             }
-            ToolBox(onClickPlay = { isSheetPlayOpen = true },
-                onClickDownload = { isSheetDownloadOpen = true })
+            val isAlreadyFavorite =
+                viewModel.state.favoriteList.any { it.id == response.id }
+
+            if (!isAlreadyFavorite) {
+                addedToList.value = false
+            } else {
+                addedToList.value = true
+            }
+            ToolBox(
+                onClickPlay = {
+                    isSheetPlayOpen = true
+                    if (!isAlreadyFavorite) {
+                        viewModel.onEvent(MovieEvent.AddMovieToWatch(response))
+                    }
+                },
+                onClickDownload = { isSheetDownloadOpen = true },
+                onAddToFavorite = {
+                    if (!isAlreadyFavorite) {
+                        viewModel.onEvent(MovieEvent.AddMovieToFavorite(response))
+                        viewModel.onEvent(MovieEvent.GetFavoriteList)
+                        addedToList.value = true
+                    } else {
+                        viewModel.onEvent(MovieEvent.DeleteMovieToFavorite(response))
+                        viewModel.onEvent(MovieEvent.GetFavoriteList)
+                        addedToList.value = false
+                    }
+                },
+                addedToList = addedToList
+            )
             Row(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
@@ -502,7 +536,12 @@ fun Header(
 }
 
 @Composable
-fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
+fun ToolBox(
+    onClickPlay: () -> Unit,
+    onClickDownload: () -> Unit,
+    onAddToFavorite: () -> Unit,
+    addedToList: State<Boolean>
+) {
     Column {
         ButtonCustom("Play", R.drawable.play) {
             onClickPlay()
@@ -529,21 +568,34 @@ fun ToolBox(onClickPlay: () -> Unit, onClickDownload: () -> Unit) {
                 .padding(start = 6.dp, end = 6.dp)
                 .width(80.dp)
                 .height(60.dp),
-                onClick = { /*TODO*/ }) {
+                onClick = { onAddToFavorite() }) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_add),
-                        contentDescription = "Add To List"
-                    )
-                    Text(
-                        text = "Add to list", style = TextStyle(
-                            color = Gray,
-                            fontSize = 12.sp,
+                    if (!addedToList.value) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_add),
+                            contentDescription = stringResource(id = R.string.add_fev)
                         )
-                    )
+                        Text(
+                            text = stringResource(id = R.string.add_fev), style = TextStyle(
+                                color = Gray,
+                                fontSize = 12.sp,
+                            )
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_remove),
+                            contentDescription = stringResource(id = R.string.remove_fav)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.remove_fav), style = TextStyle(
+                                color = Gray,
+                                fontSize = 12.sp,
+                            )
+                        )
+                    }
                 }
             }
             IconButton(modifier = Modifier

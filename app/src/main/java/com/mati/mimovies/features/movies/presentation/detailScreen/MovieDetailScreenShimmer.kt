@@ -1,5 +1,6 @@
 package com.mati.mimovies.features.movies.presentation.detailScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,12 +36,14 @@ import androidx.core.view.WindowInsetsCompat
 import com.mati.mimovies.utils.Title
 import com.valentinilk.shimmer.shimmer
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun MovieDetailScreenShimmer(isVisible: Boolean) {
 
     val view = LocalView.current
     val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
-    val statusBarHeight = with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
+    val statusBarHeight =
+        with(LocalDensity.current) { insets.getInsets(WindowInsetsCompat.Type.statusBars()).top.toDp() }
 
     Column(
         modifier = Modifier
@@ -49,8 +53,12 @@ fun MovieDetailScreenShimmer(isVisible: Boolean) {
     ) {
         HeaderShimmer()
 
-        ToolBox(onClickPlay = { },
-            onClickDownload = { })
+        ToolBox(
+            onClickPlay = { },
+            onClickDownload = { },
+            onAddToFavorite = { },
+            addedToList = mutableStateOf(false)
+        )
         Row(
             modifier = Modifier
                 .padding(horizontal = 8.dp)

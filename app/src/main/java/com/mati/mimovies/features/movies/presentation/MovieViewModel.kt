@@ -13,8 +13,11 @@ import com.mati.mimovies.common.base.doOnLoading
 import com.mati.mimovies.common.base.doOnSuccess
 import com.mati.mimovies.features.movies.data.model.Movies
 import com.mati.mimovies.features.movies.domain.usecase.MovieUseCase
+import com.mati.mimovies.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,10 +27,13 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
     var ID = mutableIntStateOf(1)
     var title = mutableStateOf("")
 
+    val searchBox = mutableStateOf("")
+
     var state by mutableStateOf(MovieState())
         private set
 
-    val searchBox = mutableStateOf("")
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _more = mutableStateListOf<Movies.Results>()
     val more: List<Movies.Results> = _more
@@ -142,6 +148,47 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
                         }.collect()
                 }
             }
+
+            is MovieEvent.GetFavoriteList -> {
+                viewModelScope.launch {
+                    state = state.copy(
+                        favoriteList = useCase.getMovieFavoriteList()
+                    )
+                }
+            }
+
+            is MovieEvent.AddMovieToFavorite -> {
+                viewModelScope.launch {
+                    useCase.insertMovieFavoriteList(event.movie)
+                }
+            }
+
+            is MovieEvent.DeleteMovieToFavorite -> {
+                viewModelScope.launch {
+                    useCase.deleteMovieFavoriteList(event.movie)
+                }
+            }
+
+            is MovieEvent.GetWatchList -> {
+                viewModelScope.launch {
+                    state = state.copy(
+                        watchList = useCase.getMovieWatchList()
+                    )
+                }
+            }
+
+            is MovieEvent.AddMovieToWatch -> {
+                viewModelScope.launch {
+                    useCase.insertMovieWatchList(event.movie)
+                }
+            }
+
+            is MovieEvent.DeleteMovieToWatch -> {
+                viewModelScope.launch {
+                    useCase.deleteMovieWatchList(event.movie)
+                }
+            }
+
         }
     }
 

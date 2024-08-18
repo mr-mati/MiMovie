@@ -5,6 +5,7 @@
 package com.mati.mimovies.features.movies.presentation.mainScreen
 
 import MainScreenShimmer
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.animation.core.tween
@@ -89,6 +90,7 @@ import com.mati.mimovies.utils.MovieNavigationItems
 import kotlinx.coroutines.delay
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MovieScreen(
     viewModel: MovieViewModel = hiltViewModel(),
@@ -170,7 +172,14 @@ fun MovieScreen(
                 .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
         ) {
-            TopToolbar(navHostController)
+            TopToolbar(
+                onClickProfile = {
+                    navHostController.navigate(MovieNavigationItems.ProfileScreen.route)
+                },
+                {
+                    navHostController.navigate(MovieNavigationItems.SearchScreen.route)
+                }
+            )
             Categories()
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -278,7 +287,7 @@ fun MovieScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopToolbar(navHostController: NavHostController) {
+fun TopToolbar(onClickProfile: () -> Unit, onClickSearch: () -> Unit) {
     TopAppBar(
         title = {
             Text(
@@ -290,10 +299,10 @@ fun TopToolbar(navHostController: NavHostController) {
             )
         },
         actions = {
-            IconButton(onClick = { navHostController.navigate(MovieNavigationItems.SearchScreen.route) }) {
+            IconButton(onClick = { onClickSearch() }) {
                 Icon(Icons.Default.Search, null)
             }
-            IconButton(onClick = { navHostController.navigate(MovieNavigationItems.ProfileScreen.route) }) {
+            IconButton(onClick = { onClickProfile() }) {
                 Icon(Icons.Default.Person, null)
             }
         },
