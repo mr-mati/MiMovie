@@ -1,6 +1,8 @@
 package com.mati.mimovies.features.movies.domain.repository
 
 import com.mati.mimovies.common.base.ApiState
+import com.mati.mimovies.features.movies.data.local.entity.FavoriteEntity
+import com.mati.mimovies.features.movies.data.local.entity.WatchEntity
 import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
@@ -26,4 +28,15 @@ interface MovieRepository {
 
     suspend fun getMovieDetail(movieId: Long?): Flow<ApiState<MovieDetail>>
 
+    suspend fun getMovieFavoriteList(): List<FavoriteEntity>
+
+    suspend fun insertMovieFavoriteList(movie: MovieDetail)
+
+    suspend fun deleteMovieFavoriteList(movie: MovieDetail)
+
+    suspend fun getMovieWatchList(): List<WatchEntity>
+
+    suspend fun insertMovieWatchList(movie: MovieDetail)
+
+    suspend fun deleteMovieWatchList(movie: MovieDetail)
 }

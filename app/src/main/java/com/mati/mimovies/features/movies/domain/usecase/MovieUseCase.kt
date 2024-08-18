@@ -2,6 +2,8 @@ package com.mati.mimovies.features.movies.domain.usecase
 
 import com.mati.mimovies.common.base.ApiState
 import com.mati.mimovies.common.base.map
+import com.mati.mimovies.features.movies.data.local.entity.FavoriteEntity
+import com.mati.mimovies.features.movies.data.local.entity.WatchEntity
 import com.mati.mimovies.features.movies.data.model.MovieDetail
 import com.mati.mimovies.features.movies.data.model.MovieImages
 import com.mati.mimovies.features.movies.data.model.Movies
@@ -78,6 +80,30 @@ class MovieUseCase @Inject constructor(
 
     suspend fun getMovieDetail(movieId: Long?): Flow<ApiState<MovieDetail>> {
         return repo.getMovieDetail(movieId)
+    }
+
+    suspend fun getMovieFavoriteList(): List<FavoriteEntity> {
+        return repo.getMovieFavoriteList()
+    }
+
+    suspend fun insertMovieFavoriteList(movie: MovieDetail) {
+        repo.insertMovieFavoriteList(movie)
+    }
+
+    suspend fun deleteMovieFavoriteList(movie: MovieDetail) {
+        repo.deleteMovieFavoriteList(movie)
+    }
+
+    suspend fun getMovieWatchList(): List<WatchEntity> {
+        return repo.getMovieWatchList()
+    }
+
+    suspend fun insertMovieWatchList(movie: MovieDetail) {
+        repo.insertMovieWatchList(movie)
+    }
+
+    suspend fun deleteMovieWatchList(movie: MovieDetail) {
+        repo.deleteMovieWatchList(movie)
     }
 
 }
