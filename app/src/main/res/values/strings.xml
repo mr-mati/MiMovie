@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Mi Movies</string>
     <string name="fullscreen">fullscreen</string>
+
+    <string name="add_fev">+Fav</string>
+    <string name="remove_fav">-Fav</string>
+
+    <string name="add_to_favorite">Add to favorite list</string>
 </resources>
