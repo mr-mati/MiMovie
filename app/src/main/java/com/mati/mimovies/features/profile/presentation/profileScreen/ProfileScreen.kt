@@ -37,7 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -91,6 +95,17 @@ fun ProfileScreen(
     val responseFavorite = state.favoriteList
     val responseWatch = state.watchList
 
+    val nestedScrollConnection = object : NestedScrollConnection {
+        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+            // بررسی اینکه آیا اسکرول در حالت عمودی است و ScrollState به انتها نرسیده
+            return if (available.y > 0 && scrollState.value != scrollState.maxValue) {
+                Offset.Zero // اسکرول نکردن LazyColumn
+            } else {
+                Offset(0f, available.y) // اجازه اسکرول دادن به LazyColumn
+            }
+        }
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -100,6 +115,7 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
+                //.nestedScroll(nestedScrollConnection)
                 .padding(bottom = 16.dp)
         ) {
             Card(
@@ -254,7 +270,7 @@ fun ProfileScreen(
                         viewModel.onEvent(MovieEvent.GetFavoriteList)
                         LazyVerticalGrid(
                             modifier = Modifier
-                                .heightIn(min = 200.dp, max = 500.dp),
+                                .heightIn(min = 200.dp, max = 5000.dp),
                             columns = GridCells.Fixed(3),
                         ) {
                             items(
@@ -276,7 +292,7 @@ fun ProfileScreen(
                         viewModel.onEvent(MovieEvent.GetWatchList)
                         LazyVerticalGrid(
                             modifier = Modifier
-                                .heightIn(min = 200.dp, max = 500.dp),
+                                .heightIn(min = 200.dp, max = 5000.dp),
                             columns = GridCells.Fixed(3)
                         ) {
                             items(

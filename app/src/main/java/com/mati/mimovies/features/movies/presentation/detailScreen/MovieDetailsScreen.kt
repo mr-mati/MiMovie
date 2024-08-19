@@ -103,7 +103,7 @@ fun MovieDetailScreen(
 
     val systemUiController = rememberSystemUiController()
     systemUiController.isNavigationBarVisible = false
-    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
+    systemUiController.setNavigationBarColor(Color.Transparent)
     systemUiController.setStatusBarColor(Color.Transparent)
 
     val response = viewModel.movieDetails.value.data

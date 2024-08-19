@@ -130,13 +130,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
                     useCase.searchMovies(event.name)
                         .doOnSuccess {
                             state = state.copy(
+
                                 search = checkNotNull(it),
                                 isLoading = false
                             )
                         }
                         .doOnFailure {
                             state = state.copy(
-                                error = checkNotNull(it?.message),
+                                error = it?.message!!,
                                 isLoading = false
 
                             )
@@ -197,12 +198,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
             useCase.getMovies(1)
                 .doOnSuccess {
                     state = state.copy(
-                        responseMovie = checkNotNull(it)
+                        responseMovie = checkNotNull(it),
+                        isLoading = false
                     )
                 }
                 .doOnFailure {
                     state = state.copy(
-                        error = checkNotNull(it?.message)
+                        error = checkNotNull(it?.message),
+                        isLoading = false
                     )
                 }
                 .doOnLoading {
@@ -218,12 +221,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
             useCase.getMovieTrending()
                 .doOnSuccess {
                     state = state.copy(
-                        trendingMovie = checkNotNull(it)
+                        trendingMovie = checkNotNull(it),
+                        isLoading = false
                     )
                 }
                 .doOnFailure {
                     state = state.copy(
-                        error = checkNotNull(it?.message)
+                        error = checkNotNull(it?.message),
+                        isLoading = false
                     )
                 }
                 .doOnLoading {
@@ -239,12 +244,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
             useCase.getMovieYou(2)
                 .doOnSuccess {
                     state = state.copy(
-                        youMovie = checkNotNull(it)
+                        youMovie = checkNotNull(it),
+                        isLoading = false
                     )
                 }
                 .doOnFailure {
                     state = state.copy(
-                        error = checkNotNull(it?.message)
+                        error = checkNotNull(it?.message),
+                        isLoading = false
                     )
                 }
                 .doOnLoading {
@@ -260,12 +267,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
             useCase.getMoviesUpcoming(1)
                 .doOnSuccess {
                     state = state.copy(
-                        upcoming = checkNotNull(it)
+                        upcoming = checkNotNull(it),
+                        isLoading = false
                     )
                 }
                 .doOnFailure {
                     state = state.copy(
-                        error = checkNotNull(it?.message)
+                        error = checkNotNull(it?.message),
+                        isLoading = false
                     )
                 }
                 .doOnLoading {
@@ -281,12 +290,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
             useCase.getNewShowing(1)
                 .doOnSuccess {
                     state = state.copy(
-                        newShowing = checkNotNull(it)
+                        newShowing = checkNotNull(it),
+                        isLoading = false
                     )
                 }
                 .doOnFailure {
                     state = state.copy(
-                        error = checkNotNull(it?.message)
+                        error = checkNotNull(it?.message),
+                        isLoading = false
                     )
                 }
                 .doOnLoading {
@@ -302,12 +313,14 @@ class MovieViewModel @Inject constructor(private val useCase: MovieUseCase) : Vi
             useCase.getTopMovies(1)
                 .doOnSuccess {
                     state = state.copy(
-                        top = checkNotNull(it)
+                        top = checkNotNull(it),
+                        isLoading = false
                     )
                 }
                 .doOnFailure {
                     state = state.copy(
-                        error = checkNotNull(it?.message)
+                        error = checkNotNull(it?.message),
+                        isLoading = false
                     )
                 }
                 .doOnLoading {

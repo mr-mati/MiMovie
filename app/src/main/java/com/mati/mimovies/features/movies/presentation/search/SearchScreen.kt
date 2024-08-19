@@ -49,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -126,7 +127,9 @@ fun SearchScreen(
                 )
                 Text(
                     modifier = Modifier.padding(start = 4.dp),
-                    text = "Mi Movies", fontWeight = FontWeight.Bold, style = TextStyle(
+                    text = stringResource(id = R.string.app_name),
+                    fontWeight = FontWeight.Bold,
+                    style = TextStyle(
                         color = MaterialTheme.colorScheme.secondary,
                         fontFamily = FontFamily(Font(R.font.primary_bold)),
                         fontSize = 26.sp
@@ -136,8 +139,11 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(4.dp))
             SearchBox(searchBox) {
                 if (searchBox.value != "" || searchBox.value.isNotEmpty()) {
-                    viewModel.onEvent(MovieEvent.GetSearchMovie(searchBox.value))
-                    personViewModel.searchPerson(searchBox.value)
+                    if (searchMovie.value) {
+                        viewModel.onEvent(MovieEvent.GetSearchMovie(searchBox.value))
+                    } else if (searchPerson.value) {
+                        personViewModel.searchPerson(searchBox.value)
+                    }
                 }
             }
 
